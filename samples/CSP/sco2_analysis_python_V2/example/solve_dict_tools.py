@@ -810,7 +810,7 @@ def solarpaces_2024_abstract():
 
     # Plot
     print("Plotting...")
-    htrbp_legend_label = "recompression w/ htr bypass"
+    htrbp_legend_label = "recompression \nw/ htr bypass"
     recomp_legend_label = "recompression"
     simple_legend_label = "simple"
     simple_bp_legend_label = "simple w/ bypass"
@@ -856,6 +856,12 @@ def solarpaces_2024_abstract():
     # Abstract specific plots
     fig_abstract_pareto, (ax1_abstract_pareto, ax2_abstract_pareto) = plt.subplots(1,2)
     fig_abstract_pareto.set_size_inches(fig_width, fig_height)
+    ax1_abstract_pareto.xaxis.grid(True)
+    ax1_abstract_pareto.yaxis.grid(True)
+    ax2_abstract_pareto.xaxis.grid(True)
+    ax2_abstract_pareto.yaxis.grid(True)
+    ax1_abstract_pareto.set_axisbelow(True)
+    ax2_abstract_pareto.set_axisbelow(True)
 
     # Compiled All Data (Temp vs ETA)
     design_tools.plot_scatter_pts([
