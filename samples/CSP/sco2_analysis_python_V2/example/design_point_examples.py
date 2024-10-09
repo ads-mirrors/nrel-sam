@@ -28,8 +28,8 @@ sys.path.append(newPath)
 import sco2_cycle_ssc as sco2_solve
 import sco2_plots as cy_plt
 
-folder_location = "C:\\Users\\tbrown2\\Desktop\\sco2_python\\Alfani2020_Final\\"
-Nproc = 10
+folder_location = "C:\\Users\\tbrown2\\Desktop\\sco2_python\\G3P3\\compressor_and_approach\\"
+Nproc = 20
 
 # Utilities
 
@@ -226,13 +226,13 @@ def get_label_list():
     return get_result_list_v2([], [], True, True)
 
 def make_dict_par_list(bp_list = [], recomp_list = [], ltr_ua_frac_list = [], max_pressure_list = [], pres_ratio_list = [], UA_total_list = [], HTF_targ_list = [],
-                       min_phx_deltaT_list = [], split_frac_list = []):
+                       min_phx_deltaT_list = [], split_frac_list = [], eta_compressor_list = [], cold_approach_list = []):
 
     if(len(ltr_ua_frac_list) > 0 and len(UA_total_list) == 0):
         return
 
     # Create List of non empty input lists
-    input_list = [bp_list, recomp_list, ltr_ua_frac_list, max_pressure_list, pres_ratio_list, HTF_targ_list, min_phx_deltaT_list, split_frac_list]
+    input_list = [bp_list, recomp_list, ltr_ua_frac_list, max_pressure_list, pres_ratio_list, HTF_targ_list, min_phx_deltaT_list, split_frac_list, eta_compressor_list, cold_approach_list]
 
     # UA total is ALWAYS last
     input_list.append(UA_total_list)
@@ -323,6 +323,22 @@ def make_dict_par_list(bp_list = [], recomp_list = [], ltr_ua_frac_list = [], ma
             combo_index += 1
 
             local_dict["is_turbine_split_ok"] = -1.0 * split_frac
+
+        # Compressor Efficiency
+        if(len(eta_compressor_list) > 0):
+            eta = combo[combo_index]
+            combo_index += 1
+
+            local_dict["eta_isen_mc"] = eta
+            local_dict["eta_isen_pc"] = eta
+            local_dict["eta_isen_rc"] = eta
+
+        # Cold Approach Temp
+        if(len(cold_approach_list) > 0):
+            approach = combo[combo_index]
+            combo_index += 1
+
+            local_dict["dT_PHX_cold_approach"] = approach
 
         # Add dictionary
         dict_list.append(local_dict)
@@ -3379,12 +3395,15 @@ def run_G3P3_tsf_sweep(n_par):
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
     UA_total_list = np.linspace(100, 5000, Npts, True)
     split_frac_list = np.linspace(0, 0.7, Npts, True)
-    default_par["dT_PHX_cold_approach"] = default_par["dT_PHX_hot_approach"]
+    eta_compressor_list = np.linspace(0.7, 0.9, 5, True)
+    approach_list = np.linspace(10, 70, 7, True)
 
     dict_list = make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
                                    split_frac_list=split_frac_list,
-                                   pres_ratio_list=pressure_list)
+                                   pres_ratio_list=pressure_list,
+                                   eta_compressor_list=eta_compressor_list,
+                                   cold_approach_list=approach_list)
 
     solve_collection = run_opt_parallel_solve_dict(dict_list, default_par, Nproc)
 
@@ -3408,12 +3427,15 @@ def run_G3P3_recomp_sweep(n_par):
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
     UA_total_list = np.linspace(100, 5000, Npts, True)
     recomp_frac_list = np.linspace(0, 0.7, Npts, True)
-    default_par["dT_PHX_cold_approach"] = default_par["dT_PHX_hot_approach"]
+    eta_compressor_list = np.linspace(0.7, 0.9, 5, True)
+    approach_list = np.linspace(10, 70, 7, True)
 
     dict_list = make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
                                    recomp_list=recomp_frac_list,
-                                   pres_ratio_list=pressure_list)
+                                   pres_ratio_list=pressure_list,
+                                   eta_compressor_list=eta_compressor_list,
+                                   cold_approach_list=approach_list)
 
     solve_collection = run_opt_parallel_solve_dict(dict_list, default_par, Nproc)
 
@@ -3430,7 +3452,6 @@ def run_G3P3_htrbp_sweep(n_par):
     default_par["cycle_config"] = 3
     default_par["T_bypass_target"] = 0 # (not used)
     default_par["deltaT_bypass"] = 0
-    default_par["dT_PHX_cold_approach"] = default_par["dT_PHX_hot_approach"]
 
     # Organize Variable Combinations
     Npts = n_par
@@ -3441,12 +3462,16 @@ def run_G3P3_htrbp_sweep(n_par):
     UA_total_list = np.linspace(100, 5000, Npts, True)
     recomp_frac_list = np.linspace(0, 0.7, Npts, True)
     bp_frac_list = np.linspace(0, 0.99, Npts, True)
+    eta_compressor_list = np.linspace(0.7, 0.9, 5, True)
+    approach_list = np.linspace(10, 70, 7, True)
 
     dict_list = make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
                                    recomp_list=recomp_frac_list,
                                    pres_ratio_list=pressure_list,
-                                   bp_list=bp_frac_list)
+                                   bp_list=bp_frac_list,
+                                   eta_compressor_list=eta_compressor_list,
+                                   cold_approach_list=approach_list)
 
     solve_collection = run_opt_parallel_solve_dict(dict_list, default_par, Nproc)
 
@@ -3464,7 +3489,6 @@ def run_G3P3_partial_sweep(n_par):
     # Define constant parameters
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 2
-    default_par["dT_PHX_cold_approach"] = default_par["dT_PHX_hot_approach"]
 
     # Organize Variable Combinations
     Npts = n_par
@@ -3474,11 +3498,15 @@ def run_G3P3_partial_sweep(n_par):
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
     UA_total_list = np.linspace(100, 5000, Npts, True)
     recomp_frac_list = np.linspace(0, 0.7, Npts, True)
+    eta_compressor_list = np.linspace(0.7, 0.9, 5, True)
+    approach_list = np.linspace(10, 70, 7, True)
 
     dict_list = make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
                                    recomp_list=recomp_frac_list,
-                                   pres_ratio_list=pressure_list)
+                                   pres_ratio_list=pressure_list,
+                                   eta_compressor_list=eta_compressor_list,
+                                   cold_approach_list=approach_list)
 
     solve_collection = run_opt_parallel_solve_dict(dict_list, default_par, Nproc)
 
@@ -3568,7 +3596,7 @@ def test_bad_G3P3_case():
 
 if __name__ == "__main__":
 
-    run_G3P3_sweeps(10)
+    run_G3P3_sweeps(5)
     #run_bad_tsf()
     #test_bad_G3P3_case()
     #run_G3P3_sweeps(10)
