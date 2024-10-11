@@ -1515,10 +1515,17 @@ def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title=""
                              arrowprops=dict(arrowstyle="->"))
     annot.set_visible(False)
     
-    label_list = ["cycle_config", "config_name", "T_htf_cold_des", "eta_thermal_calc", "recup_total_UA_calculated", "LTR_UA_calculated", 
-                  "HTR_UA_calculated", "UA_BPX", "UA_PHX",
-                  "cycle_cost", "mc_cost_bare_erected", "rc_cost_bare_erected", "pc_cost_bare_erected", "t_cost_bare_erected", "t2_cost_bare_erected", "LTR_cost_bare_erected", "HTR_cost_bare_erected",
-                  "PHX_cost_bare_erected", "BPX_cost_bare_erected", "mc_cooler_cost_bare_erected", "pc_cooler_cost_bare_erected", "piping_inventory_etc_cost"]
+    ax.xaxis.grid(True)
+    ax.yaxis.grid(True)
+    ax.set_axisbelow(True)
+
+    #label_list = ["cycle_config", "config_name", "T_htf_cold_des", "eta_thermal_calc", "recup_total_UA_calculated", "LTR_UA_calculated", 
+    #              "HTR_UA_calculated", "UA_BPX", "UA_PHX",
+    #              "cycle_cost", "mc_cost_bare_erected", "rc_cost_bare_erected", "pc_cost_bare_erected", "t_cost_bare_erected", "t2_cost_bare_erected", "LTR_cost_bare_erected", "HTR_cost_bare_erected",
+    #              "PHX_cost_bare_erected", "BPX_cost_bare_erected", "mc_cooler_cost_bare_erected", "pc_cooler_cost_bare_erected", "piping_inventory_etc_cost"]
+    label_list = ["cycle_config", "config_name", "T_htf_cold_des", "eta_thermal_calc", "recomp_frac", "bypass_frac", 
+                  ]
+
     fig.canvas.mpl_connect("button_press_event", lambda event: hover_multiple_pts(event, dict_list, label_list, fig, annot, ax, ax.collections))
 
     return ax

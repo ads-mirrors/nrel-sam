@@ -887,8 +887,7 @@ def solarpaces_2024_abstract():
                     ], 
                     ETA_label, COST_label, ax=ax2_abstract_pareto, show_legend=True, legend_loc='upper left')
     #ax2_abstract_pareto.set_ylim(0,70)
-    plt.tight_layout()
-    plt.rc('font', size=11) 
+    
 
     # Compiled All Data (Temp vs ETA)
     design_tools.plot_scatter_pts([
@@ -958,6 +957,86 @@ def solarpaces_2024_abstract():
         plt.tight_layout()
         plt.rc('font', size=11) 
 
+    
+    
+    ax1_abstract_pareto.xaxis.grid(True)
+    ax1_abstract_pareto.yaxis.grid(True)
+    ax2_abstract_pareto.xaxis.grid(True)
+    ax2_abstract_pareto.yaxis.grid(True)
+    ax1_abstract_pareto.set_axisbelow(True)
+    ax2_abstract_pareto.set_axisbelow(True)
+
+    # Plot ONLY recompression based cycles
+    design_tools.plot_scatter_pts([
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    [simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}], 
+                    [simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                                
+                    
+                    
+                    #[partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True, legend_loc='lower right')
+
+    # Plot ONLY recompression and htr bp
+    design_tools.plot_scatter_pts([
+                    #[simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    #[simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}],   
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],          
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    #[partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True, legend_loc='lower right')
+
+    # Pareto recomp based
+    design_tools.plot_scatter_pts([
+                    
+                    [simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],    
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],         
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    #[partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True)
+
+    # Pareto recomp vs htrbp
+    design_tools.plot_scatter_pts([
+                    #[simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    #[simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    #[partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label,show_legend=True)
+
+    # Pareto recomp vs htrbp
+    design_tools.plot_scatter_pts([
+                    #[simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    #[simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    
+                    [htrbp_sim_collection.old_result_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [recomp_sim_collection.old_result_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    #[partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label,show_legend=True)
+
+    plt.tight_layout()
+    plt.rc('font', size=11) 
     plt.show(block = True)
 
 def asme_es_plots():
@@ -1135,9 +1214,335 @@ def asme_es_plots():
 
     plt.show(block = True)
 
+def solarpaces_2024_BONUS_plots():
+    tsf_filename = r"C:\Users\tbrown2\Desktop\sco2_python\G3P3\TSF_G3P3_collection_10_20240426_224925.csv"
+    recomp_filename = r"C:\Users\tbrown2\Desktop\sco2_python\G3P3\recomp_G3P3_collection_10_20240426_223109.csv"
+    partial_filename = r"C:\Users\tbrown2\Desktop\sco2_python\G3P3\partial_G3P3_collection_10_20240426_204607.csv"
+    htrbp_filename = r"C:\Users\tbrown2\Desktop\sco2_python\G3P3\htrbp_G3P3_collection_10_20240427_205838.csv"
+
+    print("Opening htrbp...")
+    htrbp_sim_collection = sco2_solve.C_sco2_sim_result_collection()
+    htrbp_sim_collection.open_csv(htrbp_filename)
+    print("HTR BP opened")
+
+    print("Opening recomp...")
+    recomp_sim_collection = sco2_solve.C_sco2_sim_result_collection()
+    recomp_sim_collection.open_csv(recomp_filename)
+    print("Recomp open")
+
+    print("Opening tsf...")
+    tsf_sim_collection = sco2_solve.C_sco2_sim_result_collection()
+    tsf_sim_collection.open_csv(tsf_filename)
+    print("TSF opened")
+
+    print("Opening partial...")
+    partial_sim_collection = sco2_solve.C_sco2_sim_result_collection()
+    partial_sim_collection.open_csv(partial_filename)
+    print("Partial opened")
+
+    # Validate Cost Calculations
+    if False:
+        htrbp_cost_error = validate_costs(htrbp_sim_collection.old_result_dict)
+        recomp_cost_error = validate_costs(recomp_sim_collection.old_result_dict)
+        tsf_cost_error = validate_costs(tsf_sim_collection.old_result_dict)
+        partial_cost_error = validate_costs(partial_sim_collection.old_result_dict)
+
+    # Split Dicts by 'Actual' config name
+
+    print("Splitting by config type...")
+
+    # HTR BP (only comes from htr bp file)
+    htrbp_compiled_dict = design_tools.combine_dict_by_key([htrbp_sim_collection.old_result_dict],
+                                                            "config_name", "htr bp")
+
+    # Recompression (comes from recomp and htr bp)
+    recomp_compiled_dict = design_tools.combine_dict_by_key([htrbp_sim_collection.old_result_dict, 
+                                                            recomp_sim_collection.old_result_dict],  
+                                                            "config_name", "recompression")
+
+    # Simple (from recomp and htr bp)
+    simple_compiled_dict = design_tools.combine_dict_by_key([htrbp_sim_collection.old_result_dict, 
+                                                            recomp_sim_collection.old_result_dict],  
+                                                            "config_name", "simple")
+
+    # Simple w/ htr bypass (from htr bp only)
+    simple_htrbp_compiled_dict = design_tools.combine_dict_by_key([htrbp_sim_collection.old_result_dict],
+                                                            "config_name", "simple split flow bypass")
+    
+    # Partial (only comes from partial file)
+    partial_compiled_dict = design_tools.combine_dict_by_key([partial_sim_collection.old_result_dict],
+                                                            "config_name", "partial")
+
+    # Partial Intercooling (only comes from partial file)
+    partial_ic_compiled_dict = design_tools.combine_dict_by_key([partial_sim_collection.old_result_dict],
+                                                            "config_name", "partial intercooling")
+
+    # Variables to Display
+    ETA_label = ["eta_thermal_calc", "", "Cycle Thermal Efficiency"]
+    T_HTF_label = ["T_htf_cold_des", "C", "HTF Outlet Temperature"]
+    COST_label = ["cycle_cost", "M$", "Cycle Cost"]
+
+    # Variables to Display
+    ETA_label = ["eta_thermal_calc", "", "Cycle Thermal Efficiency"]
+    T_HTF_label = ["T_htf_cold_des", "C", "HTF Outlet Temperature"]
+    COST_label = ["cycle_cost", "M$", "Cycle Cost"]
+
+    # Create Cycle Split T HTF Pareto
+    print("Forming split cycle T HTF pareto fronts...")
+    htrbp_compiled_T_HTF_pareto_dict = design_tools.get_pareto_dict(htrbp_compiled_dict, ETA_label[0], T_HTF_label[0], True, False)
+    recomp_compiled_T_HTF_pareto_dict = design_tools.get_pareto_dict(recomp_compiled_dict, ETA_label[0], T_HTF_label[0], True, False)
+    simple_compiled_T_HTF_pareto_dict = design_tools.get_pareto_dict(simple_compiled_dict, ETA_label[0], T_HTF_label[0], True, False)
+    simple_htrbp_compiled_T_HTF_pareto_dict = design_tools.get_pareto_dict(simple_htrbp_compiled_dict, ETA_label[0], T_HTF_label[0], True, False)
+    partial_compiled_T_HTF_pareto_dict = design_tools.get_pareto_dict(partial_compiled_dict, ETA_label[0], T_HTF_label[0], True, False)
+    partial_ic_compiled_T_HTF_pareto_dict = design_tools.get_pareto_dict(partial_ic_compiled_dict, ETA_label[0], T_HTF_label[0], True, False)
+    tsf_T_HTF_pareto_dict = design_tools.get_pareto_dict(tsf_sim_collection.old_result_dict, ETA_label[0], T_HTF_label[0], True, False)
+
+    # Create Cycle Split Cost Pareto
+    print("Forming split cycle cost pareto fronts...")
+    htrbp_compiled_cost_pareto_dict = design_tools.get_pareto_dict(htrbp_compiled_dict, ETA_label[0], COST_label[0], True, False)
+    recomp_compiled_cost_pareto_dict = design_tools.get_pareto_dict(recomp_compiled_dict, ETA_label[0], COST_label[0], True, False)
+    simple_compiled_cost_pareto_dict = design_tools.get_pareto_dict(simple_compiled_dict, ETA_label[0], COST_label[0], True, False)
+    simple_htrbp_compiled_cost_pareto_dict = design_tools.get_pareto_dict(simple_htrbp_compiled_dict, ETA_label[0], COST_label[0], True, False)
+    partial_compiled_cost_pareto_dict = design_tools.get_pareto_dict(partial_compiled_dict, ETA_label[0], COST_label[0], True, False)
+    partial_ic_compiled_cost_pareto_dict = design_tools.get_pareto_dict(partial_ic_compiled_dict, ETA_label[0], COST_label[0], True, False)
+    tsf_cost_pareto_dict = design_tools.get_pareto_dict(tsf_sim_collection.old_result_dict, ETA_label[0], COST_label[0], True, False)
+
+    # Plot
+    print("Plotting...")
+    htrbp_legend_label = "recompression \nw/ htr bypass"
+    recomp_legend_label = "recompression"
+    simple_legend_label = "simple"
+    simple_bp_legend_label = "simple w/ bypass"
+    partial_legend_label = "partial cooling"
+    partial_ic_legend_label = "simple intercooling"
+    tsf_legend_label = "turbine split flow"
+
+    fig_width = 6 * 1.6
+    fig_height = 2.2 * 1.6
+
+    # Abstract specific plots
+    fig_abstract, (ax1_abstract, ax2_abstract) = plt.subplots(1,2)
+    fig_abstract.set_size_inches(fig_width, fig_height)
+
+    # Compiled All Data (Temp vs ETA)
+    design_tools.plot_scatter_pts([
+                    [simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    [tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, ax=ax1_abstract, show_legend=False)
+
+    # Compiled All Data (Cost vs ETA)
+    design_tools.plot_scatter_pts([
+                    [simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],
+                    [tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, COST_label, ax=ax2_abstract, show_legend=True, legend_loc='upper right')
+    ax2_abstract.set_ylim(0,70)
+    plt.tight_layout()
+    plt.rc('font', size=11) 
+
+
+    # Abstract specific plots
+    fig_abstract_pareto, (ax1_abstract_pareto, ax2_abstract_pareto) = plt.subplots(1,2)
+    fig_abstract_pareto.set_size_inches(fig_width, fig_height)
+    ax1_abstract_pareto.xaxis.grid(True)
+    ax1_abstract_pareto.yaxis.grid(True)
+    ax2_abstract_pareto.xaxis.grid(True)
+    ax2_abstract_pareto.yaxis.grid(True)
+    ax1_abstract_pareto.set_axisbelow(True)
+    ax2_abstract_pareto.set_axisbelow(True)
+
+    # Compiled All Data (Temp vs ETA)
+    design_tools.plot_scatter_pts([
+                    [simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    [tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, ax=ax1_abstract_pareto, show_legend=False)
+
+    # Compiled All Data (Cost vs ETA)
+    design_tools.plot_scatter_pts([
+                    [simple_compiled_cost_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_cost_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_cost_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_cost_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_cost_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_cost_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],
+                    [tsf_cost_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, COST_label, ax=ax2_abstract_pareto, show_legend=True, legend_loc='upper left')
+    #ax2_abstract_pareto.set_ylim(0,70)
+    
+
+    # Compiled All Data (Temp vs ETA)
+    design_tools.plot_scatter_pts([
+                    [simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    [tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True)
+
+    # Combine All 4 Plots
+    if True:
+        fig_abstract_all, ((ax1_abstract_allsweep, ax2_abstract_allsweep), (ax1_abstract_allpareto, ax2_abstract_allpareto)) = plt.subplots(2,2)
+        fig_abstract_all.set_size_inches(fig_width, fig_height * 2)
+
+        # Sweep (Temp vs ETA)
+        design_tools.plot_scatter_pts([
+                    [simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    [tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, ax=ax1_abstract_allsweep, show_legend=False)
+        
+        # Sweep (Cost vs ETA)
+        design_tools.plot_scatter_pts([
+                    [simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],
+                    [tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, COST_label, ax=ax2_abstract_allsweep, show_legend=True, legend_loc='upper right')
+        
+        # Pareto (Temp vs ETA)
+        design_tools.plot_scatter_pts([
+                    [simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    [tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, ax=ax1_abstract_allpareto, show_legend=False)
+
+        # Pareto (Cost vs ETA)
+        design_tools.plot_scatter_pts([
+                    [simple_compiled_cost_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_cost_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_cost_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    [htrbp_compiled_cost_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [partial_ic_compiled_cost_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    [partial_compiled_cost_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],
+                    [tsf_cost_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, COST_label, ax=ax2_abstract_allpareto, show_legend=False, legend_loc='upper left')
+
+        plt.tight_layout()
+        plt.rc('font', size=11) 
+
+    
+    
+    ax1_abstract_pareto.xaxis.grid(True)
+    ax1_abstract_pareto.yaxis.grid(True)
+    ax2_abstract_pareto.xaxis.grid(True)
+    ax2_abstract_pareto.yaxis.grid(True)
+    ax1_abstract_pareto.set_axisbelow(True)
+    ax2_abstract_pareto.set_axisbelow(True)
+
+    # Plot ONLY recompression based cycles
+    design_tools.plot_scatter_pts([
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    [simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}], 
+                    [simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                                
+                    
+                    
+                    #[partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True, legend_loc='lower right')
+
+    # Plot ONLY recompression and htr bp
+    design_tools.plot_scatter_pts([
+                    #[simple_compiled_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    #[simple_htrbp_compiled_dict, {'label':simple_bp_legend_label, 'marker':'.'}],   
+                    [htrbp_compiled_dict, {'label':htrbp_legend_label, 'marker':'.'}],          
+                    [recomp_compiled_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    #[partial_ic_compiled_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_sim_collection.old_result_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True, legend_loc='lower right')
+
+    # Pareto recomp based
+    design_tools.plot_scatter_pts([
+                    
+                    [simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    [simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],    
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],         
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    #[partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label, show_legend=True)
+
+    # Pareto recomp vs htrbp
+    design_tools.plot_scatter_pts([
+                    #[simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    #[simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    [htrbp_compiled_T_HTF_pareto_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [recomp_compiled_T_HTF_pareto_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    
+                    #[partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label,show_legend=True)
+
+    # Pareto recomp vs htrbp
+    design_tools.plot_scatter_pts([
+                    #[simple_compiled_T_HTF_pareto_dict, {'label':simple_legend_label, 'marker':'.'}],
+                    #[simple_htrbp_compiled_T_HTF_pareto_dict, {'label':simple_bp_legend_label, 'marker':'.'}],             
+                    
+                    [htrbp_sim_collection.old_result_dict, {'label':htrbp_legend_label, 'marker':'.'}],
+                    [recomp_sim_collection.old_result_dict, {'label':recomp_legend_label, 'marker':'.'}],
+                    #[partial_ic_compiled_T_HTF_pareto_dict, {'label':partial_ic_legend_label, 'marker':'.'}],
+                    #[partial_compiled_T_HTF_pareto_dict, {'label':partial_legend_label, 'marker':'.'}],          
+                    #[tsf_T_HTF_pareto_dict, {'label':tsf_legend_label, 'marker':'.'}]
+                    ], 
+                    ETA_label, T_HTF_label,show_legend=True)
+
+    plt.tight_layout()
+    plt.rc('font', size=11) 
+    plt.show(block = True)
+
+
 # Main Script
 
 if __name__ == "__main__":
-    solarpaces_2024_abstract()
+    #solarpaces_2024_abstract()
+    solarpaces_2024_BONUS_plots()
     #asme_es_plots()
     #example_plot_solve_dict()
