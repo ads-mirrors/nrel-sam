@@ -413,8 +413,7 @@ void WaveDownloadDialog::GetResources()
 		return;
 	}
 
-
-	rapidjson::Document reader;
+	rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
 	reader.Parse(json_data.c_str());
 
 	if (reader.HasParseError())
@@ -423,20 +422,20 @@ void WaveDownloadDialog::GetResources()
 		return;
 	}
 
-	if (reader.HasMember("metadata"))
-		if (reader["metadata"].HasMember("resultset"))
-			if (reader["metadata"]["resultset"].HasMember("count"))
-				if (reader["metadata"]["resultset"]["count"].IsInt())
-					if (reader["metadata"]["resultset"]["count"].GetInt() == 0) {
+	if (reader.HasMember(L"metadata"))
+		if (reader[L"metadata"].HasMember(L"resultset"))
+			if (reader[L"metadata"][L"resultset"].HasMember(L"count"))
+				if (reader[L"metadata"][L"resultset"][L"count"].IsInt())
+					if (reader[L"metadata"][L"resultset"][L"count"].GetInt() == 0) {
 							wxMessageBox("No Weather Files Found.\n\nWave Data Query did not return any files for\n" + location, "Wave Download Message", wxOK, this);
 							return;
 						}
 
-	if (reader.HasMember("error"))
-		if (reader["error"].HasMember("message") && reader["error"].HasMember("code"))
-			if (reader["error"]["message"].IsString() && reader["error"]["code"].IsString()) {
-				wxString message = reader["error"]["message"].GetString();
-				wxString code = reader["error"]["code"].GetString();
+	if (reader.HasMember(L"error"))
+		if (reader[L"error"].HasMember(L"message") && reader[L"error"].HasMember(L"code"))
+			if (reader[L"error"][L"message"].IsString() && reader[L"error"][L"code"].IsString()) {
+				wxString message = reader[L"error"][L"message"].GetString();
+				wxString code = reader[L"error"][L"code"].GetString();
 				wxMessageBox(wxString::Format("NSRDB API error!\n\nMessage: %s\n\nCode: %s ", message.c_str(), code.c_str()));
 				return;
 			}
@@ -454,31 +453,31 @@ void WaveDownloadDialog::GetResources()
 	m_chlResources->Clear();
 	m_links.clear();
 
-	if (!reader.HasMember("outputs")) return; // error message?
-	if (!reader["outputs"].IsArray()) return; // error message?
+	if (!reader.HasMember(L"outputs")) return; // error message?
+	if (!reader[L"outputs"].IsArray()) return; // error message?
 
-	auto output_list = reader["outputs"].GetArray();
+	auto output_list = reader[L"outputs"].GetArray();
 
 	for (size_t i_outputs = 0; i_outputs<output_list.Size(); i_outputs++)
 	{
-		if (!output_list[i_outputs].HasMember("links")) return; // error message?
-		if (!output_list[i_outputs]["links"].IsArray()) return; // error message?
+		if (!output_list[i_outputs].HasMember(L"links")) return; // error message?
+		if (!output_list[i_outputs][L"links"].IsArray()) return; // error message?
 
-		auto links_list = output_list[i_outputs]["links"].GetArray();
+		auto links_list = output_list[i_outputs][L"links"].GetArray();
 
 		for (size_t i_links = 0; i_links < links_list.Size(); i_links++)
 		{
 			// check for validity
-			wxString name = output_list[i_outputs]["name"].GetString();
-			wxString displayName = output_list[i_outputs]["displayName"].GetString();
+			wxString name = output_list[i_outputs][L"name"].GetString();
+			wxString displayName = output_list[i_outputs][L"displayName"].GetString();
 
 			wxString year, interval;
-			if (links_list[i_links]["year"].IsInt())
-				year = wxString::Format("%d", links_list[i_links]["year"].GetInt());
-			if (links_list[i_links]["interval"].IsInt())
-				interval = wxString::Format("%d", links_list[i_links]["interval"].GetInt());
+			if (links_list[i_links][L"year"].IsInt())
+				year = wxString::Format("%d", links_list[i_links][L"year"].GetInt());
+			if (links_list[i_links][L"interval"].IsInt())
+				interval = wxString::Format("%d", links_list[i_links][L"interval"].GetInt());
 
-			wxString URL = links_list[i_links]["link"].GetString();
+			wxString URL = links_list[i_links][L"link"].GetString();
 
 			URL.Replace("yourapikey", "<SAMAPIKEY>");
 			URL.Replace("youremail", "<USEREMAIL>");

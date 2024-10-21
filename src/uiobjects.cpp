@@ -930,7 +930,7 @@ public:
 			wxString tt_name;
 			wxString tt_title;
 			wxString json_file;
-			rapidjson::Document reader;
+			rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
 			wxString json_items;
 			wxTextFile tf;
 			wxString str_line;
@@ -953,15 +953,15 @@ public:
 				tt_title = "JSON or file read failed.";
 			else
 			{
-				if (reader.HasMember("tooltips")) {
-					if (reader["tooltips"].IsArray()) {
-						auto tooltips = reader["tooltips"].GetArray();
+				if (reader.HasMember(L"tooltips")) {
+					if (reader[L"tooltips"].IsArray()) {
+						auto tooltips = reader[L"tooltips"].GetArray();
 						for (i = 0; i < tooltips.Size(); i++)
 						{
-							if (tooltips[i]["name"].GetString() == tt_name)
+							if (tooltips[i][L"name"].GetString() == tt_name)
 							{
-								tt_title = tooltips[i]["title"].GetString();
-								tt_tips = tooltips[i]["tip"].GetString();
+								tt_title = tooltips[i][L"title"].GetString();
+								tt_tips = tooltips[i][L"tip"].GetString();
 							}
 						}
 					}
