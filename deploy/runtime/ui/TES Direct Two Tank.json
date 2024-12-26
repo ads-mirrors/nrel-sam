@@ -1,7 +1,7 @@
 {
     "Name": "TES Direct Two Tank",
-    "Width": 912.0,
-    "Height": 333.0,
+    "Width": 910.0,
+    "Height": 331.0,
     "FormObjects": {
         "GroupBox": {
             "Visible": 1.0,
@@ -1869,7 +1869,7 @@
         "h_tank_min": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "Tank fluid minimum height",
+            "Label": "Tank HTF minimum height",
             "Units": "m",
             "Group": "Thermal Energy Storage",
             "IndexLabels": "",
@@ -1997,7 +1997,7 @@
         "\tif ( technology() == 'ETES' ){",
         "\t\tshow(\"tanks_in_parallel\", false);",
         "\t}",
-        "",
+        "\r",
         "\treturn;",
         "};",
         "",

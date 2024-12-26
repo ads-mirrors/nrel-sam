@@ -194,7 +194,7 @@ extern "C"
 	SAM_EXPORT void SAM_Pvwattsv8_SystemDesign_inv_eff_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
-	 * Set losses: Other DC losses [%]
+	 * Set losses: DC system losses [%]
 	 * options: total system losses
 	 * constraints: MIN=-5,MAX=99
 	 * required if: *
@@ -722,6 +722,8 @@ extern "C"
 	SAM_EXPORT double* SAM_Pvwattsv8_Outputs_shad_beam_factor_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_Pvwattsv8_Outputs_snow_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double* SAM_Pvwattsv8_Outputs_snow_cover_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_Pvwattsv8_Outputs_soiling_f_aget(SAM_table ptr, int* length, SAM_error *err);
 

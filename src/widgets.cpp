@@ -2261,7 +2261,7 @@ public:
 		timestepmin.Add("15");
 		timestepmin.Add("20");
 		timestepmin.Add("30");
-		Timesteps = new wxComboBox(this, ILDD_TIMESTEPS, "30", wxDefaultPosition, wxDefaultSize, timestepmin);
+		Timesteps = new wxComboBox(this, ILDD_TIMESTEPS, "30", wxDefaultPosition, wxDefaultSize, timestepmin, wxCB_READONLY);
 		TimestepsLabel = new wxStaticText(this, -1, "Time step in minutes");
 		szh_top4->Add(TimestepsLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 3);
 		szh_top4->AddSpacer(3);
@@ -2270,14 +2270,15 @@ public:
 
 		wxBoxSizer *szh_top3 = new wxBoxSizer(wxHORIZONTAL);
 		wxArrayString modes;
-		modes.Add("Subhourly");
-		modes.Add("Hourly");
-		modes.Add("Daily");
-		if (optweekly) modes.Add("Weekly");
-		modes.Add("Monthly");
-		if (optannual)	modes.Add("Annual");
 		modes.Add("Single Value");
-		ModeOptions = new wxComboBox(this, ILDD_MODEOPTIONS, "Hourly", wxDefaultPosition, wxDefaultSize, modes);
+		if (optannual)	modes.Add("Annual");
+		modes.Add("Monthly");
+		if (optweekly) modes.Add("Weekly");
+		modes.Add("Daily");
+		modes.Add("Three Hourly");
+		modes.Add("Hourly");
+		modes.Add("Subhourly");
+		ModeOptions = new wxComboBox(this, ILDD_MODEOPTIONS, "Hourly", wxDefaultPosition, wxDefaultSize, modes, wxCB_READONLY);
 		szh_top3->Add(new wxStaticText(this, -1, "Mode"), 0, wxALL | wxALIGN_CENTER_VERTICAL, 3);
 		szh_top3->AddSpacer(3);
 		szh_top3->Add(ModeOptions, 0, wxALL | wxEXPAND, 1);
@@ -2350,6 +2351,12 @@ public:
 			Grid->ResizeGrid(l, 1);
 			break;
 		}
+        case DATA_LIFETIME_ARRAY_THREEHOURLY: // assume 2920
+        {
+            l = mAnalysisPeriod * 2920;
+            Grid->ResizeGrid(l, 1);
+            break;
+        }
 		case DATA_LIFETIME_ARRAY_SUBHOURLY: // assume 8760 * timesteps per hour
 		{
 			// error handling
@@ -2414,18 +2421,20 @@ public:
 			mData.push_back(0.0);
 			dataSize = 1;
 		}
-		if (dataSize == 1)
-			mMode = DATA_LIFETIME_ARRAY_SINGLEVALUE;
-		else if (dataSize == (mAnalysisPeriod))
-			mMode = DATA_LIFETIME_ARRAY_ANNUAL;
-		else if (dataSize == (mAnalysisPeriod * 12))
-			mMode = DATA_LIFETIME_ARRAY_MONTHLY;
-		else if (dataSize == (mAnalysisPeriod * 52))
-			mMode = DATA_LIFETIME_ARRAY_WEEKLY;
-		else if (dataSize == (mAnalysisPeriod * 365))
-			mMode = DATA_LIFETIME_ARRAY_DAILY;
-		else if (dataSize == (mAnalysisPeriod * 8760))
-			mMode = DATA_LIFETIME_ARRAY_HOURLY;
+        if (dataSize == 1)
+            mMode = DATA_LIFETIME_ARRAY_SINGLEVALUE;
+        else if (dataSize == (mAnalysisPeriod))
+            mMode = DATA_LIFETIME_ARRAY_ANNUAL;
+        else if (dataSize == (mAnalysisPeriod * 12))
+            mMode = DATA_LIFETIME_ARRAY_MONTHLY;
+        else if (dataSize == (mAnalysisPeriod * 52))
+            mMode = DATA_LIFETIME_ARRAY_WEEKLY;
+        else if (dataSize == (mAnalysisPeriod * 365))
+            mMode = DATA_LIFETIME_ARRAY_DAILY;
+        else if (dataSize == (mAnalysisPeriod * 8760))
+            mMode = DATA_LIFETIME_ARRAY_HOURLY;
+        else if (dataSize == (mAnalysisPeriod * 2920))
+            mMode = DATA_LIFETIME_ARRAY_THREEHOURLY;
 		else
 		{
 			mMode = DATA_LIFETIME_ARRAY_SUBHOURLY;
@@ -2608,20 +2617,22 @@ void AFDataLifetimeArrayButton::Set(const std::vector<double> &data, size_t anal
 	mAnalysisPeriod = analysis_period;
 	mData = data;
 	size_t newSize = mData.size();
-	if (newSize == 1)
-		mMode = DATA_LIFETIME_ARRAY_SINGLEVALUE;
-	else if (newSize == mAnalysisPeriod)
-		mMode = DATA_LIFETIME_MATRIX_ANNUAL;
-	else if (newSize == (mAnalysisPeriod * 12))
-		mMode = DATA_LIFETIME_MATRIX_MONTHLY;
-	else if (newSize == (mAnalysisPeriod * 52))
-		mMode = DATA_LIFETIME_MATRIX_WEEKLY;
-	else if (newSize == (mAnalysisPeriod * 365))
-		mMode = DATA_LIFETIME_MATRIX_DAILY;
-	else if (newSize == (mAnalysisPeriod * 8760))
-		mMode = DATA_LIFETIME_MATRIX_HOURLY;
+    if (newSize == 1)
+        mMode = DATA_LIFETIME_ARRAY_SINGLEVALUE;
+    else if (newSize == mAnalysisPeriod)
+        mMode = DATA_LIFETIME_ARRAY_ANNUAL;
+    else if (newSize == (mAnalysisPeriod * 12))
+        mMode = DATA_LIFETIME_ARRAY_MONTHLY;
+    else if (newSize == (mAnalysisPeriod * 52))
+        mMode = DATA_LIFETIME_ARRAY_WEEKLY;
+    else if (newSize == (mAnalysisPeriod * 365))
+        mMode = DATA_LIFETIME_ARRAY_DAILY;
+    else if (newSize == (mAnalysisPeriod * 8760))
+        mMode = DATA_LIFETIME_ARRAY_HOURLY;
+    else if (newSize == (mAnalysisPeriod * 2920))
+        mMode = DATA_LIFETIME_ARRAY_THREEHOURLY;
 	else
-		mMode = DATA_LIFETIME_MATRIX_SUBHOURLY;
+		mMode = DATA_LIFETIME_ARRAY_SUBHOURLY;
 }
 void AFDataLifetimeArrayButton::SetDataLabel(const wxString &s)
 {
@@ -2977,7 +2988,7 @@ public:
 		timestepmin.Add("15");
 		timestepmin.Add("20");
 		timestepmin.Add("30");
-		Timesteps = new wxComboBox(this, ILDM_TIMESTEPS, "30", wxDefaultPosition, wxDefaultSize, timestepmin);
+		Timesteps = new wxComboBox(this, ILDM_TIMESTEPS, "30", wxDefaultPosition, wxDefaultSize, timestepmin, wxCB_READONLY);
 		TimestepsLabel = new wxStaticText(this, -1, "Time step in minutes");
 		szh_top4->Add(TimestepsLabel, 0, wxALL | wxALIGN_CENTER_VERTICAL, 3);
 		szh_top4->AddSpacer(3);
@@ -2986,14 +2997,14 @@ public:
 
 		wxBoxSizer *szh_top3 = new wxBoxSizer(wxHORIZONTAL);
 		wxArrayString modes;
-		modes.Add("Subhourly");
-		modes.Add("Hourly");
-		modes.Add("Daily");
-		if (optweekly) modes.Add("Weekly");
-		modes.Add("Monthly");
-		if (optannual)	modes.Add("Annual");
 		modes.Add("Single Value");
-		ModeOptions = new wxComboBox(this, ILDM_MODEOPTIONS, "Hourly", wxDefaultPosition, wxDefaultSize, modes);
+		if (optannual)	modes.Add("Annual");
+		modes.Add("Monthly");
+		if (optweekly) modes.Add("Weekly");
+		modes.Add("Daily");
+		modes.Add("Hourly");
+		modes.Add("Subhourly");
+		ModeOptions = new wxComboBox(this, ILDM_MODEOPTIONS, "Hourly", wxDefaultPosition, wxDefaultSize, modes, wxCB_READONLY);
 		szh_top3->Add(new wxStaticText(this, -1, "Mode"), 0, wxALL | wxALIGN_CENTER_VERTICAL, 3);
 		szh_top3->AddSpacer(3);
 		szh_top3->Add(ModeOptions, 0, wxALL | wxEXPAND, 1);
