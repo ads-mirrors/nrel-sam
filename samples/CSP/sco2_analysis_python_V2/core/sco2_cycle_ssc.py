@@ -13,6 +13,7 @@ import copy
 import math
 import numpy as np
 import pandas as pd
+import os
 
 import sco2_plots as cy_plt
 import ssc_inout_v2 as ssc_sim
@@ -771,6 +772,10 @@ class C_sco2_sim_result_collection:
             print("ERROR: no csv array to save")
             return
 
+        folder_path = os.path.dirname(file_name)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
         f = open(file_name, "w")
         delimiter = ', '
         for row in self.csv_array:
@@ -1063,29 +1068,63 @@ class C_sco2_sim_result_collection:
         # get number of values
         NVals = len(self.csv_array[0]) - self.csv_col_offset
 
-        # get eta thermal calc row (this will be used to check if run succeeded)
-        eta_vec = []
-        success_id_vec = []
-        failure_id_vec = []
-        success_bool_vec = []
+        # Check if 'cycle_success' exists
+        key_cycle_success_exists = False
         for row_vec in self.csv_array:
-            if(row_vec[0] == "eta_thermal_calc"):
-                NVals_row = len(row_vec) - self.csv_col_offset
-                for i in range(NVals_row):
-                    eta_val = self.convert_string(row_vec[i + self.csv_col_offset])
-                    eta_vec.append(eta_val)
-                    if(isinstance(eta_val, str) == False):
-                        success_id_vec.append(i)
-                    else:
-                        failure_id_vec.append(i)
-
-                # account for missing data at end of row
-                while(len(eta_vec) < NVals):
-                    eta_vec.append('')
-                    success_bool_vec.append(0)
-
+            if(row_vec[0] == "cycle_success"):
+                key_cycle_success_exists = True
                 break
 
+        # Determine which cases passed, and which failed
+        success_id_vec = []
+        failure_id_vec = []
+            # Use 'cycle_success' keyword
+        if(key_cycle_success_exists):
+            # get cycle success (this will be used to check if run succeeded)
+            cycle_success_vec = []
+            for row_vec in self.csv_array:
+                if(row_vec[0] == "cycle_success"):
+                    NVals_row = len(row_vec) - self.csv_col_offset
+                    for i in range(NVals_row):
+                        cycle_success_val = self.convert_string(row_vec[i + self.csv_col_offset])
+                        cycle_success_vec.append(cycle_success_val)
+                        if(cycle_success_val == 1):
+                            success_id_vec.append(i)
+                        else:
+                            failure_id_vec.append(i)
+
+                    # account for missing data at end of row
+                    while(len(cycle_success_vec) < NVals):
+                        i += 1
+                        cycle_success_vec.append(0)
+                        failure_id_vec.append(i)
+
+                    break
+            # Use 'eta_thermal_calc' keyword
+        else:
+            # get eta thermal calc row (this will be used to check if run succeeded)
+            eta_vec = []
+            for row_vec in self.csv_array:
+                if(row_vec[0] == "eta_thermal_calc"):
+                    NVals_row = len(row_vec) - self.csv_col_offset
+                    for i in range(NVals_row):
+                        eta_val = self.convert_string(row_vec[i + self.csv_col_offset])
+                        eta_vec.append(eta_val)
+                        if(isinstance(eta_val, str) == False):
+                            success_id_vec.append(i)
+                        else:
+                            failure_id_vec.append(i)
+
+                    # account for missing data at end of row
+                    while(len(eta_vec) < NVals):
+                        i += 1
+                        eta_vec.append('')
+                        failure_id_vec.append(i)
+
+                    break
+
+
+        
         self.success_id_vec = success_id_vec
         self.failure_id_vec = failure_id_vec
 

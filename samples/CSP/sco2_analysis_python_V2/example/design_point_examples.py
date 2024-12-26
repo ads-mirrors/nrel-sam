@@ -226,13 +226,21 @@ def get_label_list():
     return get_result_list_v2([], [], True, True)
 
 def make_dict_par_list(bp_list = [], recomp_list = [], ltr_ua_frac_list = [], max_pressure_list = [], pres_ratio_list = [], UA_total_list = [], HTF_targ_list = [],
-                       min_phx_deltaT_list = [], split_frac_list = [], eta_compressor_list = [], cold_approach_list = []):
+                       min_phx_deltaT_list = [], split_frac_list = [], eta_compressor_list = [], cold_approach_list = [],
+                       partial_IP_frac_list = []):
 
+    # UA Ratio must have at least one UA_total defined
     if(len(ltr_ua_frac_list) > 0 and len(UA_total_list) == 0):
         return
 
+    # Partial IP frac must have max and min pressure defined
+    if(len(partial_IP_frac_list) > 0 and (len(pres_ratio_list) == 0 or len(max_pressure_list) == 0)):
+        return
+
     # Create List of non empty input lists
-    input_list = [bp_list, recomp_list, ltr_ua_frac_list, max_pressure_list, pres_ratio_list, HTF_targ_list, min_phx_deltaT_list, split_frac_list, eta_compressor_list, cold_approach_list]
+    input_list = [bp_list, recomp_list, ltr_ua_frac_list, max_pressure_list, pres_ratio_list, 
+                  HTF_targ_list, min_phx_deltaT_list, split_frac_list, 
+                  eta_compressor_list, cold_approach_list, partial_IP_frac_list]
 
     # UA total is ALWAYS last
     input_list.append(UA_total_list)
@@ -339,6 +347,16 @@ def make_dict_par_list(bp_list = [], recomp_list = [], ltr_ua_frac_list = [], ma
             combo_index += 1
 
             local_dict["dT_PHX_cold_approach"] = approach
+
+        # Partial cooling Inner Pressure (is_IP_fixed)
+        if(len(partial_IP_frac_list) > 0):
+            low_pressure = local_dict["is_PR_fixed"] * -1.0
+            high_pressure = local_dict["P_high_limit"]
+            frac = combo[combo_index]
+            combo_index += 1
+
+            IP_pressure = frac * (high_pressure - low_pressure) + low_pressure
+            local_dict["is_IP_fixed"] = -1.0 * IP_pressure
 
         # Add dictionary
         dict_list.append(local_dict)
@@ -1541,7 +1559,7 @@ def run_opt_parallel_experimental(dict_list_total, default_par, nproc, filename 
     return labeled_result_array
 
 
-def run_once_solve_dict(dict, default_par, solve_dict_queue = None, N_run_total = 0):
+def run_once_solve_dict(dict, default_par, solve_dict_queue = None, N_run_total = 0, N_run_offset = 0):
 
     # Make Cycle class
     c_sco2 = sco2_solve.C_sco2_sim(3)
@@ -1564,14 +1582,17 @@ def run_once_solve_dict(dict, default_par, solve_dict_queue = None, N_run_total 
     # Report Progress (if necessary)
     if(N_run_total > 0):
         completed = solve_dict_queue.qsize()
-        percent = (completed / N_run_total) * 100
+        percent = ((completed + N_run_offset) / N_run_total) * 100
         print(str(round(percent, 2)) + "% complete")
 
     return
 
-def run_opt_parallel_solve_dict(dict_list_total, default_par, nproc):
+def run_opt_parallel_solve_dict(dict_list_total, default_par, nproc, N_run_total=-1, N_run_curr = 0):
     # Initialize
-    N_run = len(dict_list_total)
+    if(N_run_total == -1):
+        N_run = len(dict_list_total)
+    else:
+        N_run = N_run_total
 
     # Make Cycle Collection Class
     sim_collection = sco2_solve.C_sco2_sim_result_collection()
@@ -1582,7 +1603,9 @@ def run_opt_parallel_solve_dict(dict_list_total, default_par, nproc):
     solve_dict_queue = manager.Queue()
 
     with multiprocessing.Pool(nproc, maxtasksperchild=50) as p:
-        p.imap_unordered(partial(run_once_solve_dict, default_par=default_par, solve_dict_queue=solve_dict_queue, N_run_total = N_run), dict_list_total)
+        p.imap_unordered(partial(run_once_solve_dict, 
+                                 default_par=default_par, solve_dict_queue=solve_dict_queue, N_run_total = N_run, N_run_offset=N_run_curr), 
+                                 dict_list_total)
         p.close()
         p.join()
 
