@@ -43,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ssc/cmod_pvsamv1_eqns.h>
 #include <ssc/cmod_merchantplant_eqns.h>
 #include <ssc/cmod_analysisperiodchange_eqns.h>
-#include <ssc/cmod_geothermal_eqns.h>
+#include <ssc/cmod_geothermal_costs_eqns.h>
 
 #include "SAM_api.h"
 #include "SAM_eqns.h"
