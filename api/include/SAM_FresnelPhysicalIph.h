@@ -239,6 +239,22 @@ extern "C"
 	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_eta_pump_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
+	 * Set f_htfmax: Maximum loop mass flow rate fraction of design
+	 * options: None
+	 * constraints: None
+	 * required if: use_abs_or_rel_mdot_limit=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_f_htfmax_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set f_htfmin: Minimum loop mass flow rate fraction of design
+	 * options: None
+	 * constraints: None
+	 * required if: use_abs_or_rel_mdot_limit=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_f_htfmin_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
 	 * Set field_fl_props: Fluid property data
 	 * options: None
 	 * constraints: None
@@ -253,6 +269,22 @@ extern "C"
 	 * required if: *
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_land_mult_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set m_dot_htfmax: Maximum loop HTF flow rate [kg/s]
+	 * options: None
+	 * constraints: None
+	 * required if: use_abs_or_rel_mdot_limit=0
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_m_dot_htfmax_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set m_dot_htfmin: Minimum loop HTF flow rate [kg/s]
+	 * options: None
+	 * constraints: None
+	 * required if: use_abs_or_rel_mdot_limit=0
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_m_dot_htfmin_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
 	 * Set mc_bal_cold: The heat capacity of the balance of plant on the cold side [kWht/K-MWt]
@@ -335,6 +367,14 @@ extern "C"
 	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_theta_stow_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
+	 * Set use_abs_or_rel_mdot_limit: Use mass flow abs (0) or relative (1) limits
+	 * options: None
+	 * constraints: None
+	 * required if: ?=0
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_use_abs_or_rel_mdot_limit_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
 	 * Set washes_per_year: Mirror washing frequency [none]
 	 * options: None
 	 * constraints: None
@@ -349,51 +389,6 @@ extern "C"
 	 * required if: *
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_water_per_wash_nset(SAM_table ptr, double number, SAM_error *err);
-
-
-	//
-	// SolarField parameters
-	//
-
-	/**
-	 * Set f_htfmax: Maximum loop mass flow rate fraction of design
-	 * options: None
-	 * constraints: None
-	 * required if: use_abs_or_rel_mdot_limit=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_f_htfmax_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set f_htfmin: Minimum loop mass flow rate fraction of design
-	 * options: None
-	 * constraints: None
-	 * required if: use_abs_or_rel_mdot_limit=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_f_htfmin_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set m_dot_htfmax: Maximum loop HTF flow rate [kg/s]
-	 * options: None
-	 * constraints: None
-	 * required if: use_abs_or_rel_mdot_limit=0
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_m_dot_htfmax_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set m_dot_htfmin: Minimum loop HTF flow rate [kg/s]
-	 * options: None
-	 * constraints: None
-	 * required if: use_abs_or_rel_mdot_limit=0
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_m_dot_htfmin_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set use_abs_or_rel_mdot_limit: Use mass flow abs (0) or relative (1) limits
-	 * options: None
-	 * constraints: None
-	 * required if: ?=0
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_SolarField_use_abs_or_rel_mdot_limit_nset(SAM_table ptr, double number, SAM_error *err);
 
 
 	//
@@ -748,6 +743,70 @@ extern "C"
 	//
 	// HeatSink parameters
 	//
+
+	/**
+	 * Set hs_phys_N_sub: Number physical heat sink HX nodes
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_N_sub_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_phys_P_steam_hot_des: Steam outlet (and inlet) pressure for physical heat sink [bar]
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_P_steam_hot_des_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_phys_Q_steam_hot_des: Steam outlet quality for physical heat sink
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_Q_steam_hot_des_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_phys_T_steam_cold_des: Steam inlet temperature for physical heat sink [C]
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_T_steam_cold_des_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_phys_f_mdot_steam_max: Max steam mdot fraction for physical heat sink
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_max_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_phys_f_mdot_steam_min: Min steam mdot fraction for physical heat sink
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_min_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_phys_tol: Physical heat sink solve tolerance
+	 * options: None
+	 * constraints: None
+	 * required if: hs_type=1
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_tol_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
+	 * Set hs_type: 0: ideal model, 1: physical steam model
+	 * options: None
+	 * constraints: None
+	 * required if: ?=0
+	 */
+	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_type_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
 	 * Set pb_pump_coef: Pumping power to move 1kg of HTF through PB loop [kW/kg]
@@ -1869,9 +1928,17 @@ extern "C"
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_eta_pump_nget(SAM_table ptr, SAM_error *err);
 
+	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_f_htfmax_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_f_htfmin_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_SolarField_field_fl_props_mget(SAM_table ptr, int* nrows, int* ncols, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_land_mult_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_m_dot_htfmax_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_m_dot_htfmin_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_mc_bal_cold_nget(SAM_table ptr, SAM_error *err);
 
@@ -1893,24 +1960,11 @@ extern "C"
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_theta_stow_nget(SAM_table ptr, SAM_error *err);
 
+	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_use_abs_or_rel_mdot_limit_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_washes_per_year_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_water_per_wash_nget(SAM_table ptr, SAM_error *err);
-
-
-	/**
-	 * SolarField Getters
-	 */
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_f_htfmax_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_f_htfmin_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_m_dot_htfmax_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_m_dot_htfmin_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_SolarField_use_abs_or_rel_mdot_limit_nget(SAM_table ptr, SAM_error *err);
 
 
 	/**
@@ -2007,6 +2061,22 @@ extern "C"
 	/**
 	 * HeatSink Getters
 	 */
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_N_sub_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_P_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_Q_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_T_steam_cold_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_max_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_min_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_tol_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_type_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_pb_pump_coef_nget(SAM_table ptr, SAM_error *err);
 
