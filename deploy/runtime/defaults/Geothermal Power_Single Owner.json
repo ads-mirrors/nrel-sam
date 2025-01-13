@@ -19871,6 +19871,7 @@
     "steel_ppi": 1.12883,
     "step": 3600.0,
     "stim_success_rate": 0.0,
+    "stimulation_type": 0.0,
     "subsurface_water_loss": 2.0,
     "system_capacity": 32813.6,
     "system_recapitalization_cost": 86841500.0,
