@@ -595,8 +595,6 @@ extern "C"
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_conf_total_cost_nget(SAM_table ptr, SAM_error *err);
 
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_drilling_total_cost_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_expl_total_cost_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_inj_total_cost_nget(SAM_table ptr, SAM_error *err);
@@ -604,6 +602,8 @@ extern "C"
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_prod_total_cost_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_stim_total_cost_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_drilling_cost_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_gathering_cost_nget(SAM_table ptr, SAM_error *err);
 

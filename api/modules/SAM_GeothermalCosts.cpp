@@ -857,15 +857,6 @@ SAM_EXPORT double SAM_GeothermalCosts_Outputs_conf_total_cost_nget(SAM_table ptr
 	return result;
 }
 
-SAM_EXPORT double SAM_GeothermalCosts_Outputs_drilling_total_cost_nget(SAM_table ptr, SAM_error *err){
-	double result;
-	translateExceptions(err, [&]{
-	if (!ssc_data_get_number(ptr, "drilling_total_cost", &result))
-		make_access_error("SAM_GeothermalCosts", "drilling_total_cost");
-	});
-	return result;
-}
-
 SAM_EXPORT double SAM_GeothermalCosts_Outputs_expl_total_cost_nget(SAM_table ptr, SAM_error *err){
 	double result;
 	translateExceptions(err, [&]{
@@ -898,6 +889,15 @@ SAM_EXPORT double SAM_GeothermalCosts_Outputs_stim_total_cost_nget(SAM_table ptr
 	translateExceptions(err, [&]{
 	if (!ssc_data_get_number(ptr, "stim_total_cost", &result))
 		make_access_error("SAM_GeothermalCosts", "stim_total_cost");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_drilling_cost_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "total_drilling_cost", &result))
+		make_access_error("SAM_GeothermalCosts", "total_drilling_cost");
 	});
 	return result;
 }
