@@ -1023,7 +1023,13 @@ extern "C"
 
 	SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_inj_nget(SAM_table ptr, SAM_error *err);
 
+	SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_inj_drilled_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_output_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_prod_drilled_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_prod_failed_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_Geothermal_Outputs_plant_brine_eff_nget(SAM_table ptr, SAM_error *err);
 

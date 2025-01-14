@@ -1639,11 +1639,38 @@ SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_inj_nget(SAM_table ptr,
 	return result;
 }
 
+SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_inj_drilled_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "num_wells_getem_inj_drilled", &result))
+		make_access_error("SAM_Geothermal", "num_wells_getem_inj_drilled");
+	});
+	return result;
+}
+
 SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_output_nget(SAM_table ptr, SAM_error *err){
 	double result;
 	translateExceptions(err, [&]{
 	if (!ssc_data_get_number(ptr, "num_wells_getem_output", &result))
 		make_access_error("SAM_Geothermal", "num_wells_getem_output");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_prod_drilled_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "num_wells_getem_prod_drilled", &result))
+		make_access_error("SAM_Geothermal", "num_wells_getem_prod_drilled");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_Geothermal_Outputs_num_wells_getem_prod_failed_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "num_wells_getem_prod_failed", &result))
+		make_access_error("SAM_Geothermal", "num_wells_getem_prod_failed");
 	});
 	return result;
 }
