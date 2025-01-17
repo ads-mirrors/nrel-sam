@@ -1001,3 +1001,12 @@ SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_pump_gathering_cost_nget(SAM
 	return result;
 }
 
+SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_surface_equipment_cost_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "total_surface_equipment_cost", &result))
+		make_access_error("SAM_GeothermalCosts", "total_surface_equipment_cost");
+	});
+	return result;
+}
+

@@ -647,6 +647,8 @@ extern "C"
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_pump_gathering_cost_nget(SAM_table ptr, SAM_error *err);
 
+	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_surface_equipment_cost_nget(SAM_table ptr, SAM_error *err);
+
 #ifdef __cplusplus
 } /* end of extern "C" { */
 #endif
