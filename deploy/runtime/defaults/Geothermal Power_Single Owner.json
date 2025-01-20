@@ -9698,6 +9698,7 @@
     "geotherm.cost.prod_per_well": 4310560.0,
     "geotherm.cost.prod_req": 4.07451,
     "geotherm.cost.prod_wells_drilled": 2.07451,
+    "geotherm.cost.pump_casing_cost": 44.74,
     "geotherm.cost.pump_depth": 1123.12,
     "geotherm.cost.pump_fixed": 0.0,
     "geotherm.cost.pump_installation": 56156.0,
