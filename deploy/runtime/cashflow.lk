@@ -306,6 +306,7 @@ function cf_om_expenses()
 	{
 		cfline( 'cf_om_fixed2_expense,cf_om_production2_expense,cf_om_capacity2_expense', 0);
 		cfline( 'cf_fuelcell_replacement_cost', 0);
+		cfline( 'cf_om_fuel_expense', 0);
 	}
 	if ( is_fuel_tech() ) { cfline('cf_om_fuel_expense', 0); }
 	if ( tech == 'Biopower' ) { cfline( 'cf_om_opt_fuel_1_expense,cf_om_opt_fuel_2_expense', 0); }
