@@ -6654,6 +6654,89 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
+                    "String": "geotherm.cost.pump_casing_cost"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 207.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 1713.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 90.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Value": {
+                    "Type": 1.0,
+                    "Double": 0.0
+                },
+                "Mode": {
+                    "Type": 3.0,
+                    "Integer": 1.0
+                },
+                "Format": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Decimals": {
+                    "Type": 3.0,
+                    "Integer": 3.0
+                },
+                "Prefix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Suffix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "ThousandsSep": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "Numeric": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
                     "String": "geotherm.cost.pump_depth"
                 },
                 "X": {
@@ -12034,6 +12117,32 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
+        "geotherm.cost.pump_casing_cost": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Casing cost",
+            "Units": "$/ft",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 0.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "geotherm.cost.pump_cost_install": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Pump installation cost",
+            "Units": "$/well",
+            "Group": "Geothermal Costs",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
         "geotherm.cost.pump_depth": {
             "Version": 4.0,
             "Type": 1.0,
@@ -12073,10 +12182,23 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
+        "geotherm.cost.pump_only_cost": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Pump cost",
+            "Units": "$/well",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
         "geotherm.cost.pump_per_foot": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "Installation and Casing Cost",
+            "Label": "Installation Cost",
             "Units": "$/ft",
             "Group": "Geothermal Capital Costs",
             "IndexLabels": "",
@@ -12378,6 +12500,19 @@
             "Label": "Total Installed Cost",
             "Units": "$M",
             "Group": "Geothermal Capital Costs",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "geotherm.cost.total_surface_equipment_cost": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Total surface equipment cost",
+            "Units": "$",
+            "Group": "Geothermal Costs",
             "IndexLabels": "",
             "Flags": 8.0,
             "DefaultValue": 0.0,
@@ -13032,11 +13167,11 @@
         "\t\t\t",
         "\t\t\tconversion_type = ${conversion_type};",
         "\t\t\tppi_base_year = ${ppi_base_year};",
-        "\t\t\tgross_output = ${geotherm.cost.plant_size};",
+        "\t\t\t//gross_output = ${geotherm.cost.plant_size};",
         "\t\t\tdesign_temp = ssc_var(geothermal, \"design_temp\");",
         "\t\t\tsecond_law_eff = ssc_var(geothermal, \"eff_secondlaw\");\r",
         "\t\t\tprod_wells_failed = ssc_var(geothermal, 'num_wells_getem_prod_failed');",
-        "\t\t\tssc_var(geothermal,'gross_output', gross_output);",
+        "\t\t\t//ssc_var(geothermal,'gross_output', gross_output);",
         "\t\t\tssc_var(geothermal,'design_temp', design_temp);",
         "\t\t\tssc_var(geothermal,'eff_secondlaw', second_law_eff);",
         "\t\t\tssc_var(geothermal, \"conversion_type\", conversion_type);\r",
@@ -13048,7 +13183,7 @@
         "\t\t\tssc_var(geothermal, 'pump_size_hp', ${pump_size_hp});\r",
         "\t\t\tssc_var(geothermal, 'inj_pump_hp', ${inj_pump_hp});\r",
         "\t\t\tssc_var(geothermal, 'inj_num_pumps', ${inj_num_pumps});\r",
-        "\t\t\t\r",
+        "\t\t\tssc_var(geothermal, 'geotherm.cost.pump_casing_cost', ${geotherm.cost.pump_casing_cost});\r",
         "\t\t\t//ssc_var(geothermal, 'geotherm.cost.prod_wells_drilled', ${geotherm.cost.prod_wells_drilled});\r",
         "\t\t\t//ssc_var(geothermal, 'geotherm.cost.inj_wells_drilled', ${geotherm.cost.inj_wells_drilled});\r",
         "\t\t\t//ssc_var(geothermal, 'geotherm.cost.prod_wells_failed', prod_wells_failed);",
@@ -13112,6 +13247,9 @@
         "\t\t\t\t${geotherm.cost.plant_per_kW} = ssc_var(geothermal, \"baseline_cost\");\t",
         "\t\t\t\t${geotherm.cost.pumps_total} = ssc_var(geothermal, \"total_pump_cost\");\r",
         "\t\t\t\t${geotherm.cost.surf_total} = ssc_var(geothermal, \"total_gathering_cost\");\r",
+        "\t\t\t\t${geotherm.cost.pump_cost_install} = ssc_var(geothermal, \"pump_cost_install\");\r",
+        "\t\t\t\t${geotherm.cost.pump_only_cost} = ssc_var(geothermal, \"pump_only_cost\");\r",
+        "\t\t\t\t${geotherm.cost.total_surface_equipment_cost} = ssc_var(geothermal, \"total_surface_equipment_cost\");\r",
         "\t\t\t\tssc_free(geothermal);",
         "\t\t\t\t//return plant_per_kW;",
         "\t\t\t}",
