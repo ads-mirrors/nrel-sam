@@ -270,13 +270,17 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         success = false;
 
         curl = wxEasyCurl();
-        curl.AddHttpHeader("Content-Type: application/json");
-        curl.AddHttpHeader("Accept: application/json");
+//        curl.AddHttpHeader("Content-Type: application/json");
+//        curl.AddHttpHeader("Accept: application/json");
+
 
 
         url = SamApp::WebApi("bing_maps_timezone_api");
         url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
         url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
+
+        curl.AddHttpHeader("Content-Type: application/json");
+        curl.AddHttpHeader("Accept: application/json");
 
 
         wxMessageBox(url, "geocode developer bing tz URL");
