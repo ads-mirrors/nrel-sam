@@ -194,8 +194,8 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     url.Replace("&", "\\&");
     wxMessageBox(url, "updated geocode developer URL");
     */
-   // curl.AddHttpHeader("Content-Type: application/json");
-   // curl.AddHttpHeader("Accept: application/json");
+    curl.AddHttpHeader("Content-Type: application/json");
+    curl.AddHttpHeader("Accept: application/json");
 
 
     if (showprogress) {
