@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wex/easycurl.h>
 
 #include <rapidjson/reader.h>
+#include <rapidjson/error/en.h> // parser errors returned as char strings
 
 #include "main.h"
 #include "geotools.h"
@@ -210,10 +211,22 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     wxMessageBox(str, "geocode developer URL return string");
 
-    reader.Parse(str.c_str());
 
 
-    /* example for "denver, co"
+
+    rapidjson::ParseResult ok = reader.Parse(str.c_str());
+
+
+    /* 
+            ParseResult ok = doc.Parse("[42]");
+        if (!ok) {
+            fprintf(stderr, "JSON parse error: %s (%u)",
+                    GetParseError_En(ok.Code()), ok.Offset());
+            exit(EXIT_FAILURE);
+        }
+
+    
+    example for "denver, co"
 {"info":
     {"statuscode":0,"copyright":
         {"text":"© 2024 MapQuest, Inc.","imageUrl":"http://api.mqcdn.com/res/mqlogo.gif","imageAltText":"© 2024 MapQuest, Inc."}
@@ -251,6 +264,7 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         }
         // check status code
         success = false;//overrides success of retrieving data
+        wxMessageBox(str, "geocode developer reset status code ");
 
         if (reader.HasMember("info")) {
             if (reader["info"].HasMember("statuscode")) {
@@ -259,6 +273,9 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
                 }
             }
         }
+    }
+    else {
+        wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
     }
 
     if (!success)
