@@ -48,8 +48,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static wxString MyGet(const wxString &url)
 {
 	wxEasyCurl curl;
-	curl.AddHttpHeader( "Content-type: text/plain" );
+//	curl.AddHttpHeader( "Content-type: text/plain" );
+//	curl.AddHttpHeader( "Cache-Control: no-cache" );
 	curl.AddHttpHeader( "Cache-Control: no-cache" );
+	curl.AddHttpHeader("Content-Type: application/json");
+	curl.AddHttpHeader("Accept: application/json");
+
     curl.Get(url);
 	return curl.GetDataAsString();
 }
