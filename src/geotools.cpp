@@ -125,7 +125,7 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
     if (tz != 0) {
         success = false;
 
-        // get timezone from Goolge timezone API
+        // get timezone from Google timezone API
         url = SamApp::WebApi("google_timezone_api") + wxString::Format("&location=%.14lf,%.14lf", *lat, *lon);
         url.Replace("<GOOGLEAPIKEY>", wxString(google_api_key));
 
@@ -263,6 +263,8 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     if (!success)
         return false;
+
+    wxMessageBox(str, "geocode developer success to tz ");
 
 
     if (tz != 0) 
