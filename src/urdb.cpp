@@ -216,7 +216,7 @@ bool OpenEI::QueryUtilityCompanies(wxArrayString &names, wxString *err)
 	}
 
 	rapidjson::Document reader;
-	reader.Parse(json_data.c_str());
+	reader.Parse((const char *)json_data.c_str());
 
 	if (reader.HasParseError())
 	{

@@ -80,7 +80,7 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
     }
 
     rapidjson::Document reader;
-    auto str = curl.GetDataAsString();
+    wxString str = curl.GetDataAsString();
     reader.Parse(str.c_str());
 
     if (!reader.HasParseError()) {
@@ -207,14 +207,14 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     }
  
     rapidjson::Document reader;
-    auto str = curl.GetDataAsString();
+    wxString str = curl.GetDataAsString();
 
     wxMessageBox(str, "geocode developer URL return string");
 
 
 
 
-    rapidjson::ParseResult ok = reader.Parse(str.c_str());
+    rapidjson::ParseResult ok = reader.Parse((const char *)str.c_str());
 
 
     /* 
