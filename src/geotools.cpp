@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 #include "geotools.h"
 
+/*
 static wxString MyGet(const wxString& url)
 {
     wxEasyCurl curl;
@@ -48,7 +49,7 @@ static wxString MyGet(const wxString& url)
     curl.Get(url);
     return curl.GetDataAsString();
 }
-
+*/
 // Geocode using Google API for non-NREL builds of SAM
 bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
@@ -211,10 +212,14 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     wxMessageBox(str, "geocode developer URL return string");
 
+    
+    rapidjson::StringStream is(str.c_str());
+
+//    doc.ParseStream(is);
 
 
-
-    rapidjson::ParseResult ok = reader.Parse((const char *)str.c_str());
+//    rapidjson::ParseResult ok = reader.Parse((const char*)str.c_str());
+    rapidjson::ParseResult ok = reader.ParseStream(is);
 
 
     /* 
