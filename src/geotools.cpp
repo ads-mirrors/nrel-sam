@@ -210,6 +210,8 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     rapidjson::Document reader;
     wxString str = curl.GetDataAsString();
 
+    str.Replace("\"", "\\\"");
+
     wxMessageBox(str, "geocode developer URL return string");
 
     
