@@ -208,13 +208,13 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     }
  
     rapidjson::Document reader;
-  //  wxString str = curl.GetDataAsString();
+    wxString str = curl.GetDataAsString();
 
   //  str.Replace("\"", "\\\"");
 
-    std::string str = curl.GetDataAsString().ToStdString();
+  //  std::string str = curl.GetDataAsString().ToStdString();
 
-    wxMessageBox((wxString)str, "geocode developer URL return string");
+    wxMessageBox(str, "geocode developer URL return string");
 
     
 //    rapidjson::StringStream is(str.c_str());
