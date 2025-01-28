@@ -208,13 +208,13 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     }
  
     rapidjson::Document reader;
-    wxString str = curl.GetDataAsString();
+  //  wxString str = curl.GetDataAsString();
 
   //  str.Replace("\"", "\\\"");
 
-    std::string stdstr = str.ToStdString();
+    std::string str = curl.GetDataAsString().ToStdString();
 
-    wxMessageBox(stdstr, "geocode developer URL return string");
+    wxMessageBox((wxString)str, "geocode developer URL return string");
 
     
 //    rapidjson::StringStream is(str.c_str());
@@ -224,7 +224,7 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
 //    rapidjson::ParseResult ok = reader.Parse((const char*)str.c_str());
 //    rapidjson::ParseResult ok = reader.ParseStream(is);
-    rapidjson::ParseResult ok = reader.Parse<0>(stdstr.c_str());
+    rapidjson::ParseResult ok = reader.Parse<0>(str.c_str());
 
 
     /* 
@@ -361,7 +361,7 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
             if (reader.HasMember("statusDescription")) {
                 if (reader["statusDescription"].IsString()) {
-                    str = reader["statusDescription"].GetString();
+                    wxString str = reader["statusDescription"].GetString();
                     success = str.Lower() == "ok";
                 }
             }
