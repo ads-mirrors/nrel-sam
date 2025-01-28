@@ -379,7 +379,7 @@ function cf_operating_expenses()
 	cf_om_expenses();
 	cfline( 'cf_property_tax_expense', 0);
 	cfline( 'cf_insurance_expense', 0);
-   	if ( is_land_lease_config() ) { cfline('cf_land_lease_expense', 0); }
+   	if ( is_land_lease_config() && strpos(technology(),'Hybrid') < 0 ) { cfline('cf_land_lease_expense', 0); } // hybrid land lease handled in cf_om_expenses() function
    	if ( fin == 'Community Solar')
 	{
 		cfline('cf_community_solar_recurring_fixed', 0);
