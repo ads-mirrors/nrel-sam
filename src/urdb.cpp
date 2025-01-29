@@ -1281,8 +1281,9 @@ int OpenEIUtilityRateDialog::ShowModal()
 	return wxDialog::ShowModal();
 }
 
-void OpenEIUtilityRateDialog::QueryRates(const wxString &utility_name)
+bool OpenEIUtilityRateDialog::QueryRates(const wxString &utility_name)
 {
+	bool ret = true;
 	wxBusyInfo busy("Getting available rates...", this);
 	lblStatus->SetLabel("Loading rates...");
 
@@ -1293,8 +1294,10 @@ void OpenEIUtilityRateDialog::QueryRates(const wxString &utility_name)
     if (!api.QueryUtilityRates(utility_name, mUtilityRates, &err))
     {
 		busy.~wxBusyInfo();
-		wxMessageBox("Utility Rate Query Error\n\n" + err, "URDB Download Message");
-		return;
+//		wxMessageBox("Utility Rate Query Error\n\n" + err, "URDB Download Message");
+//		return false;
+		ret = false;
+		mUtilityRates.clear();
 	}
 
     lblRateStatus->SetLabel(wxString::Format("%d rates available for %s", (int)mUtilityRates.size(), utility_name));
@@ -1305,6 +1308,7 @@ void OpenEIUtilityRateDialog::QueryRates(const wxString &utility_name)
 		lblStatus->SetLabel("Ready.");
 
 	UpdateRateList();
+	return true;
 }
 
 void OpenEIUtilityRateDialog::UpdateRateList()
@@ -1414,8 +1418,14 @@ void OpenEIUtilityRateDialog::OnEvent(wxCommandEvent &evt)
 		UpdateRateList();
 		break;
 	case ID_lstUtilities:
-		QueryRates( lstUtilities->GetStringSelection() );
-		lblUtilityCount->SetLabel(wxString::Format("%d utilities", (int)lstUtilities->Count()));
+		if (QueryRates(lstUtilities->GetStringSelection())) {
+			lblUtilityCount->SetLabel(wxString::Format("%d utilities", (int)lstUtilities->Count()));
+		}
+		else {
+			lstRates->Clear();
+			mGUIDList.Clear();
+			mUtilityRates.clear();
+		}
 		break;
 	case ID_lstRates:
 		UpdateRateData();

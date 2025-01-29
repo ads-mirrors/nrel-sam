@@ -163,7 +163,7 @@ public:
 	void StartHttp();
 	void QueryUtilities();
 	void QueryUtilitiesByZipCode();
-	void QueryRates(const wxString &utility_name);
+	bool QueryRates(const wxString &utility_name);
 	void OnEvent(wxCommandEvent &evt);
 	void OnTimer(wxTimerEvent &evt);
 	void UpdateRateList();

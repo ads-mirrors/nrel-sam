@@ -188,13 +188,8 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     wxEasyCurl curl;
     wxBusyCursor curs;
-    wxMessageBox(url, "geocode developer URL");
-
+    
     // SAM issue 1968 
-    /* works from command line and fails in curl.get with invalid key 
-    url.Replace("&", "\\&");
-    wxMessageBox(url, "updated geocode developer URL");
-    */
     curl.AddHttpHeader("Content-Type: application/json");
     curl.AddHttpHeader("Accept: application/json");
 
@@ -212,32 +207,10 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
     wxString str = curl.GetDataAsString();
 
-  //  str.Replace("\"", "\\\"");
-
-  //  std::string str = curl.GetDataAsString().ToStdString();
-
-    wxMessageBox(str, "geocode developer URL return string");
-
-    
-//    rapidjson::StringStream is(str.c_str());
-
-//    doc.ParseStream(is);
-
-
-//    rapidjson::ParseResult ok = reader.Parse((const char*)str.c_str());
-//    rapidjson::ParseResult ok = reader.ParseStream(is);
     rapidjson::ParseResult ok = reader.Parse(str.c_str());
 
 
     /* 
-            ParseResult ok = doc.Parse("[42]");
-        if (!ok) {
-            fprintf(stderr, "JSON parse error: %s (%u)",
-                    GetParseError_En(ok.Code()), ok.Offset());
-            exit(EXIT_FAILURE);
-        }
-
-    
     example for "denver, co"
 {"info":
     {"statuscode":0,"copyright":
@@ -276,7 +249,6 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         }
         // check status code
         success = false;//overrides success of retrieving data
-        wxMessageBox(str, "geocode developer reset status code ");
 
         if (reader.HasMember(L"info")) {
             if (reader[L"info"].HasMember(L"statuscode")) {
@@ -293,7 +265,6 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     if (!success)
         return false;
 
-    wxMessageBox(str, "geocode developer success to tz ");
 
 
     if (tz != 0) 
@@ -301,8 +272,6 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         success = false;
 
         curl = wxEasyCurl();
-//        curl.AddHttpHeader("Content-Type: application/json");
-//        curl.AddHttpHeader("Accept: application/json");
 
 
 
@@ -313,8 +282,6 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         curl.AddHttpHeader("Content-Type: application/json");
         curl.AddHttpHeader("Accept: application/json");
 
-
-        wxMessageBox(url, "geocode developer bing tz URL");
 
         if (showprogress) 
         {
@@ -327,8 +294,6 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         }
 
         str = curl.GetDataAsString();
-
-        wxMessageBox(str, "geocode developer bing tz URL return string");
 
         reader.Parse(str.c_str());
 
