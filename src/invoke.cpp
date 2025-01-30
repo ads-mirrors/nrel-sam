@@ -1233,6 +1233,7 @@ void fcall_value( lk::invoke_t &cxt )
 	wxString name = cxt.arg(0).as_string();
 	auto& c = cc.GetCase();
 	bool found = false;
+	// Issue 1965 - assumption is that higher ndxHybrid vartables contain independent vairables in startup.lk
 //	for (size_t ndxHybrid = 0; !found && ndxHybrid < c.GetConfiguration()->Technology.size(); ndxHybrid++) {
 	for (int ndxHybrid = c.GetConfiguration()->Technology.size() - 1; !found && ndxHybrid > -1; ndxHybrid--) {
 		if (VarValue* vv = cc.GetValues(ndxHybrid).Get(name))
