@@ -108,10 +108,10 @@ Generic CSP System,None,592360448,NA,NA,; Notice: time 0.00 { Generic solar mode
 MSPT IPH,None,1496956800,NA,NA,; 
 MSPT IPH,LCOH Calculator,1496956800,NA,NA,; 
 MSPT IPH,Single Owner,1550245888,6.26452,6.83681,; 
-Physical Trough IPH,None,22067516,NA,NA,; 
-Physical Trough IPH,LCOH Calculator,22067516,NA,NA,; 
-Physical Trough IPH,Single Owner,22067516,6.75611,5.54336,; 
-Physical Trough IPH,Commercial,22067516,4.66723,NA,; 
+Physical Trough IPH,None,20884994,NA,NA,; 
+Physical Trough IPH,LCOH Calculator,20884994,NA,NA,; 
+Physical Trough IPH,Single Owner,20884994,7.55453,7.02159,; 
+Physical Trough IPH,Commercial,20884994,5.13905,NA,; 
 DSGL IPH,None,10833103,NA,NA,; 
 DSGL IPH,LCOH Calculator,10833103,NA,NA,; 
 DSGL IPH,Single Owner,10833103,5.44917,7.02159,; 
