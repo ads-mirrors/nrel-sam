@@ -759,8 +759,8 @@ csv_table_rows = ["Company_Name","WEC_Name","Device_Model","Device_Model_Year","
 	"Other_Infrastructure","Project_Contingency_Budget","Insurance_during_Construction","Reserve_Accounts", "Operations", "Maintenance"];
 csv_table_units = ["Unitless","Unitless","Unitless","Year","Unitless","Unitless","Unitless","Unitless","Mg","Unitless","m","Unitless",
 	"kW","kW","%","kWh","Unitless","Unitless","Unitless","Unitless","Unitless",
-	"Unitless","Unitless","Unitless","kW/m","kW","Unitless","km","m","m","m","kWh",
-	"%","%","$","$","$/kWh","%","$","$","$","$","$","$","$","$","$","$","$","$",
+	"Unitless","Unitless","Unitless","kW/m","kW","Unitless","m","m","m","m","%",
+	"$","$","$/kWh","%","$","$","$","$","$","$","$","$","$","$","$","$",
 	"$","$","$"];
 csv_table_results = [companyName, deviceName, deviceModel, deviceModelYear, deviceType,
 	deviceTRL,ptoType,foundationType,deviceMass,deviceMaterial,charDia,deviceScale,deviceRatedPower,
@@ -772,7 +772,7 @@ final_table = [[]];
 final_table[0] = csv_table_rows;
 final_table[1] = csv_table_units;
 final_table[2] = csv_table_results;
-fn = choose_file();
+fn = choose_file('','open data file', 'CSV Files(*.csv)|*.csv');
 csvwrite(fn, final_table);
 
 reportCode = 
