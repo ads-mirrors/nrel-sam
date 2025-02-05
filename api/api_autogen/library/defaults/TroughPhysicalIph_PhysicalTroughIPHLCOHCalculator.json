@@ -140,11 +140,11 @@
 				[0.935000, 0.935000, 0.935000, 0.963000],
 				[0.935000, 0.935000, 0.935000, 0.963000]
 			],
-			"T_fp": 10,
-			"T_loop_in_des": 90,
-			"T_loop_out": 300,
-			"T_shutdown": 159.3,
-			"T_startup": 159.3,
+			"T_fp": 150,
+			"T_loop_in_des": 293,
+			"T_loop_out": 391,
+			"T_shutdown": 325.34,
+			"T_startup": 325.34,
 			"Tau_envelope": [
 				[0.964000, 0.964000, 1.000000, 0.000000],
 				[0.964000, 0.964000, 1.000000, 0.000000],
@@ -324,13 +324,13 @@
 		"SystemCosts": {
 		},
 		"TES": {
-			"cold_tank_Thtr": 60,
+			"cold_tank_Thtr": 250,
 			"cold_tank_max_heat": 0.5,
 			"d_tank_in": 0,
 			"dt_hot": 5,
-			"h_tank_in": 15,
-			"h_tank_min": 0.5,
-			"hot_tank_Thtr": 110,
+			"h_tank_in": 12,
+			"h_tank_min": 1,
+			"hot_tank_Thtr": 365,
 			"hot_tank_max_heat": 1,
 			"init_hot_htf_percent": 30,
 			"is_h_tank_fixed": 1,
@@ -345,7 +345,7 @@
 			"tes_cyl_tank_insul_percent": 0,
 			"tes_cyl_tank_thick": 0.0254,
 			"tes_n_tsteps": 100,
-			"tes_pb_T_charge_min": 290,
+			"tes_pb_T_charge_min": 381,
 			"tes_pb_T_cold_delta": 30,
 			"tes_pb_T_hot_delta": 30,
 			"tes_pb_cp_solid": 0.83,
@@ -356,7 +356,7 @@
 			"tes_pb_void_frac": 0.22,
 			"tes_type": 1,
 			"tshours": 6,
-			"u_tank": 0.3
+			"u_tank": 0.4
 		},
 		"Controller": {
 			"T_tank_hot_inlet_min": 400,
@@ -458,7 +458,7 @@
 			"csp_dtr_cost_sales_tax_percent": 80,
 			"csp_dtr_cost_site_improvements_cost_per_m2": 16,
 			"csp_dtr_cost_solar_field_cost_per_m2": 297,
-			"csp_dtr_cost_storage_cost_per_kwht": 62,
+			"csp_dtr_cost_storage_cost_per_kwht": 70,
 			"sales_tax_rate": 5
 		},
 		"FinancialParameters": {

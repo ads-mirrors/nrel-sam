@@ -264,7 +264,7 @@ extern "C"
 	SAM_EXPORT void SAM_GeothermalCosts_GeoHourly_geotherm_cost_stim_non_drill_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
-	 * Set gross_cost_output: Gross output from GETEM for cost calculations [MW]
+	 * Set gross_cost_output: Gross output from GETEM for cost calculations [kW]
 	 * options: None
 	 * constraints: None
 	 * required if: *
