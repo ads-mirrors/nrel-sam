@@ -629,7 +629,7 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "insurance_during_construction_cost_modeled_ui"
+                    "String": "insurance_during_construction_cost_modeled"
                 },
                 "X": {
                     "Type": 3.0,
@@ -2268,7 +2268,7 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "project_contingency_cost_modeled_ui"
+                    "String": "project_contingency_cost_modeled"
                 },
                 "X": {
                     "Type": 3.0,
@@ -2558,7 +2558,7 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "reserve_accounts_cost_modeled_ui"
+                    "String": "reserve_accounts_cost_modeled"
                 },
                 "X": {
                     "Type": 3.0,
