@@ -2855,7 +2855,7 @@
         "system_capacity_heat_btu": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "",
+            "Label": "Heat sink thermal power",
             "Units": "MMBtu/hr",
             "Group": "System Design",
             "IndexLabels": "",
