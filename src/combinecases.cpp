@@ -282,7 +282,7 @@ void CombineCasesDialog::OnEvt(wxCommandEvent& e)
 							SamApp::Window()->SwitchToCaseWindow(m_custom_generation_case_name);
 							m_custom_generation_case_window->SwitchToInputPage("Power Plant");
 							wxMessageBox("Subhourly simulations unsupported\n\n"
-								"The subhourly simulation for case " + technology_name + " is not supported.",
+								"The subhourly simulation for case " + case_name + " is not supported.",
 								"Combine Cases Message", wxOK, this);
 							return;
 						}
