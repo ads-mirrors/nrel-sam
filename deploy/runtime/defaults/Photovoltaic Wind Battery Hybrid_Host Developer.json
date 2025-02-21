@@ -20903,7 +20903,6 @@
         "inverterarray_power": 453.994,
         "irrad_mode": 0.0,
         "is_advanced": 0.0,
-        "land_area": 2.23136,
         "land_area_value": 2.23136,
         "land_fixed": 0.0,
         "land_per_acre": 0.0,
@@ -20951,10 +20950,6 @@
             0.0
         ],
         "om_fixed_escal": 0.0,
-        "om_land_lease": [
-            0.0
-        ],
-        "om_land_lease_escal": 0.0,
         "om_production": [
             0.0
         ],
@@ -21487,13 +21482,7 @@
         "ui_aspect_ratio": 1.7,
         "ui_land_area_additional": 0.0,
         "ui_land_area_additional_units": 0.0,
-        "ui_land_area_ha": 0.903001,
-        "ui_land_area_multiplier": 0.0,
         "ui_land_area_per_mw": 0.0,
-        "ui_land_area_units": 0.0,
-        "ui_land_lease": [
-            0.0
-        ],
         "ui_step_minutes": 60.0,
         "ui_subarray1_length_side": 4.18856,
         "ui_subarray1_nrows": 21.0,

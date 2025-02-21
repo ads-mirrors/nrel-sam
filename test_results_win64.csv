@@ -1,5 +1,5 @@
 TECHNOLOGY,FINANCING,ANNUAL_OUTPUT,LCOE_NOM,LPPA_NOM,MESSAGES
-Flat Plate PV,Residential,14982,6.61612,NA,; 
+Flat Plate PV,Residential,14982,10.0439,NA,; 
 Flat Plate PV,Commercial,1.10797e+06,3.29402,NA,; 
 Flat Plate PV,Third Party,14982,NA,NA,; 
 Flat Plate PV,Host Developer,1.10797e+06,8.5834,11.4567,; 
@@ -10,7 +10,7 @@ Flat Plate PV,All Equity Partnership Flip,235722032,4.09852,4.32454,; Warning: I
 Flat Plate PV,Sale Leaseback,235722032,4.72857,4.32454,; Warning: IRR at end of analysis period is not a number (NaN). This can indicate that revenues are too low to cover costs, or that they are excessively high compared to costs. Warning: NPV is $-9.19125e+06. A negative NPV indicates project costs are higher than revenues.
 Flat Plate PV,LCOE Calculator,235722032,NA,NA,; 
 Flat Plate PV,None,155941152,NA,NA,; 
-PVWatts,Residential,13916.2,13.3762,NA,; 
+PVWatts,Residential,13916.2,10.8753,NA,; 
 PVWatts,Commercial,939340,3.76351,NA,; 
 PVWatts,Third Party,11132.9,NA,NA,; 
 PVWatts,Host Developer,939340,9.51537,10.2578,; 
