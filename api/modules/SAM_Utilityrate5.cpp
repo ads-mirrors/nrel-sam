@@ -1297,44 +1297,6 @@ SAM_EXPORT double* SAM_Utilityrate5_Outputs_charge_wo_sys_minimum_ym_mget(SAM_ta
 	return result;
 }
 
-SAM_EXPORT double* SAM_Utilityrate5_Outputs_elec_cost_with_system_aget(SAM_table ptr, int* length, SAM_error *err){
-	double* result = nullptr;
-	translateExceptions(err, [&]{
-	result = ssc_data_get_array(ptr, "elec_cost_with_system", length);
-	if (!result)
-		make_access_error("SAM_Utilityrate5", "elec_cost_with_system");
-	});
-	return result;
-}
-
-SAM_EXPORT double SAM_Utilityrate5_Outputs_elec_cost_with_system_year1_nget(SAM_table ptr, SAM_error *err){
-	double result;
-	translateExceptions(err, [&]{
-	if (!ssc_data_get_number(ptr, "elec_cost_with_system_year1", &result))
-		make_access_error("SAM_Utilityrate5", "elec_cost_with_system_year1");
-	});
-	return result;
-}
-
-SAM_EXPORT double* SAM_Utilityrate5_Outputs_elec_cost_without_system_aget(SAM_table ptr, int* length, SAM_error *err){
-	double* result = nullptr;
-	translateExceptions(err, [&]{
-	result = ssc_data_get_array(ptr, "elec_cost_without_system", length);
-	if (!result)
-		make_access_error("SAM_Utilityrate5", "elec_cost_without_system");
-	});
-	return result;
-}
-
-SAM_EXPORT double SAM_Utilityrate5_Outputs_elec_cost_without_system_year1_nget(SAM_table ptr, SAM_error *err){
-	double result;
-	translateExceptions(err, [&]{
-	if (!ssc_data_get_number(ptr, "elec_cost_without_system_year1", &result))
-		make_access_error("SAM_Utilityrate5", "elec_cost_without_system_year1");
-	});
-	return result;
-}
-
 SAM_EXPORT double* SAM_Utilityrate5_Outputs_energy_w_sys_ec_apr_tp_mget(SAM_table ptr, int* nrows, int* ncols, SAM_error *err){
 	double* result = nullptr;
 	translateExceptions(err, [&]{
@@ -1814,6 +1776,15 @@ SAM_EXPORT double* SAM_Utilityrate5_Outputs_utility_bill_w_sys_aget(SAM_table pt
 	return result;
 }
 
+SAM_EXPORT double SAM_Utilityrate5_Outputs_utility_bill_w_sys_year1_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "utility_bill_w_sys_year1", &result))
+		make_access_error("SAM_Utilityrate5", "utility_bill_w_sys_year1");
+	});
+	return result;
+}
+
 SAM_EXPORT double* SAM_Utilityrate5_Outputs_utility_bill_w_sys_ym_mget(SAM_table ptr, int* nrows, int* ncols, SAM_error *err){
 	double* result = nullptr;
 	translateExceptions(err, [&]{
@@ -1830,6 +1801,15 @@ SAM_EXPORT double* SAM_Utilityrate5_Outputs_utility_bill_wo_sys_aget(SAM_table p
 	result = ssc_data_get_array(ptr, "utility_bill_wo_sys", length);
 	if (!result)
 		make_access_error("SAM_Utilityrate5", "utility_bill_wo_sys");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_Utilityrate5_Outputs_utility_bill_wo_sys_year1_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "utility_bill_wo_sys_year1", &result))
+		make_access_error("SAM_Utilityrate5", "utility_bill_wo_sys_year1");
 	});
 	return result;
 }

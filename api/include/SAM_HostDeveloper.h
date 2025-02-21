@@ -1955,22 +1955,6 @@ extern "C"
 	SAM_EXPORT void SAM_HostDeveloper_Host_annual_energy_value_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
 
 	/**
-	 * Set elec_cost_with_system: Host energy bill with system [$]
-	 * options: None
-	 * constraints: None
-	 * required if: *
-	 */
-	SAM_EXPORT void SAM_HostDeveloper_Host_elec_cost_with_system_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
-
-	/**
-	 * Set elec_cost_without_system: Host energy bill without system [$]
-	 * options: None
-	 * constraints: None
-	 * required if: *
-	 */
-	SAM_EXPORT void SAM_HostDeveloper_Host_elec_cost_without_system_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
-
-	/**
 	 * Set host_real_discount_rate: Host real discount rate [%]
 	 * options: None
 	 * constraints: None
@@ -2999,10 +2983,6 @@ extern "C"
 	 */
 
 	SAM_EXPORT double* SAM_HostDeveloper_Host_annual_energy_value_aget(SAM_table ptr, int* length, SAM_error *err);
-
-	SAM_EXPORT double* SAM_HostDeveloper_Host_elec_cost_with_system_aget(SAM_table ptr, int* length, SAM_error *err);
-
-	SAM_EXPORT double* SAM_HostDeveloper_Host_elec_cost_without_system_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double SAM_HostDeveloper_Host_host_real_discount_rate_nget(SAM_table ptr, SAM_error *err);
 

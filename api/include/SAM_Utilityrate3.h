@@ -6223,14 +6223,6 @@ extern "C"
 
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_charge_wo_sys_minimum_sep_aget(SAM_table ptr, int* length, SAM_error *err);
 
-	SAM_EXPORT double* SAM_Utilityrate3_Outputs_elec_cost_with_system_aget(SAM_table ptr, int* length, SAM_error *err);
-
-	SAM_EXPORT double SAM_Utilityrate3_Outputs_elec_cost_with_system_year1_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double* SAM_Utilityrate3_Outputs_elec_cost_without_system_aget(SAM_table ptr, int* length, SAM_error *err);
-
-	SAM_EXPORT double SAM_Utilityrate3_Outputs_elec_cost_without_system_year1_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_energy_w_sys_ec_apr_p1_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_energy_w_sys_ec_apr_p10_aget(SAM_table ptr, int* length, SAM_error *err);
@@ -6837,6 +6829,8 @@ extern "C"
 
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_utility_bill_w_sys_sep_aget(SAM_table ptr, int* length, SAM_error *err);
 
+	SAM_EXPORT double SAM_Utilityrate3_Outputs_utility_bill_w_sys_year1_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_utility_bill_wo_sys_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_utility_bill_wo_sys_apr_aget(SAM_table ptr, int* length, SAM_error *err);
@@ -6862,6 +6856,8 @@ extern "C"
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_utility_bill_wo_sys_oct_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_Utilityrate3_Outputs_utility_bill_wo_sys_sep_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double SAM_Utilityrate3_Outputs_utility_bill_wo_sys_year1_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_Utilityrate3_Outputs_year1_electric_load_nget(SAM_table ptr, SAM_error *err);
 
