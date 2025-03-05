@@ -23,7 +23,7 @@
 			"om_fixed_escal": 0,
 			"om_production_escal": 0,
 			"om_production_heat": [2.000000],
-			"total_installed_cost": 1.33794e+07
+			"total_installed_cost": 1.36747e+07
 		},
 		"LandLease": {
 		},
@@ -180,10 +180,6 @@
 		},
 		"Lifetime": {
 			"system_use_lifetime_output": 0
-		},
-		"ThirdPartyOwnership": {
-			"elec_cost_with_system": [0],
-			"elec_cost_without_system": [0]
 		},
 		"LCOS": {
 			"batt_salvage_percentage": 0

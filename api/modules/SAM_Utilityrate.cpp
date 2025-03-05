@@ -2561,26 +2561,6 @@ SAM_EXPORT double* SAM_Utilityrate_Outputs_charge_tr_sep_aget(SAM_table ptr, int
 	return result;
 }
 
-SAM_EXPORT double* SAM_Utilityrate_Outputs_elec_cost_with_system_aget(SAM_table ptr, int* length, SAM_error *err){
-	double* result = nullptr;
-	translateExceptions(err, [&]{
-	result = ssc_data_get_array(ptr, "elec_cost_with_system", length);
-	if (!result)
-		make_access_error("SAM_Utilityrate", "elec_cost_with_system");
-	});
-	return result;
-}
-
-SAM_EXPORT double* SAM_Utilityrate_Outputs_elec_cost_without_system_aget(SAM_table ptr, int* length, SAM_error *err){
-	double* result = nullptr;
-	translateExceptions(err, [&]{
-	result = ssc_data_get_array(ptr, "elec_cost_without_system", length);
-	if (!result)
-		make_access_error("SAM_Utilityrate", "elec_cost_without_system");
-	});
-	return result;
-}
-
 SAM_EXPORT double* SAM_Utilityrate_Outputs_energy_net_aget(SAM_table ptr, int* length, SAM_error *err){
 	double* result = nullptr;
 	translateExceptions(err, [&]{
@@ -2617,6 +2597,26 @@ SAM_EXPORT double* SAM_Utilityrate_Outputs_revenue_without_system_aget(SAM_table
 	result = ssc_data_get_array(ptr, "revenue_without_system", length);
 	if (!result)
 		make_access_error("SAM_Utilityrate", "revenue_without_system");
+	});
+	return result;
+}
+
+SAM_EXPORT double* SAM_Utilityrate_Outputs_utility_bill_w_sys_aget(SAM_table ptr, int* length, SAM_error *err){
+	double* result = nullptr;
+	translateExceptions(err, [&]{
+	result = ssc_data_get_array(ptr, "utility_bill_w_sys", length);
+	if (!result)
+		make_access_error("SAM_Utilityrate", "utility_bill_w_sys");
+	});
+	return result;
+}
+
+SAM_EXPORT double* SAM_Utilityrate_Outputs_utility_bill_wo_sys_aget(SAM_table ptr, int* length, SAM_error *err){
+	double* result = nullptr;
+	translateExceptions(err, [&]{
+	result = ssc_data_get_array(ptr, "utility_bill_wo_sys", length);
+	if (!result)
+		make_access_error("SAM_Utilityrate", "utility_bill_wo_sys");
 	});
 	return result;
 }

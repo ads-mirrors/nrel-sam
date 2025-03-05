@@ -145,7 +145,7 @@ public:
 	bool QueryUtilityCompaniesbyZipcode(const wxString &zipcode, wxArrayString &names, wxString *err=NULL);
 	bool QueryUtilityRates(const wxString &name, std::vector<RateInfo> &rates, wxString *err=NULL);
 	bool RetrieveUtilityRateData(const wxString &guid, RateData &rate, wxString *json_url=NULL, wxString *err=NULL);
-	bool RetrieveDiurnalData(rapidjson::Value &month_ary, double sched[12][24]);
+	bool RetrieveDiurnalData(rapidjson::GenericValue< rapidjson::UTF16<>> &month_ary, double sched[12][24]);
 };
 
 
@@ -163,7 +163,7 @@ public:
 	void StartHttp();
 	void QueryUtilities();
 	void QueryUtilitiesByZipCode();
-	void QueryRates(const wxString &utility_name);
+	bool QueryRates(const wxString &utility_name);
 	void OnEvent(wxCommandEvent &evt);
 	void OnTimer(wxTimerEvent &evt);
 	void UpdateRateList();
