@@ -745,14 +745,6 @@ extern "C"
 	//
 
 	/**
-	 * Set hs_phys_N_sub: Number physical heat sink HX nodes
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_N_sub_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
 	 * Set hs_phys_P_steam_hot_des: Steam outlet (and inlet) pressure for physical heat sink [bar]
 	 * options: None
 	 * constraints: None
@@ -775,30 +767,6 @@ extern "C"
 	 * required if: hs_type=1
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_T_steam_cold_des_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set hs_phys_f_mdot_steam_max: Max steam mdot fraction for physical heat sink
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_max_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set hs_phys_f_mdot_steam_min: Min steam mdot fraction for physical heat sink
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_min_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set hs_phys_tol: Physical heat sink solve tolerance
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_tol_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
 	 * Set hs_type: 0: ideal model, 1: physical steam model
@@ -998,7 +966,7 @@ extern "C"
 	 * Set dispatch_factors_ts: Dispatch payment factor array
 	 * options: None
 	 * constraints: None
-	 * required if: ppa_multiplier_model=1&csp_financial_model<5&is_dispatch=1&sim_type=1
+	 * required if: ppa_multiplier_model=1&csp_financial_model<5&is_dispatch=1
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_Tou_dispatch_factors_ts_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
 
@@ -1033,22 +1001,6 @@ extern "C"
 	 * required if: ?=0
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_Tou_ppa_multiplier_model_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set q_rec_heattrace: Receiver heat trace energy consumption during startup [kWhe]
-	 * options: None
-	 * constraints: None
-	 * required if: ?=0.0
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_Tou_q_rec_heattrace_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set q_rec_standby: Receiver standby energy consumption [kWt]
-	 * options: None
-	 * constraints: None
-	 * required if: ?=9e99
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_Tou_q_rec_standby_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
 	 * Set timestep_load_abs: Heat sink hourly load (not normalized) [kWt]
@@ -1144,14 +1096,6 @@ extern "C"
 	SAM_EXPORT void SAM_FresnelPhysicalIph_SysControl_disp_mip_gap_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
-	 * Set disp_rsu_cost_rel: Receiver startup cost [$/MWt/start]
-	 * options: None
-	 * constraints: None
-	 * required if: is_dispatch=1
-	 */
-	SAM_EXPORT void SAM_FresnelPhysicalIph_SysControl_disp_rsu_cost_rel_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
 	 * Set disp_time_weighting: Dispatch optimization future time discounting factor [-]
 	 * options: None
 	 * constraints: None
@@ -1205,7 +1149,7 @@ extern "C"
 	 * Set ppa_soln_mode: PPA solution mode (0=Specify IRR target, 1=Specify PPA price)
 	 * options: None
 	 * constraints: None
-	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1&sim_type=1
+	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_FinancialSolutionMode_ppa_soln_mode_nset(SAM_table ptr, double number, SAM_error *err);
 
@@ -1218,7 +1162,7 @@ extern "C"
 	 * Set dispatch_sched_weekday: PPA pricing weekday schedule, 12x24
 	 * options: None
 	 * constraints: None
-	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1&sim_type=1
+	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_TimeOfDeliveryFactors_dispatch_sched_weekday_mset(SAM_table ptr, double* mat, int nrows, int ncols, SAM_error *err);
 
@@ -1226,7 +1170,7 @@ extern "C"
 	 * Set dispatch_sched_weekend: PPA pricing weekend schedule, 12x24
 	 * options: None
 	 * constraints: None
-	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1&sim_type=1
+	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_TimeOfDeliveryFactors_dispatch_sched_weekend_mset(SAM_table ptr, double* mat, int nrows, int ncols, SAM_error *err);
 
@@ -1234,7 +1178,7 @@ extern "C"
 	 * Set dispatch_tod_factors: TOD factors for periods 1 through 9
 	 * options: None
 	 * constraints: None
-	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1&sim_type=1
+	 * required if: ppa_multiplier_model=0&csp_financial_model<5&is_dispatch=1
 	 */
 	SAM_EXPORT void SAM_FresnelPhysicalIph_TimeOfDeliveryFactors_dispatch_tod_factors_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
 
@@ -2062,19 +2006,11 @@ extern "C"
 	 * HeatSink Getters
 	 */
 
-	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_N_sub_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_P_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_Q_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_T_steam_cold_des_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_max_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_f_mdot_steam_min_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_phys_tol_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_type_nget(SAM_table ptr, SAM_error *err);
 
@@ -2142,10 +2078,6 @@ extern "C"
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Tou_ppa_multiplier_model_nget(SAM_table ptr, SAM_error *err);
 
-	SAM_EXPORT double SAM_FresnelPhysicalIph_Tou_q_rec_heattrace_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_Tou_q_rec_standby_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Tou_timestep_load_abs_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Tou_timestep_load_abs_factor_nget(SAM_table ptr, SAM_error *err);
@@ -2172,8 +2104,6 @@ extern "C"
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SysControl_disp_max_iter_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SysControl_disp_mip_gap_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_FresnelPhysicalIph_SysControl_disp_rsu_cost_rel_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_SysControl_disp_time_weighting_nget(SAM_table ptr, SAM_error *err);
 
@@ -2425,7 +2355,11 @@ extern "C"
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_T_heat_sink_out_aget(SAM_table ptr, int* length, SAM_error *err);
 
+	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_T_hs_ext_out_des_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_T_loop_out_des_SS_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_T_out_wf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_T_rec_cold_in_aget(SAM_table ptr, int* length, SAM_error *err);
 
@@ -2607,6 +2541,12 @@ extern "C"
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_htf_system_cost_nget(SAM_table ptr, SAM_error *err);
 
+	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_hx_UA_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_hx_min_dT_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_hx_min_dT_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
+
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_installed_per_capacity_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_is_pc_sb_allowed_aget(SAM_table ptr, int* length, SAM_error *err);
@@ -2639,6 +2579,8 @@ extern "C"
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_m_dot_field_to_cycle_aget(SAM_table ptr, int* length, SAM_error *err);
 
+	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_m_dot_hs_ext_des_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_m_dot_htf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_m_dot_htfmax_actual_nget(SAM_table ptr, SAM_error *err);
@@ -2654,6 +2596,8 @@ extern "C"
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_m_dot_tes_cold_out_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_m_dot_tes_hot_out_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_m_dot_wf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_mass_tes_cold_aget(SAM_table ptr, int* length, SAM_error *err);
 
@@ -2832,6 +2776,8 @@ extern "C"
 	SAM_EXPORT double SAM_FresnelPhysicalIph_Outputs_vol_tank_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_wspd_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double* SAM_FresnelPhysicalIph_Outputs_x_out_wf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 #ifdef __cplusplus
 } /* end of extern "C" { */

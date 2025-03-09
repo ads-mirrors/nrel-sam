@@ -1525,14 +1525,6 @@ extern "C"
 	//
 
 	/**
-	 * Set hs_phys_N_sub: Number physical heat sink HX nodes
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_MsptIph_HeatSink_hs_phys_N_sub_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
 	 * Set hs_phys_P_steam_hot_des: Steam outlet (and inlet) pressure for physical heat sink [bar]
 	 * options: None
 	 * constraints: None
@@ -1555,30 +1547,6 @@ extern "C"
 	 * required if: hs_type=1
 	 */
 	SAM_EXPORT void SAM_MsptIph_HeatSink_hs_phys_T_steam_cold_des_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set hs_phys_f_mdot_steam_max: Max steam mdot fraction for physical heat sink
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_MsptIph_HeatSink_hs_phys_f_mdot_steam_max_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set hs_phys_f_mdot_steam_min: Min steam mdot fraction for physical heat sink
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_MsptIph_HeatSink_hs_phys_f_mdot_steam_min_nset(SAM_table ptr, double number, SAM_error *err);
-
-	/**
-	 * Set hs_phys_tol: Physical heat sink solve tolerance
-	 * options: None
-	 * constraints: None
-	 * required if: hs_type=1
-	 */
-	SAM_EXPORT void SAM_MsptIph_HeatSink_hs_phys_tol_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
 	 * Set hs_type: 0: ideal model, 1: physical steam model
@@ -2390,19 +2358,11 @@ extern "C"
 	 * HeatSink Getters
 	 */
 
-	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_N_sub_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_P_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_Q_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_T_steam_cold_des_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_f_mdot_steam_max_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_f_mdot_steam_min_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_tol_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_type_nget(SAM_table ptr, SAM_error *err);
 
@@ -2563,9 +2523,13 @@ extern "C"
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_T_heat_sink_out_aget(SAM_table ptr, int* length, SAM_error *err);
 
+	SAM_EXPORT double SAM_MsptIph_Outputs_T_hs_ext_out_des_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double* SAM_MsptIph_Outputs_T_htf_heater_in_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_T_htf_heater_out_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double* SAM_MsptIph_Outputs_T_out_wf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_T_panel_out_max_aget(SAM_table ptr, int* length, SAM_error *err);
 
@@ -2803,6 +2767,12 @@ extern "C"
 
 	SAM_EXPORT double SAM_MsptIph_Outputs_heliostat_area_nget(SAM_table ptr, SAM_error *err);
 
+	SAM_EXPORT double SAM_MsptIph_Outputs_hx_UA_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_MsptIph_Outputs_hx_min_dT_des_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double* SAM_MsptIph_Outputs_hx_min_dT_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
+
 	SAM_EXPORT double* SAM_MsptIph_Outputs_is_PAR_HTR_allowed_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_is_pc_sb_allowed_aget(SAM_table ptr, int* length, SAM_error *err);
@@ -2827,6 +2797,8 @@ extern "C"
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_m_dot_field_to_cycle_aget(SAM_table ptr, int* length, SAM_error *err);
 
+	SAM_EXPORT double SAM_MsptIph_Outputs_m_dot_hs_ext_des_nget(SAM_table ptr, SAM_error *err);
+
 	SAM_EXPORT double* SAM_MsptIph_Outputs_m_dot_htf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_m_dot_htf_heater_aget(SAM_table ptr, int* length, SAM_error *err);
@@ -2842,6 +2814,8 @@ extern "C"
 	SAM_EXPORT double* SAM_MsptIph_Outputs_m_dot_tes_cold_out_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_m_dot_tes_hot_out_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double* SAM_MsptIph_Outputs_m_dot_wf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_mass_tes_cold_aget(SAM_table ptr, int* length, SAM_error *err);
 
@@ -2972,6 +2946,8 @@ extern "C"
 	SAM_EXPORT double SAM_MsptIph_Outputs_vel_rec_htf_des_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double* SAM_MsptIph_Outputs_wspd_aget(SAM_table ptr, int* length, SAM_error *err);
+
+	SAM_EXPORT double* SAM_MsptIph_Outputs_x_out_wf_heat_sink_aget(SAM_table ptr, int* length, SAM_error *err);
 
 #ifdef __cplusplus
 } /* end of extern "C" { */

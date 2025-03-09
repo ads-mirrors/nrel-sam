@@ -1052,7 +1052,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [ ['Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
@@ -2002,7 +2003,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [[ 'Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
@@ -2097,7 +2099,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [[ 'Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
@@ -2335,7 +2338,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [[ 'Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
