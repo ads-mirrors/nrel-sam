@@ -772,7 +772,7 @@ final_table = [[]];
 final_table[0] = csv_table_rows;
 final_table[1] = csv_table_units;
 final_table[2] = csv_table_results;
-fn = choose_file('','Save file as', 'CSV Files(*.csv)|*.csv');
+fn = choose_file('','Save file as', 'CSV Files(*.csv)|*.csv', true);
 csvwrite(fn, final_table);
 
 reportCode = 
