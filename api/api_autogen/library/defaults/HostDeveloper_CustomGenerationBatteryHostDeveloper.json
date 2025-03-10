@@ -254,8 +254,6 @@
 		},
 		"Host": {
 			"annual_energy_value": [0],
-			"elec_cost_with_system": [0],
-			"elec_cost_without_system": [0],
 			"host_real_discount_rate": 6.4
 		},
 		"TimeSeries": {

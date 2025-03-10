@@ -5355,9 +5355,9 @@ extern "C"
 
 	SAM_EXPORT double* SAM_Utilityrate2_Outputs_charge_ec_sep_aget(SAM_table ptr, int* length, SAM_error *err);
 
-	SAM_EXPORT double* SAM_Utilityrate2_Outputs_elec_cost_with_system_aget(SAM_table ptr, int* length, SAM_error *err);
+	SAM_EXPORT double* SAM_Utilityrate2_Outputs_utility_bill_w_sys_aget(SAM_table ptr, int* length, SAM_error *err);
 
-	SAM_EXPORT double* SAM_Utilityrate2_Outputs_elec_cost_without_system_aget(SAM_table ptr, int* length, SAM_error *err);
+	SAM_EXPORT double* SAM_Utilityrate2_Outputs_utility_bill_wo_sys_aget(SAM_table ptr, int* length, SAM_error *err);
 
 	SAM_EXPORT double* SAM_Utilityrate2_Outputs_year1_hourly_dc_tou_schedule_aget(SAM_table ptr, int* length, SAM_error *err);
 
