@@ -627,13 +627,21 @@ void ResultsViewer::SetDViewState(wxDVPlotCtrlSettings& settings)
 	int energy_index = -1;
 	for( size_t i=0;i<m_tsDataSets.size();i++ )
 	{
-        if (m_tsDataSets[i]->GetMetaData() == "energy_hourly_kW") {
-            energy_index = i;
-            break;
+        if (m_sim && m_sim->GetCase()->GetTechnology().Find(" IPH") != wxNOT_FOUND) {
+            if (m_tsDataSets[i]->GetMetaData() == "gen_heat") {
+                energy_index = i;
+                break;
+            }
         }
-        if (m_tsDataSets[i]->GetMetaData() == "gen") {
-            energy_index = i;
-            break;
+        else {
+            if (m_tsDataSets[i]->GetMetaData() == "energy_hourly_kW") {
+                energy_index = i;
+                break;
+            }
+            if (m_tsDataSets[i]->GetMetaData() == "gen") {
+                energy_index = i;
+                break;
+            }
         }
 	}
 
@@ -691,29 +699,34 @@ void ResultsViewer::SetDViewState(wxDVPlotCtrlSettings& settings)
             }
 
 
-
-            //***TimeSeries Properties***
-            m_timeSeries->SetStackingOnYLeft(true); //Turn on stacked area plot
             m_timeSeries->SetTopSelectedNames(settings.GetProperty(wxT("tsTopSelectedNames")));
             m_timeSeries->SetBottomSelectedNames(settings.GetProperty(wxT("tsBottomSelectedNames")));
+            
 
             // select something by default
             if (m_timeSeries->GetNumberOfSelections() == 0) {
+
+                //***TimeSeries Properties***
+                m_timeSeries->SetStackingOnYLeft(true); //Turn on stacked area plot
+                
+
                 m_timeSeries->SelectDataSetAtIndex(batt_index, 0);
                 m_timeSeries->SelectDataSetAtIndex(grid_index, 0);
                 m_timeSeries->SelectDataSetAtIndex(gen_index, 0);
                 m_timeSeries->SelectDataSetAtIndex(batt_SOC_index, 0); //right y-axis, battery SOC percentage (%)
 
+                //Set min/max after setting plots to make sure there is an axis to set.
+                if (settings.GetProperty(wxT("tsAxisMin")).ToDouble(&min))
+                    m_timeSeries->SetViewMin(min);
+                /*
+                if (settings.GetProperty(wxT("tsAxisMax")).ToDouble(&max))
+                    m_timeSeries->SetViewMax(max);
+                */
+                m_timeSeries->SetViewMax(168); //24 hr/day * 7 days, show first week
+
             }
 
-            //Set min/max after setting plots to make sure there is an axis to set.
-            if (settings.GetProperty(wxT("tsAxisMin")).ToDouble(&min))
-                m_timeSeries->SetViewMin(min);
-            /*
-            if (settings.GetProperty(wxT("tsAxisMax")).ToDouble(&max))
-                m_timeSeries->SetViewMax(max);
-            */
-            m_timeSeries->SetViewMax(168); //24 hr/day * 7 days, show first week
+            
         }
         
         
@@ -3380,11 +3393,19 @@ void TabularBrowser::UpdateAll()
 	}
     
     if (n == 0) {
-        int idx = m_names.Index("gen");
-        if (idx >= 0)
-        {
-            m_varSel->SelectRowInCol(idx);
-            ProcessAdded("gen");
+        if (m_sim && m_sim->GetCase()->GetTechnology().Find(" IPH") != wxNOT_FOUND){
+            int idx = m_names.Index("gen_heat");
+            if (idx >= 0) {
+                m_varSel->SelectRowInCol(idx);
+                ProcessAdded("gen_heat");
+            }
+        }
+        else {
+            int idx = m_names.Index("gen");
+            if (idx >= 0) {
+                m_varSel->SelectRowInCol(idx);
+                ProcessAdded("gen");
+            }
         }
     }
     
@@ -3412,7 +3433,10 @@ void TabularBrowser::OnCommand(wxCommandEvent& evt)
             ProcessRemovedAll(sizes[i]);
 
         UpdateAll();
-        ProcessRemoved("gen");
+        if (m_sim && m_sim->GetCase()->GetTechnology().Find(" IPH") != wxNOT_FOUND)
+            ProcessRemoved("gen_heat");
+        else
+            ProcessRemoved("gen");
         int vsx, vsy;
         UpdateSelectionList(vsx, vsy);
         UpdateSelectionExpansion(vsx, vsy);

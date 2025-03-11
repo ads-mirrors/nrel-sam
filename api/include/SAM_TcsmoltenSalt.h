@@ -469,7 +469,7 @@ extern "C"
 	SAM_EXPORT void SAM_TcsmoltenSalt_SystemControl_q_pc_target_su_in_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
 
 	/**
-	 * Set q_rec_heattrace: Receiver heat trace energy consumption during startup [kWe-hr]
+	 * Set q_rec_heattrace: Receiver heat trace energy consumption during startup [kWhe]
 	 * options: None
 	 * constraints: None
 	 * required if: ?=0.0
@@ -493,7 +493,7 @@ extern "C"
 	SAM_EXPORT void SAM_TcsmoltenSalt_SystemControl_rec_op_mode_initial_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
-	 * Set rec_startup_energy_remain_init: Initial receiver startup energy remaining [W-hr]
+	 * Set rec_startup_energy_remain_init: Initial receiver startup energy remaining [Wh]
 	 * options: None
 	 * constraints: None
 	 * required if: None
@@ -544,7 +544,7 @@ extern "C"
 	 * Set timestep_load_fractions: Turbine load fraction for each timestep, alternative to block dispatch
 	 * options: None
 	 * constraints: None
-	 * required if: ?
+	 * required if: None
 	 */
 	SAM_EXPORT void SAM_TcsmoltenSalt_SystemControl_timestep_load_fractions_aset(SAM_table ptr, double* arr, int length, SAM_error *err);
 
@@ -1409,7 +1409,7 @@ extern "C"
 	SAM_EXPORT void SAM_TcsmoltenSalt_HeliostatField_opt_max_iter_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
-	 * Set p_start: Heliostat startup energy [kWe-hr]
+	 * Set p_start: Heliostat startup energy [kWhe]
 	 * options: None
 	 * constraints: None
 	 * required if: *
@@ -2212,7 +2212,7 @@ extern "C"
 	SAM_EXPORT void SAM_TcsmoltenSalt_UserDefinedPowerCycle_ud_ind_od_mset(SAM_table ptr, double* mat, int nrows, int ncols, SAM_error *err);
 
 	/**
-	 * Set ud_is_sco2_regr: False: default, base udpc interpolation, True: use sco2 heuristic regression
+	 * Set ud_is_sco2_regr: 0: (default) simple max htf mass flow correction; 1: sco2 heuristic regression; 2: no correction
 	 * options: None
 	 * constraints: None
 	 * required if: ?=0

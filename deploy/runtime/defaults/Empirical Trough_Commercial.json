@@ -9320,7 +9320,6 @@
     "itc_sta_percent_maxvalue": [
         1e38
     ],
-    "land_area": 890.324,
     "lat": 32.13,
     "lib_Ave_Focal_Length": 1.8,
     "lib_BOPParF0": 0.483,
@@ -26965,10 +26964,6 @@
         0.0
     ],
     "om_fuel_cost_escal": 0.0,
-    "om_land_lease": [
-        0.0
-    ],
-    "om_land_lease_escal": 0.0,
     "om_production": [
         4.0
     ],
@@ -27182,12 +27177,6 @@
     "ui_hce_thermloss_weighted_m2": 36.1005,
     "ui_hce_weighted_optical_efficiency": 0.770356,
     "ui_hce_weighted_thermal_losses": 36.1005,
-    "ui_land_area_ha": 360.302,
-    "ui_land_area_multiplier": 0.0,
-    "ui_land_area_units": 0.0,
-    "ui_land_lease": [
-        0.0
-    ],
     "ui_land_multiplier": 1.4,
     "ui_lib_hce_heat_loss_factor_1": 0.0,
     "ui_lib_hce_heat_loss_factor_2": 0.0,
