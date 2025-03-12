@@ -165,7 +165,6 @@
         "inverter_total": 23478.3,
         "inverterarray_power": 469.565,
         "is_advanced": 0.0,
-        "land_area": 2.341,
         "land_area_value": 2.341,
         "land_fixed": 0.0,
         "land_per_acre": 0.0,
@@ -209,10 +208,6 @@
             0.0
         ],
         "om_fixed_escal": 0.0,
-        "om_land_lease": [
-            0.0
-        ],
-        "om_land_lease_escal": 0.0,
         "om_production": [
             0.0
         ],
@@ -294,13 +289,7 @@
         "ui_array_land_area_multiplier": 1.0,
         "ui_land_area_additional": 0.0,
         "ui_land_area_additional_units": 0.0,
-        "ui_land_area_ha": 0.947369,
-        "ui_land_area_multiplier": 0.0,
         "ui_land_area_per_mw": 0.0,
-        "ui_land_area_units": 0.0,
-        "ui_land_lease": [
-            0.0
-        ],
         "ui_step_minutes": 60.0,
         "ui_total_land_area_ha": 0.947369,
         "ui_total_module_area": 2842.11,
