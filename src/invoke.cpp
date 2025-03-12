@@ -3565,9 +3565,13 @@ void fcall_urdb_read(lk::invoke_t &cxt)
 				// try upgrading - see project file upgrader for 2015.11.16
 				// update to matrix for ec and dc
 				//errors.Add("Problem assigning " + var_name + " missing with " + value);
-				ret_val = false;
-				upgrade_list.Add(var_name);
-				upgrade_value.Add(value);
+// SAM issue 2007 - check that var_name in list to be updated below
+				// do not fail for previously saved files with no longer used variables like "ui_electricity_rate_option"
+				if (var_name.Left(2).Lower() != "ui") {
+					ret_val = false;
+					upgrade_list.Add(var_name);
+					upgrade_value.Add(value);
+				}
 			}
 		}
 		// try upgrading to matrix format
