@@ -215,7 +215,10 @@ void PopulateSelectionList(wxDVSelectionListCtrl* sel, wxArrayString* names, Sim
                 else if (grp == "UR_DMP")
                     gbn = "Electricity Demand Data by Period"; // monthly period
                 else if (grp == "LIFETIME_MP")
-                    gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
+//                    if (lifetime)
+                        gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
+//                    else
+//                        gbn = "Merchant Plant"; // SAM issue 1891 - e.g. PVWatts/Merchant Plant
                 else if (grp == "WTPCD")
                     gbn = "Wind Turbine Power Curve Data";
             }
@@ -2429,6 +2432,8 @@ public:
             if (IsTimeSeriesShown())
             {
                 double steps_per_hour = MaxCount / 8760.0;
+//                double steps_per_hour = MaxCount / (8760.0 * Years); // SAM issue 1891
+//                if (steps_per_hour < 1.0) steps_per_hour = 1.0;
                 return wxFormatTime(row, steps_per_hour, true);
             }
             else if (IsSingleValues)
@@ -2464,6 +2469,10 @@ public:
         StepsPerHour = 1;
 
         if (vars.size() == 0) return;
+
+        // testing issue 1891
+        if (VarValue* vv = results->GetValue("analysis_period"))
+            Years = (int)vv->Value();
 
         // don't report geothermal system output as minute data depending on analysis period
         UseLifetime = false;
@@ -2534,6 +2543,15 @@ public:
                         MinCount = cc.N;
 
                     StepsPerHour = cc.N / (8760 * Years);
+
+                    StringHash ui_hint = results->GetUIHints(vars[i]);
+
+                    if (ui_hint.find("GROUP") != ui_hint.end())
+                    {
+                        wxString grp = ui_hint["GROUP"];
+                        if (grp == "LIFETIME_MP")
+                            UseLifetime = true; // SAM issue 1891 - Merchant Plant values are always lifetime.
+                    }
 
                     cc.Label = vars[i];
                     wxString label = results->GetLabel(vars[i]);
