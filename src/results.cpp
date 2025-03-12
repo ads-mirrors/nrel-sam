@@ -215,10 +215,7 @@ void PopulateSelectionList(wxDVSelectionListCtrl* sel, wxArrayString* names, Sim
                 else if (grp == "UR_DMP")
                     gbn = "Electricity Demand Data by Period"; // monthly period
                 else if (grp == "LIFETIME_MP")
-//                    if (lifetime)
                         gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
-//                    else
-//                        gbn = "Merchant Plant"; // SAM issue 1891 - e.g. PVWatts/Merchant Plant
                 else if (grp == "WTPCD")
                     gbn = "Wind Turbine Power Curve Data";
             }
@@ -2432,8 +2429,6 @@ public:
             if (IsTimeSeriesShown())
             {
                 double steps_per_hour = MaxCount / 8760.0;
-//                double steps_per_hour = MaxCount / (8760.0 * Years); // SAM issue 1891
-//                if (steps_per_hour < 1.0) steps_per_hour = 1.0;
                 return wxFormatTime(row, steps_per_hour, true);
             }
             else if (IsSingleValues)
@@ -2471,8 +2466,8 @@ public:
         if (vars.size() == 0) return;
 
         // testing issue 1891
-        if (VarValue* vv = results->GetValue("analysis_period"))
-            Years = (int)vv->Value();
+//        if (VarValue* vv = results->GetValue("analysis_period"))
+//            Years = (int)vv->Value();
 
         // don't report geothermal system output as minute data depending on analysis period
         UseLifetime = false;
