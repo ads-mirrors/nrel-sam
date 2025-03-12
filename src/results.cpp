@@ -2465,9 +2465,6 @@ public:
 
         if (vars.size() == 0) return;
 
-        // testing issue 1891
-//        if (VarValue* vv = results->GetValue("analysis_period"))
-//            Years = (int)vv->Value();
 
         // don't report geothermal system output as minute data depending on analysis period
         UseLifetime = false;
