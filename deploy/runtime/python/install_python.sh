@@ -120,7 +120,7 @@ arch=$(uname -m)
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	PLATFORM=Linux-x86_64
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-	PLATFORM=MacOSX-$arch
+	PLATFORM=MacOSX-x86_64
 else
 	error "unknown OS type $OSTYPE"
 	exit 1
