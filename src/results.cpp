@@ -215,7 +215,7 @@ void PopulateSelectionList(wxDVSelectionListCtrl* sel, wxArrayString* names, Sim
                 else if (grp == "UR_DMP")
                     gbn = "Electricity Demand Data by Period"; // monthly period
                 else if (grp == "LIFETIME_MP")
-                    gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
+                        gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
                 else if (grp == "WTPCD")
                     gbn = "Wind Turbine Power Curve Data";
             }
@@ -2465,6 +2465,7 @@ public:
 
         if (vars.size() == 0) return;
 
+
         // don't report geothermal system output as minute data depending on analysis period
         UseLifetime = false;
         if (VarValue* lftm = results->GetValue("system_use_lifetime_output"))
@@ -2534,6 +2535,15 @@ public:
                         MinCount = cc.N;
 
                     StepsPerHour = cc.N / (8760 * Years);
+
+                    StringHash ui_hint = results->GetUIHints(vars[i]);
+
+                    if (ui_hint.find("GROUP") != ui_hint.end())
+                    {
+                        wxString grp = ui_hint["GROUP"];
+                        if (grp == "LIFETIME_MP")
+                            UseLifetime = true; // SAM issue 1891 - Merchant Plant values are always lifetime.
+                    }
 
                     cc.Label = vars[i];
                     wxString label = results->GetLabel(vars[i]);
