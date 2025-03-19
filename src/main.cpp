@@ -1249,6 +1249,7 @@ bool MainWindow::SwitchToCaseWindow( const wxString &case_name )
 void MainWindow::OnCaseTabChange( wxCommandEvent &evt )
 {
 	int sel = evt.GetSelection();
+	m_caseTabList->SetFocus(); // SAM issue 1922 force any losefocus events to fire
 	SwitchToCaseWindow( m_caseTabList->GetLabel(sel) );
 	//wxMessageBox( wxString::Format("Case tab changed: %d", evt.GetSelection() ) );
 }
