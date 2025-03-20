@@ -536,7 +536,20 @@ int EqnEvaluator::Calculate( )
 	size_t nevals = 0; // number of equations evaluated
 
 //	wxLogStatus("Calculating equations...");
-	
+#ifdef _DEBUG
+//	wxArrayString asCalc, asInd;
+//	m_vars.Write_JSON("e:\temp\vars.json", asCalc, asInd, 500);
+	if (VarValue *vv = m_vars.Get("weekday_schedule"))
+		wxLogStatus("1922-weekday_schedule " + vv->AsString());
+	else {
+		wxLogStatus("1922-weekday_schedule NOT FOUND");
+		wxArrayString asCalc, asInd;
+		m_vars.Write_JSON("e:\\temp\\vars.json", asCalc, asInd, 500);
+	}
+#endif
+
+
+
 	do
 	{
 		niterations++;
