@@ -1940,7 +1940,14 @@ void fcall_var_exists(lk::invoke_t& cxt)
 {
 	LK_DOC("var_exists", "Check by name if an input or output variable exists in current case", "(string:name):bool");
 
-	if (Case* c = SamApp::Window()->GetCurrentCase()) {
+	//	if (Case* c = SamApp::Window()->GetCurrentCase()) {
+	Case* c = nullptr;
+	if (CaseCallbackContext* ci = static_cast<CaseCallbackContext*>(cxt.user_data()))
+		*c = ci->GetCase();
+	else
+		c = SamApp::Window()->GetCurrentCase();
+	if (c != nullptr) {
+
 		wxString name = cxt.arg(0).as_string();
 		auto cfg = c->GetConfiguration();
 		int ndxHybrid = 0;
