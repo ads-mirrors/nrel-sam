@@ -51,6 +51,7 @@ static wxString MyGet(const wxString& url)
 }
 */
 // Geocode using Google API for non-NREL builds of SAM
+// Set key in private.h: Google API key
 bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
 
@@ -171,6 +172,8 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
 }
 
 // Geocode using NREL Developer API (MapQuest) for NREL builds of SAM
+// Set keys in private.h: NREL Developer API key for geocode, and Bing API key for time zone
+// Set variables in webapis.conf to URLs: bing_maps_timezone_api, nrel_geocode_api
 bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
 
@@ -209,24 +212,10 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     rapidjson::ParseResult ok = reader.Parse(str.c_str());
 
-
-    /* 
-    example for "denver, co"
-{"info":
-    {"statuscode":0,"copyright":
-        {"text":"© 2024 MapQuest, Inc.","imageUrl":"http://api.mqcdn.com/res/mqlogo.gif","imageAltText":"© 2024 MapQuest, Inc."}
-    ,"messages":[]}
-    ,"options":{"maxResults":-1,"ignoreLatLngInput":false}
-    ,"results":
-    [{"providedLocation":{"location":"denver co"},"locations":
-        [{"street":"","adminArea6":"","adminArea6Type":"Neighborhood","adminArea5":"Denver","adminArea5Type":"City","adminArea4":"Denver","adminArea4Type":"County","adminArea3":"CO","adminArea3Type":"State","adminArea1":"US","adminArea1Type":"Country","postalCode":"","geocodeQualityCode":"A5XAX","geocodeQuality":"CITY","dragPoint":false,"sideOfStreet":"N","linkId":"0","unknownInput":"","type":"s","latLng":{"lat":39.74001,"lng":-104.99202},"displayLatLng":{"lat":39.74001,"lng":-104.99202},"mapUrl":""}]
-    }
-]}
-        */
-
     if (!reader.HasParseError()) {
-        if (reader.HasMember(L"results")) {
-            if (reader[L"results"].IsArray()) {
+        success = false;
+        if (reader.HasMember(L"results") ) {
+            if (reader[L"results"].IsArray() && reader[L"results"].Size() > 0) {
                 if (reader[L"results"][0].HasMember(L"locations")) {
                     if (reader[L"results"][0][L"locations"].IsArray()) {
                         if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
@@ -239,7 +228,7 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
                             if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
                                 if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
                                     *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
-                                    success &= true;
+                                    success = true;
                                 }
                             }
                         }
@@ -247,24 +236,15 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
                 }
             }
         }
-        // check status code
-        success = false;//overrides success of retrieving data
-
-        if (reader.HasMember(L"info")) {
-            if (reader[L"info"].HasMember(L"statuscode")) {
-                if (reader[L"info"][L"statuscode"].IsInt()) {
-                    success = reader[L"info"][L"statuscode"].GetInt() == 0;
-                }
-            }
-        }
     }
     else {
-        wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
+        wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error for requested location: " + address);
     }
 
-    if (!success)
+    if (!success) {
+        wxMessageBox("geocode developer returned no results for requested location: " + address);
         return false;
-
+    }
 
 
     if (tz != 0) 
@@ -273,15 +253,12 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
         curl = wxEasyCurl();
 
-
-
         url = SamApp::WebApi("bing_maps_timezone_api");
         url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
         url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
 
         curl.AddHttpHeader("Content-Type: application/json");
         curl.AddHttpHeader("Accept: application/json");
-
 
         if (showprogress) 
         {

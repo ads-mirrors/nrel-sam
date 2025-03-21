@@ -3793,7 +3793,7 @@ void fcall_geocode(lk::invoke_t& cxt)
 		"Given a street address or location name, returns latitude, longitude, and time zone. Not designed to take latitude and longitude as input. Uses the MapQuest Geocoding API via a private NREL wrapper. Returned table fields are 'lat', 'lon', 'tz', 'ok'.",
 		"(string):table");
 
-	double lat = 0, lon = 0, tz = 0;
+	double lat, lon, tz;
 	// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
 	bool ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
 	cxt.result().empty_hash();
@@ -4591,6 +4591,7 @@ void fcall_librarygetcurrentselection(lk::invoke_t &cxt)
 	LK_DOC("librarygetcurrentselection", "Return the text of the current selection for the library specified", "(string:libraryctrlname):string");
 	UICallbackContext &cc = *(UICallbackContext*)cxt.user_data();
 	lk_string ret_val = "";
+
 
 	wxString name(cxt.arg(0).as_string().Lower());
 	std::vector<wxUIObject*> objs = cc.InputPage()->GetObjects();
