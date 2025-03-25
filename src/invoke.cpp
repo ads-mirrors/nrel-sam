@@ -3793,14 +3793,91 @@ void fcall_geocode(lk::invoke_t& cxt)
 		"Given a street address or location name, returns latitude, longitude, and time zone. Not designed to take latitude and longitude as input. Uses the MapQuest Geocoding API via a private NREL wrapper. Returned table fields are 'lat', 'lon', 'tz', 'ok'.",
 		"(string):table");
 
+	wxString err = "";
 	double lat = 0, lon = 0, tz = 0;
-	// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
-	bool ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
-	cxt.result().empty_hash();
-	cxt.result().hash_item("lat").assign(lat);
-	cxt.result().hash_item("lon").assign(lon);
-	cxt.result().hash_item("tz").assign(tz);
-	cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
+
+	// if input string contains any non-numeric characters other than n/s/e/w, assume it is an address for geocoding
+	lk_string str = cxt.arg(0).as_string();
+	wxString address = wxString::FromUTF8(str);
+
+	address = address.Lower();
+	address.Replace("north", "n");
+	address.Replace("south", "s");
+	address.Replace("east", "e");
+	address.Replace("west", "w");
+
+	bool is_address = false;
+
+	for (wxString::const_iterator it = address.begin(); it != address.end(); ++it) {
+		wxUniChar c = *it;
+		bool test_digit = wxIsdigit(c);
+		bool test_alpha = wxIsalpha(c);
+		bool test_ascii = wxIsascii(c);
+		//char test_char = wxUniChar::GetValue(c);
+		if (!wxIsdigit(c) && wxIsalpha(c)) {
+			if (c != 'n' && c != 's' && c != 'e' && c != 'w') {
+				is_address = true;
+			}
+		}
+
+	}
+
+	if (is_address) {
+		// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
+		bool ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
+		if (ok) {
+			cxt.result().empty_hash();
+			cxt.result().hash_item("lat").assign(lat);
+			cxt.result().hash_item("lon").assign(lon);
+			cxt.result().hash_item("tz").assign(tz);
+			cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
+			return;
+		}
+		else {
+			err = wxString::Format("Geocoding failed for address: %s", err);
+		}
+	}
+	else { // assume input is lat/lon and try to parse cpg WHAT TO DO ABOUT TZ
+		wxString coordinates = cxt.arg(0).as_string();
+
+		wxString lat; // string of latitude and longitude coordinates
+		double  lat_d = 0, lat_m = 0, lat_s = 0, lat_dd=0; // latitude degree, minute, seconds, decimal degrees
+
+		wxString lon; // string of latitude and longitude coordinates
+		double lon_d = 0, lon_m = 0, lon_s = 0, lon_dd=0; // longitude degree, minute, seconds, decimal degrees
+		
+		if (GeoTools::coordinates_to_lat_lon(coordinates, lat, lon)) {
+			wxMessageBox(wxString::Format("Coordinates (%s) parsed to %s, %s", coordinates, lat, lon));
+			if (GeoTools::coordinate_to_dms(lat, &lat_d, &lat_m, &lat_s) && GeoTools::coordinate_to_dms(lon, &lon_d, &lon_m, &lon_s)) {
+				wxMessageBox(wxString::Format("Lat (%s) Lon (%s) converted to DMS: (%g, %g, %g), (%g, %g, %g)", lat, lon, lat_d, lat_m, lat_s, lon_d, lon_m, lon_s));
+				if ( GeoTools::dms_to_dd(lat_d, lat_m, lat_s, &lat_dd) && GeoTools::dms_to_dd(lon_d, lon_m, lon_s, &lon_dd) ) {
+					wxMessageBox(wxString::Format("Coordinates (%s) converted to DD!\n(%g), (%g)", coordinates, lat_dd, lon_dd));
+					if (GeoTools::TimeZoneBing(&lat_dd, &lon_dd, &tz, true)) {
+						wxMessageBox(wxString::Format("Timezone for (%g, %g) is %g", lat_dd, lon_dd, tz));
+					}
+					else {
+						err = wxString::Format("Timezone not found for: (%g, %g)", lat_dd, lon_dd);
+					}
+					cxt.result().empty_hash();
+					cxt.result().hash_item("lat").assign(lat_dd);
+					cxt.result().hash_item("lon").assign(lon_dd);
+					cxt.result().hash_item("tz").assign(tz);
+					cxt.result().hash_item("ok").assign(1.0);
+					return;
+				}
+				else {
+					err = wxString::Format("Coordinates not converted to DD for: (%s)", coordinates);
+				}
+			}
+			else {
+				err = wxString::Format("Coordinates not converted to DMS for: Lat (%s), Lon (%s)", lat, lon);
+			}
+		}
+		else {
+			err = wxString::Format("Coordinates not parsed for: %s", coordinates);
+		}
+	}
+
 }
 
 

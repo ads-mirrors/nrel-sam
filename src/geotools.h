@@ -38,6 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class GeoTools
 {
 public:
+
+	// Use Bing Maps API to return time zone from lat/lon
+	// Required when using NREL Developer API for geocoding that only returns lat/lon
+    static bool GeoTools::TimeZoneBing(const double* lat, const double* lon, double* tz, bool showprogress);
+
     // Use Google Geocoding API to return lat/lon from address
     // Requires a Google Cloud Project account with billing enabled
     // This is an alternative to GeocodeDeveloper for non-NREL builds of SAM
@@ -49,6 +54,16 @@ public:
     // Requires a special private API key from NREL defined in private.h
     static bool GeocodeDeveloper(const wxString& address,
         double* lat, double* lon, double* tz = 0, bool showprogress = true);
+
+
+    // Convert array of degrees, minutes, seconds to decimal degrees (DD)
+    static bool dms_to_dd(double &d, double &m, double &s, double* dd);
+
+	// Convert a string of degrees, minutes, seconds to an array of degrees, minutes, seconds
+    static bool coordinate_to_dms(wxString& coord, double* d, double* m, double* s);
+
+    // Convert a coordinate pair in any format to an array of two coordinates in the same format
+	static bool coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& lon);
 
     enum MapProvider {
         GOOGLE_MAPS, BING_MAPS

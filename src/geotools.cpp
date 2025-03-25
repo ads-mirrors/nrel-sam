@@ -30,6 +30,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <clocale>
 #include <wx/wx.h>
 
 #include <wex/easycurl.h>
@@ -50,6 +51,125 @@ static wxString MyGet(const wxString& url)
     return curl.GetDataAsString();
 }
 */
+
+bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& lon) {
+
+    wxString str = coord.Lower();
+    str.Replace("north", "n");
+    str.Replace("south", "s");
+    str.Replace("east", "e");
+    str.Replace("west", "w");
+
+    size_t x = -1;
+	for (int i = 0; i < str.Length(); i++) {
+		if (str[i] == 'n' || str[i] == 's' ) {
+			x=size_t(i);
+		}
+	}
+
+	if (x == -1) {
+		wxMessageBox(wxString::Format("GeoTools error!\nCould not convert coordinates (%s) to a latitude/longitude pair", coord));
+        return false;
+	}
+	else {
+        wxMessageBox(str);
+        wxMessageBox(str.Left(17));
+        lat = str.Left(x + 1);
+        lon = str.Right(str.Length() - x - 1);
+        return true;
+	}
+}
+
+bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
+    
+    int sign = 1;
+
+    wxString err = "";
+
+	if (m < 0 || s < 0) {
+		err = "Negative minutes or seconds not allowed";
+	}
+	else if (m > 60.0 || s > 60.0) {
+		err = "Minutes and seconds must be less than 60";
+	}
+	else if(std::abs(d) > 180) {
+		err = "Degrees must be between -180 and 180";
+	}
+	else if ((d != int(d)) && (m != 0 || s != 0)) {
+		err = "Degrees must be a integer if minutes and seconds are not zero";
+	}
+	else if (m != int(m) && s != 0) {
+		err = "Minutes must be an integer if seconds are not zero";
+	}
+    else {
+        if (d < 0) {
+            sign = -1;
+        }
+		*dd = sign * (std::abs(d) + m / 60.0 + s / 3600.0);
+    }
+    
+	if (err == "") {
+        return true;
+	}
+	else {
+        wxMessageBox(wxString::Format("GeoTools error!\nCould not convert DMS (%g, %g, %g) to DD: %s", d, m, s, err));
+        return false;
+    }
+}
+
+bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* s)
+{
+
+    std::locale loc{ "" };
+    char decimal_symbol = std::use_facet< std::numpunct<char> >(loc).decimal_point();
+
+    wxString str = coord.Lower();
+    str.Replace("north", "n");
+    str.Replace("south", "s");
+    str.Replace("east", "e");
+    str.Replace("west", "w");
+
+    char c_prev = ' ';
+    int n = 0;
+    std::string num = "";
+    int sign = 1;
+	wxString err = "";
+	double dms[3] = { 0, 0, 0 };
+
+    for (int i = 0; i < str.Length(); i++) {
+        char c = str[i];
+        if (std::isdigit(c) || c == decimal_symbol) {
+            num = num + c;
+        }
+        else if (c == 's' || c == 'w' || c == '-') {
+            sign = -1;
+        }
+        else if (std::isdigit(c_prev)) {
+			dms[n] = std::stod(num);
+            num = "";
+            n++;
+        }
+        c_prev = c;
+    }
+
+    if (n == 0) {
+        dms[0] = std::stod(num);
+    }
+
+    dms[0] = dms[0] * sign;
+
+	if (err == "") {
+        *d = dms[0];
+		*m = dms[1];
+		*s = dms[2];
+		return true;
+	}
+	else {
+		wxMessageBox(wxString::Format("GeoTools error!\nCould not convert coordinate (%s)", coord));
+		return false;
+	}
+}
+
 // Geocode using Google API for non-NREL builds of SAM
 bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
@@ -170,6 +290,75 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
 
 }
 
+bool GeoTools::TimeZoneBing(const double* lat, const double* lon, double* tz, bool showprogress) {
+
+    wxEasyCurl curl;
+    curl = wxEasyCurl();
+
+    rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
+
+	bool success = false;
+
+    wxString url = SamApp::WebApi("bing_maps_timezone_api");
+    url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
+    url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
+
+    curl.AddHttpHeader("Content-Type: application/json");
+    curl.AddHttpHeader("Accept: application/json");
+
+    if (showprogress)
+    {
+        if (!curl.Get(url, wxString::Format("Getting time zone for Lat = %g Lon = %g...", *lat, *lon)))
+            return false;
+    }
+    else {
+        if (!curl.Get(url))
+            return false;
+    }
+
+    wxString str = curl.GetDataAsString();
+
+    reader.Parse(str.c_str());
+
+    if (!reader.HasParseError()) {
+        if (reader.HasMember(L"resourceSets")) {
+            if (reader[L"resourceSets"].IsArray()) {
+                if (reader[L"resourceSets"][0].HasMember(L"resources")) {
+                    if (reader[L"resourceSets"][0][L"resources"].IsArray()) {
+                        if (reader[L"resourceSets"][0][L"resources"][0].HasMember(L"timeZone")) {
+                            if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"].HasMember(L"utcOffset")) {
+                                if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].IsString()) {
+                                    wxString stz = reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].GetString();
+                                    wxArrayString as = wxSplit(stz, ':');
+                                    if (as.Count() != 2) return false;
+                                    if (!as[0].ToDouble(tz)) return false;
+                                    double offset = 0;
+                                    if (as[1] == "30") offset = 0.5;
+                                    if (*tz < 0)
+                                        *tz = *tz - offset;
+                                    else
+                                        *tz = *tz + offset;
+                                    success = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // check status code
+        success = false;//overrides success of retrieving data
+
+        if (reader.HasMember(L"statusDescription")) {
+            if (reader[L"statusDescription"].IsString()) {
+                wxString str = reader[L"statusDescription"].GetString();
+                success = str.Lower() == "ok";
+            }
+        }
+    }
+
+}
+
 // Geocode using NREL Developer API (MapQuest) for NREL builds of SAM
 bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
@@ -265,76 +454,9 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     if (!success)
         return false;
 
-
-
     if (tz != 0) 
-    {
-        success = false;
-
-        curl = wxEasyCurl();
-
-
-
-        url = SamApp::WebApi("bing_maps_timezone_api");
-        url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
-        url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
-
-        curl.AddHttpHeader("Content-Type: application/json");
-        curl.AddHttpHeader("Accept: application/json");
-
-
-        if (showprogress) 
-        {
-            if (!curl.Get(url, "Geocoding address '" + address + "'..."))
-                return false;
-        }
-        else {
-            if (!curl.Get(url))
-                return false;
-        }
-
-        str = curl.GetDataAsString();
-
-        reader.Parse(str.c_str());
-
-        if (!reader.HasParseError()) {
-            if (reader.HasMember(L"resourceSets")) {
-                if (reader[L"resourceSets"].IsArray()) {
-                    if (reader[L"resourceSets"][0].HasMember(L"resources")) {
-                        if (reader[L"resourceSets"][0][L"resources"].IsArray()) {
-                            if (reader[L"resourceSets"][0][L"resources"][0].HasMember(L"timeZone")) {
-                                if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"].HasMember(L"utcOffset")) {
-                                    if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].IsString()) {
-                                        wxString stz = reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].GetString();
-                                        wxArrayString as = wxSplit(stz, ':');
-                                        if (as.Count() != 2) return false;
-                                        if (!as[0].ToDouble(tz)) return false;
-                                        double offset = 0;
-                                        if (as[1] == "30") offset = 0.5;
-                                        if (*tz < 0)
-                                            *tz = *tz - offset;
-                                        else
-                                            *tz = *tz + offset;
-                                        success = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // check status code
-            success = false;//overrides success of retrieving data
-
-            if (reader.HasMember(L"statusDescription")) {
-                if (reader[L"statusDescription"].IsString()) {
-                    wxString str = reader[L"statusDescription"].GetString();
-                    success = str.Lower() == "ok";
-                }
-            }
-        }
-
-    }
+        success = GeoTools::TimeZoneBing(lat, lon, tz, showprogress);
+ 
     return success;
 }
 
