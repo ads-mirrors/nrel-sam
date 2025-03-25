@@ -214,6 +214,7 @@ MainWindow::MainWindow()
 	menuBar->Append( helpMenu, wxT("&Help")  );
 	SetMenuBar( menuBar );
 #endif
+	m_eqnCase = nullptr; // SAM 1922
 
 	m_topBook = new wxSimplebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE );
 

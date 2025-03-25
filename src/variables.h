@@ -332,6 +332,7 @@ public:
 	virtual ~VarTableScriptInterpreter( );
 	virtual bool special_set( const lk_string &name, lk::vardata_t &val );
 	virtual bool special_get( const lk_string &name, lk::vardata_t &val );
+	VarTable* GetVarTable() { return m_vars; }
 };
 
 

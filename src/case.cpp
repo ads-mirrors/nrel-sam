@@ -112,7 +112,7 @@ bool CaseCallbackContext::Invoke( lk::node_t *root, lk::env_t *parent_env, size_
 	SetupLibraries( &local_env );
 
 	try {
- 
+		SamApp::Window()->SetEquationCase(m_case);
         CaseScriptInterpreter e( root, &local_env, &GetValues(ndxHybrid), m_case, ndxHybrid);
 		if ( !e.run() )
 		{
