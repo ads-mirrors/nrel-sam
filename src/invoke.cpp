@@ -1940,52 +1940,32 @@ void fcall_var_exists(lk::invoke_t& cxt)
 {
 	LK_DOC("var_exists", "Check by name if an input or output variable exists in current case", "(string:name):bool");
 
-	//	if (Case* c = SamApp::Window()->GetCurrentCase()) {
-
-
-//	if (VarTableScriptInterpreter* vti = static_cast<VarTableScriptInterpreter*>(cxt.user_data())) {
-	if (EqnEvaluator* vti = static_cast<EqnEvaluator*>(cxt.user_data())) {
-		if (VarTable* vt = vti->GetVarTable()) {
-			wxString name = cxt.arg(0).as_string();
-			bool bfound = false;
-			if (VarValue* vv = vt->Get(name))
-				bfound = true;
-			if (bfound)
-				cxt.result().assign(1);
-			else
-				cxt.result().assign((double)0);
-		}
-		else 
-			cxt.result().assign((double)0);
-	}
-	else {
-		Case* c = nullptr;
-		if (CaseCallbackContext* ci = static_cast<CaseCallbackContext*>(cxt.user_data()))
-			*c = ci->GetCase();
-		else if (SamApp::Window()->GetEquationCase() != nullptr)
-			c = SamApp::Window()->GetEquationCase();
-		else
-			c = SamApp::Window()->GetCurrentCase();
-		if (c != nullptr) {
-			wxString name = cxt.arg(0).as_string();
-			auto cfg = c->GetConfiguration();
-			int ndxHybrid = 0;
-			VarValue* vv = NULL;
-			bool bfound = false;
-			for (size_t ndx = 0; ndx < cfg->Technology.size(); ndx++) { // select ndxHybrid based on compute module position in 		
-				if (vv = c->Values(ndxHybrid).Get(name)) {
-					bfound = true;
-					ndxHybrid = ndx;
-				}
-			}
-			if (bfound)
-				cxt.result().assign(1);
-			else
-				cxt.result().assign((double)0);
-		}
-		else
-			cxt.result().assign((double)0);
-	}
+    Case* c = nullptr;
+    if (CaseCallbackContext* ci = static_cast<CaseCallbackContext*>(cxt.user_data()))
+        *c = ci->GetCase();
+    else if (SamApp::Window()->GetEquationCase() != nullptr)
+        c = SamApp::Window()->GetEquationCase();
+    else
+        c = SamApp::Window()->GetCurrentCase();
+    if (c != nullptr) {
+        wxString name = cxt.arg(0).as_string();
+        auto cfg = c->GetConfiguration();
+        int ndxHybrid = 0;
+        VarValue* vv = NULL;
+        bool bfound = false;
+        for (size_t ndx = 0; ndx < cfg->Technology.size(); ndx++) { // select ndxHybrid based on compute module position in
+            if (vv = c->Values(ndxHybrid).Get(name)) {
+                bfound = true;
+                ndxHybrid = ndx;
+            }
+        }
+        if (bfound)
+            cxt.result().assign(1);
+        else
+            cxt.result().assign((double)0);
+    }
+	else
+		cxt.result().assign((double)0);
 }
 
 void fcall_ssc_var_auto_exec(lk::invoke_t& cxt)

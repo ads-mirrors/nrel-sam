@@ -141,7 +141,6 @@ public:
 	wxArrayString &GetErrors() { return m_errors; }
 	wxArrayString &GetUpdated() { return m_updated; }
 
-	VarTable* GetVarTable() { return &m_vars; }
 	// setup any context-specific function calls here
 	virtual void SetupEnvironment( lk::env_t &env );
 };

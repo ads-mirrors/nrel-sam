@@ -204,7 +204,6 @@ bool EqnDatabase::PreProcessScript( wxString *text, wxArrayString* errors)
 					arg[2] = sim_type value
 					*/
 					strReplace += "\tif (var_exists(\"" + ssc_var_name + "\"))\n"; // SAM issue 1634
-//					strReplace += "\tif (is_assigned(\"" + ssc_var_name + "\"))\n"; // SAM issue 1634
 					strReplace += "\t\tssc_var(" + args[0] + ", \"" + ssc_var_name + "\"," + lk_var_name + ");\n";
 				}
 			}
@@ -535,20 +534,6 @@ int EqnEvaluator::Calculate( )
 	size_t ncalculated; // count all equations processed in current iteration
 	size_t niterations = 0;
 	size_t nevals = 0; // number of equations evaluated
-
-//	wxLogStatus("Calculating equations...");
-#ifdef _DEBUG
-//	wxArrayString asCalc, asInd;
-//	m_vars.Write_JSON("e:\temp\vars.json", asCalc, asInd, 500);
-	if (VarValue *vv = m_vars.Get("weekday_schedule"))
-		wxLogStatus("1922-weekday_schedule " + vv->AsString());
-	else {
-		wxLogStatus("1922-weekday_schedule NOT FOUND");
-		wxArrayString asCalc, asInd;
-		m_vars.Write_JSON("e:\\temp\\vars.json", asCalc, asInd, 500);
-	}
-#endif
-
 
 
 	do
