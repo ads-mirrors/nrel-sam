@@ -1493,6 +1493,8 @@ int Case::Recalculate( const wxString &trigger, size_t ndxHybrid)
 		wxLogStatus( "cannot recalculate: no active configuration" );
 		return -1;
 	}
+	// SAM issue 1922
+	SamApp::Window()->SetEquationCase(this);
 
 	CaseEvaluator eval( this, m_vals[ndxHybrid], m_config->Equations[ndxHybrid]);
 	int n = eval.Changed( trigger, ndxHybrid);
