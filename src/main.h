@@ -84,7 +84,7 @@ class CaseWindow;
 class MainWindow : public wxFrame
 {
 public:
-	MainWindow( );
+	MainWindow();
 
 	ProjectFile &Project() { return m_project; }
 
@@ -111,6 +111,10 @@ public:
 	wxString GetProjectDisplayName();
 	wxString GetProjectFileName();
 
+	void SetEquationCase(Case* eqnCase) {
+		m_eqnCase = eqnCase;
+	}
+	Case* GetEquationCase() { return m_eqnCase; }
 	Case *GetCurrentCase();
 	CaseWindow *GetCurrentCaseWindow();
 	void CaseVarGrid(std::vector<Case*> &cases);
@@ -130,6 +134,7 @@ private:
 	wxMetroButton *m_mainMenuButton;
 	wxMetroTabList *m_caseTabList;
 	wxSimplebook *m_caseNotebook;
+	Case* m_eqnCase;
 
 	ProjectFile m_project;
 	wxString m_projectFileName;
