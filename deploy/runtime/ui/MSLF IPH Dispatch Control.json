@@ -2725,6 +2725,7 @@
         "\tif ( fin == \"Commercial\" || fin == \"None\" || fin == \"LCOH Calculator\")\r",
         "\t{\r",
         "\t\tshow('copy_schedule', false);\r",
+        "\t\tvalue(\"is_timestep_load_fractions\",1);\r",
         "\t}\r",
         "\telse if(fin == \"Single Owner\")\r",
         "\t{\r",
@@ -2752,10 +2753,11 @@
         "};\r",
         "\r",
         "on_change{ 'copy_schedule' } = define() {\r",
-        "\r",
-        "    value( 'weekday_schedule' , value ( 'dispatch_sched_weekday' ) );\r",
-        "    value( 'weekend_schedule' , value ( 'dispatch_sched_weekend' ) );\r",
-        "\r",
+        "\tfin = financing();\r",
+        "\tif(fin == \"Single Owner\"){\r",
+        "\t\tvalue( 'weekday_schedule' , value ( 'dispatch_sched_weekday' ) );\r",
+        "\t\tvalue( 'weekend_schedule' , value ( 'dispatch_sched_weekend' ) );\r",
+        "\t}\r",
         "};\r",
         ""
     ]

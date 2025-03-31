@@ -691,6 +691,16 @@ SAM_EXPORT double* SAM_Battwatts_Outputs_batt_cycles_aget(SAM_table ptr, int* le
 	return result;
 }
 
+SAM_EXPORT double* SAM_Battwatts_Outputs_batt_dispatch_period_aget(SAM_table ptr, int* length, SAM_error *err){
+	double* result = nullptr;
+	translateExceptions(err, [&]{
+	result = ssc_data_get_array(ptr, "batt_dispatch_period", length);
+	if (!result)
+		make_access_error("SAM_Battwatts", "batt_dispatch_period");
+	});
+	return result;
+}
+
 SAM_EXPORT double* SAM_Battwatts_Outputs_batt_dispatch_sched_mget(SAM_table ptr, int* nrows, int* ncols, SAM_error *err){
 	double* result = nullptr;
 	translateExceptions(err, [&]{

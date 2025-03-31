@@ -214,6 +214,7 @@ MainWindow::MainWindow()
 	menuBar->Append( helpMenu, wxT("&Help")  );
 	SetMenuBar( menuBar );
 #endif
+	m_eqnCase = nullptr; // SAM 1922
 
 	m_topBook = new wxSimplebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE );
 
@@ -1249,6 +1250,7 @@ bool MainWindow::SwitchToCaseWindow( const wxString &case_name )
 void MainWindow::OnCaseTabChange( wxCommandEvent &evt )
 {
 	int sel = evt.GetSelection();
+	m_caseTabList->SetFocus(); // SAM issue 1922 force any losefocus events to fire
 	SwitchToCaseWindow( m_caseTabList->GetLabel(sel) );
 	//wxMessageBox( wxString::Format("Case tab changed: %d", evt.GetSelection() ) );
 }
