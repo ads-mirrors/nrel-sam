@@ -9552,7 +9552,6 @@
         1e38
     ],
     "itoth": 0.0,
-    "land_area": 1843.45,
     "lat": 34.85,
     "latitude": 34.85,
     "library_folder_list": "x",
@@ -27119,10 +27118,6 @@
         0.0
     ],
     "om_fuel_cost_escal": 0.0,
-    "om_land_lease": [
-        0.0
-    ],
-    "om_land_lease_escal": 0.0,
     "om_production": [
         3.5
     ],
@@ -27325,12 +27320,6 @@
     "ui_disp_9_nosolar": 0.05,
     "ui_disp_9_solar": 0.05,
     "ui_disp_9_turbout": 1.0,
-    "ui_land_area_ha": 746.017,
-    "ui_land_area_multiplier": 0.0,
-    "ui_land_area_units": 0.0,
-    "ui_land_lease": [
-        0.0
-    ],
     "ui_loan_amount": 707497000.0,
     "ui_net_capital_cost": 707497000.0,
     "ui_step_minutes": 60.0,

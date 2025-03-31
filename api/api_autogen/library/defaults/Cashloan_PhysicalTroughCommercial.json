@@ -26,9 +26,6 @@
 			"total_installed_cost": 5.6689e+08
 		},
 		"LandLease": {
-			"land_area": 835.127,
-			"om_land_lease": [0.000000],
-			"om_land_lease_escal": 0
 		},
 		"Depreciation": {
 			"depr_fed_custom": [0.000000],
@@ -179,10 +176,6 @@
 		},
 		"Lifetime": {
 			"system_use_lifetime_output": 0
-		},
-		"ThirdPartyOwnership": {
-			"elec_cost_with_system": [0],
-			"elec_cost_without_system": [0]
 		},
 		"LCOS": {
 			"batt_salvage_percentage": 0

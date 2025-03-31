@@ -169,9 +169,9 @@ function cf_savings()
 	tech = technology();
 	fin = financing();
 	cfline( 'SAVINGS', -1 );
-	cfline( 'elec_cost_without_system', 0);
+	cfline( 'utility_bill_wo_sys', 0);
 	cfline('minus:', -1, 0);
-	cfline( 'elec_cost_with_system', 0);
+	cfline( 'utility_bill_w_sys', 0);
 	cfline('equals:', -1, 0);
 	if ( fin == 'Host Developer' ) { cfline( 'annual_energy_value', 0); }
 	else if ( fin != 'Merchant Plant' ){ cfline( 'cf_energy_value', 0); }
@@ -306,6 +306,7 @@ function cf_om_expenses()
 	{
 		cfline( 'cf_om_fixed2_expense,cf_om_production2_expense,cf_om_capacity2_expense', 0);
 		cfline( 'cf_fuelcell_replacement_cost', 0);
+		cfline( 'cf_om_fuel_expense', 0);
 	}
 	if ( is_fuel_tech() ) { cfline('cf_om_fuel_expense', 0); }
 	if ( tech == 'Biopower' ) { cfline( 'cf_om_opt_fuel_1_expense,cf_om_opt_fuel_2_expense', 0); }
@@ -379,7 +380,7 @@ function cf_operating_expenses()
 	cf_om_expenses();
 	cfline( 'cf_property_tax_expense', 0);
 	cfline( 'cf_insurance_expense', 0);
-   	if ( is_land_lease_config() ) { cfline('cf_land_lease_expense', 0); }
+   	if ( is_land_lease_config() ) { cfline('cf_land_lease_expense', 0); } // hybrid land lease handled in cf_om_expenses() function
    	if ( fin == 'Community Solar')
 	{
 		cfline('cf_community_solar_recurring_fixed', 0);
@@ -2372,8 +2373,8 @@ cashflow_to_excel{ 'Host Developer' } = define()
 	set_solution_mode( xl );
 
 	// HOST values
-	xl_set_output( xl, 'elec_cost_with_system');
-	xl_set_output( xl, 'elec_cost_without_system');
+	xl_set_output( xl, 'utility_bill_w_sys');
+	xl_set_output( xl, 'utility_bill_wo_sys');
 	xl_set_value( xl, 'host_real_discount_rate');
 
 	set_lcos( xl );
