@@ -1522,7 +1522,8 @@ rapidjson::Value VarValueDoubleToJSONValue(const double& d)
 	rapidjson::Value json_val;
 	//json_val.SetDouble(d);
 	//json_val = d;
-	
+	json_val.SetDouble(d);
+	/*
 	if (std::isnan(d))
 		json_val = "nan";
 	else if (std::isinf(d))
@@ -1537,7 +1538,7 @@ rapidjson::Value VarValueDoubleToJSONValue(const double& d)
 			json_val = wxAtof(s);
 		}
 	}
-	
+	*/
 	return json_val;
 }
 
