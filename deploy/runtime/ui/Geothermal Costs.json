@@ -12756,7 +12756,7 @@
         "\t\t\tssc_var(geothermal, 'geotherm.cost.pump_fixed', ${geotherm.cost.pump_fixed});\r",
         "\t\t\tssc_var(geothermal, 'geotherm.cost.pump_per_foot', ${geotherm.cost.pump_per_foot});\r",
         "\t\t\tssc_var(geothermal, 'geotherm.cost.pump_depth', ${geotherm.cost.pump_depth});\r",
-        "\t\t\tssc_var(geothermal, 'geotherm.cost.prod_req', ${geotherm.cost.prod_req});\r",
+        "\t\t\t//ssc_var(geothermal, 'geotherm.cost.prod_req', ${geotherm.cost.prod_req});\r",
         "\t\t\tssc_var(geothermal, 'pump_size_hp', ${pump_size_hp});\r",
         "\t\t\tssc_var(geothermal, 'inj_pump_hp', ${inj_pump_hp});\r",
         "\t\t\t\r",
