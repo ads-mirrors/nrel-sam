@@ -30,7 +30,7 @@
     ],
     "analysis_period": 25.0,
     "analysis_period_warning": "No messages.",
-    "annual_albedo": 0.1839506853933204,
+    "annual_albedo": 0.18395068539332039,
     "annual_beam": 7.335643835616439,
     "annual_crit": 0.0,
     "annual_diffuse": 1.3484328767123289,
@@ -28620,7 +28620,7 @@
         [
             2.0,
             1.0,
-            1e38,
+            Infinity,
             0.0,
             0.075,
             0.0
