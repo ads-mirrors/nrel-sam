@@ -1940,23 +1940,30 @@ void fcall_var_exists(lk::invoke_t& cxt)
 {
 	LK_DOC("var_exists", "Check by name if an input or output variable exists in current case", "(string:name):bool");
 
-	if (Case* c = SamApp::Window()->GetCurrentCase()) {
-		wxString name = cxt.arg(0).as_string();
-		auto cfg = c->GetConfiguration();
-		int ndxHybrid = 0;
-		VarValue* vv = NULL;
-		bool bfound = false;
-		for (size_t ndx = 0; ndx < cfg->Technology.size(); ndx++ ) { // select ndxHybrid based on compute module position in 		
-			if (vv = c->Values(ndxHybrid).Get(name)) {
-				bfound = true;
-				ndxHybrid = ndx;
-			}
-		}
-		if (bfound)
-			cxt.result().assign(1);
-		else
-			cxt.result().assign((double)0);
-	}
+    Case* c = nullptr;
+    if (CaseCallbackContext* ci = static_cast<CaseCallbackContext*>(cxt.user_data()))
+        *c = ci->GetCase();
+    else if (SamApp::Window()->GetEquationCase() != nullptr)
+        c = SamApp::Window()->GetEquationCase();
+    else
+        c = SamApp::Window()->GetCurrentCase();
+    if (c != nullptr) {
+        wxString name = cxt.arg(0).as_string();
+        auto cfg = c->GetConfiguration();
+        int ndxHybrid = 0;
+        VarValue* vv = NULL;
+        bool bfound = false;
+        for (size_t ndx = 0; ndx < cfg->Technology.size(); ndx++) { // select ndxHybrid based on compute module position in
+            if (vv = c->Values(ndxHybrid).Get(name)) {
+                bfound = true;
+                ndxHybrid = ndx;
+            }
+        }
+        if (bfound)
+            cxt.result().assign(1);
+        else
+            cxt.result().assign((double)0);
+    }
 	else
 		cxt.result().assign((double)0);
 }
@@ -3565,9 +3572,13 @@ void fcall_urdb_read(lk::invoke_t &cxt)
 				// try upgrading - see project file upgrader for 2015.11.16
 				// update to matrix for ec and dc
 				//errors.Add("Problem assigning " + var_name + " missing with " + value);
-				ret_val = false;
-				upgrade_list.Add(var_name);
-				upgrade_value.Add(value);
+// SAM issue 2007 - check that var_name in list to be updated below
+				// do not fail for previously saved files with no longer used variables like "ui_electricity_rate_option"
+				if (var_name.Left(2).Lower() != "ui") {
+					ret_val = false;
+					upgrade_list.Add(var_name);
+					upgrade_value.Add(value);
+				}
 			}
 		}
 		// try upgrading to matrix format

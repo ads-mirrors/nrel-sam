@@ -62,8 +62,8 @@ for (r = rate_start; r<=rate_end; r=r+rate_increment )
 	set_simple_flat_rate( r );
 	simulate();
 	str_result += r +','
-	           + get('elec_cost_with_system')[1] + ',' 
-	           + get('elec_cost_without_system')[1] + ',' 
+	           + get('utility_bill_w_sys')[1] + ',' 
+	           + get('utility_bill_wo_sys')[1] + ',' 
 	           + get('npv') + '\n';
 }
 outln();

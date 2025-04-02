@@ -27,7 +27,6 @@ addconfig( 'Empirical Trough', ['Commercial','Single Owner', 'Merchant Plant', '
 addconfig( 'MSPT', ['Single Owner', 'Merchant Plant', 'Leveraged Partnership Flip', 'All Equity Partnership Flip', 'Sale Leaseback', 'None']);
 addconfig( 'MSLF', ['Single Owner', 'Merchant Plant', 'Leveraged Partnership Flip', 'All Equity Partnership Flip', 'Sale Leaseback']);
 addconfig( 'DSLF', ['Commercial','Single Owner', 'Merchant Plant', 'Leveraged Partnership Flip', 'All Equity Partnership Flip', 'Sale Leaseback', 'LCOE Calculator', 'None']);
-//addconfig( 'Dish Stirling', ['Commercial','Single Owner', 'Merchant Plant', 'Leveraged Partnership Flip', 'All Equity Partnership Flip', 'Sale Leaseback', 'LCOE Calculator', 'None']);
 addconfig( 'Generic CSP System', ['Commercial','Single Owner', 'Merchant Plant', 'Leveraged Partnership Flip', 'All Equity Partnership Flip', 'Sale Leaseback', 'LCOE Calculator', 'None']);
 // Heat
 addconfig( 'MSPT IPH', ['None', 'LCOH Calculator', 'Single Owner']);
@@ -97,7 +96,6 @@ configopt( 'CustomGeneration PVWatts Wind FuelCell Battery Hybrid', { 'tree_pare
 configopt( 'MSPT', { 'tree_parent'='Concentrating Solar Power', 'long_name'='Power Tower Molten Salt', 'short_name'='CSP Tower Molten Salt', 'description'='CSP molten salt power tower system using heat transfer and thermodynamic component models' } );
 configopt( 'Physical Trough', { 'tree_parent'='Concentrating Solar Power', 'long_name'='Parabolic Trough Physical Model', 'short_name'='CSP Trough (Physical Model)', 'description'='CSP parabolic trough system using heat transfer and thermodynamic component models' } );
 configopt( 'Empirical Trough', { 'tree_parent'='Concentrating Solar Power', 'long_name'='Parabolic Trough Empirical Model', 'short_name'='CSP Trough (Empirical Model)', 'description'='CSP parabolic trough system using model with empirically-derived coefficients and equations' } );
-//configopt( 'Dish Stirling', { 'tree_parent'='Retired', 'long_name'='CSP Dish Stirling', 'short_name'='Dish Stirling', 'description'='Dish Stirling model with parameters for SES and WGA-ADDS systems' } );
 configopt( 'Generic CSP System', { 'tree_parent'='Concentrating Solar Power', 'long_name'='Generic Solar Model', 'short_name'='CSP Generic Model', 'description'='CSP power system with solar field modeled using a table of optical efficiency values' } );
 configopt( 'DSLF', { 'tree_parent'='Concentrating Solar Power', 'long_name'='Linear Fresnel Direct Steam', 'short_name'='CSP Linear Fresnel Direct Steam', 'description'='CSP power system that uses long small mirrors to line focus sunlight on fixed receiver tubes mounted above them.' } );
 configopt( 'MSLF', { 'tree_parent'='Concentrating Solar Power', 'long_name'='Linear Fresnel Molten Salt', 'short_name'='CSP Linear Fresnel Molten Salt', 'description'='CSP power system that uses long small mirrors to line focus sunlight on fixed receiver tubes mounted above them.' } );
@@ -1052,7 +1050,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [ ['Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
@@ -1786,72 +1785,6 @@ setconfig( 'High-X Concentrating PV', 'None' );
 setmodules( ['hcpv', 'grid']);
 setup_hcpv_pages();
 
-// Dish Stirling ///////////////////////////////////////////////////////////////
-/* //Dish Stirling has become outdated and does not have funding support to be updated and will thus be hidden beginning with the next major release
-function setup_dish_stirling_pages()
-{
-	addpage( [[ 'Solar Resource Data' ]], { 'sidebar'='Location and Resource', 'help'='dish_location_and_resource' } );
-	addpage( [[ 'Dish Solar Field' ]], { 'sidebar'='Solar Field', 'help'='dish_solar_field' } );
-	addpage( [[ 'Dish Collector' ]], { 'sidebar'='Collector', 'help'='dish_collector' } );
-	addpage( [[ 'Dish Receiver' ]], { 'sidebar'='Receiver', 'help'='dish_receiver' } );
-	addpage( [[ 'Dish Stirling Engine' ]], { 'sidebar'='Stirling Engine', 'help'='dish_stirling_engine' } );
-	addpage( [[ 'Dish Parasitics' ]], { 'sidebar'='Parasitics', 'help'='dish_parasitics' } );
-	addpage( [[ 'Dish Reference Inputs' ]], { 'sidebar'='Reference Inputs', 'help'='dish_reference_inputs' } );
-	setup_grid_limits_page();
-}
-
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'Commercial' );
-setmodules( ['tcsdish', 'grid', 'utilityrate5', 'cashloan']);
-setup_dish_stirling_pages();
-setup_lifetime_page(DEGRADATION_AC_SINGLE_YEAR);
-addpage( [[ 'Dish Capital Costs','O and M Costs']],{ 'sidebar'='System Costs', 'help'='dish_system_costs' } );
-setup_commercial_pages(LOAD_SIMPLE); //belpe not valid for commercial
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'Leveraged Partnership Flip' );
-setmodules( ['tcsdish', 'grid', 'utilityrate5', 'levpartflip']);
-setup_dish_stirling_pages();
-setup_lifetime_page(DEGRADATION_AC_SINGLE_YEAR);
-addpage( [[ 'Dish Capital Costs','O and M Costs']],{ 'sidebar'='System Costs', 'help'='dish_system_costs' } );
-setup_leveraged_partnership_flip_pages();
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'All Equity Partnership Flip' );
-setmodules( ['tcsdish', 'grid', 'utilityrate5', 'equpartflip']);
-setup_dish_stirling_pages();
-setup_lifetime_page(DEGRADATION_AC_SINGLE_YEAR);
-addpage( [[ 'Dish Capital Costs','O and M Costs']],{ 'sidebar'='System Costs', 'help'='dish_system_costs' } );
-setup_all_equity_partnership_flip_pages();
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'Sale Leaseback' );
-setmodules( ['tcsdish', 'grid', 'utilityrate5', 'saleleaseback']);
-setup_dish_stirling_pages();
-setup_lifetime_page(DEGRADATION_AC_SINGLE_YEAR);
-addpage( [[ 'Dish Capital Costs','O and M Costs']],{ 'sidebar'='System Costs', 'help'='dish_system_costs' } );
-setup_sale_leaseback_pages();
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'Single Owner' );
-setmodules( ['tcsdish', 'grid', 'singleowner']);
-setup_dish_stirling_pages();
-setup_lifetime_page(DEGRADATION_AC_SINGLE_YEAR);
-addpage( [[ 'Dish Capital Costs','O and M Costs']],{ 'sidebar'='System Costs', 'help'='dish_system_costs' } );
-setup_single_owner_pages();
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'Merchant Plant' );
-setmodules( ['tcsdish', 'grid', 'merchantplant']);
-setup_dish_stirling_pages();
-setup_lifetime_page(DEGRADATION_AC_SINGLE_YEAR);
-addpage( [[ 'Dish Capital Costs','O and M Costs']],{ 'sidebar'='System Costs', 'help'='dish_system_costs' } );
-setup_merchant_plant_pages();
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'LCOE Calculator' );
-setmodules( ['tcsdish', 'grid',  'lcoefcr']);
-setup_dish_stirling_pages();
-setup_lcoefcr_pages();
-//-----------------------------------------------------
-setconfig( 'Dish Stirling', 'None' );
-setmodules( ['tcsdish', 'grid']);
-setup_dish_stirling_pages();*/
-
 // Biopower ////////////////////////////////////////////////////////////////////
 function setup_biopower_pages()
 {
@@ -2002,7 +1935,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [[ 'Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
@@ -2097,7 +2031,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [[ 'Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
@@ -2335,7 +2270,8 @@ addpage( [[ 'Financial Analysis Parameters',
 		  {'name'='Financial Construction Financing','caption'='Construction Financing','collapsible'=true,'collapsible_var'='show_construction_period', 'collapsed_by_default'=false},
 		  {'name'='Financial Reserve Accounts', 'caption'='Reserve Accounts','collapsible'=true,'collapsible_var'='show_ReserveAccounts'} ]],
 	   { 'sidebar'='Financial Parameters', 'help'='fin_single_owner' }  );
-addpage( [[ 'Financial Solution Mode Single Owner IPH']],
+addpage( [[ 'Financial Solution Mode Single Owner IPH',
+			{ 'name'='Financial TOD Factors', 'caption'='Time of Delivery', 'collapsible'=true, 'collapsible_var'='revenue_TOD_is_shown', 'collapsed_by_default'=true }]],
             { 'sidebar'='Revenue', 'help'='revenue_iph' } );
 addpage( [[ 'Financial Tax Credits IPH','Financial Cash Incentives IPH']],
            { 'sidebar'='Incentives', 'help'='incentives' } );
