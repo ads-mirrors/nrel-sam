@@ -6074,7 +6074,6 @@
         "{\r",
         "\r",
         "\ttech = technology();\r",
-        "\tmsgbox(tech);\r",
         "\tis_critical_load_tech = ( tech == 'PV Battery' \r",
         "\t  || tech == 'Custom Generation Battery'\r",
         "\t  || tech == 'Standalone Battery' \r",
