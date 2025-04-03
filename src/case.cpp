@@ -613,8 +613,9 @@ bool Case::SaveDefaults(bool quiet)
 
 
     rapidjson::StringBuffer os;
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(os); // MSPT/MP 64MB JSON, 6.7MB txt, JSON Zip 242kB
-    doc.Accept(writer);
+//	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(os); // MSPT/MP 64MB JSON, 6.7MB txt, JSON Zip 242kB
+	rapidjson::PrettyWriter<rapidjson::StringBuffer, rapidjson::UTF8<char>, rapidjson::UTF8<char>, rapidjson::CrtAllocator, rapidjson::kWriteNanAndInfFlag> writer(os); // MSPT/MP 64MB JSON, 6.7MB txt, JSON Zip 242kB
+	doc.Accept(writer);
     wxString sfn = file;
     wxFileName fn(sfn);
     wxFFileOutputStream out(sfn);
@@ -757,7 +758,9 @@ bool Case::VarTablesFromJSONFile(std::vector<VarTable>& vt, const std::string& f
 
 		rapidjson::StringStream is(os.GetString().c_str());
 
-		doc.ParseStream(is);
+//	doc.ParseStream(is);
+	// SAM issue 1856 handle parsing Inf values for max tier usage values.
+	doc.ParseStream< rapidjson::kParseNanAndInfFlag>( is);
 		if (doc.HasParseError()) {
 			wxLogError(wxS("Could not read the json file string conversion '%s'."), file);
 			return false;
