@@ -686,6 +686,12 @@ SAM_EXPORT void SAM_TroughPhysicalIph_SolarField_wind_stow_speed_nset(SAM_table 
 	});
 }
 
+SAM_EXPORT void SAM_TroughPhysicalIph_HeatSink_hs_htf_mdot_max_frac_nset(SAM_table ptr, double number, SAM_error *err){
+	translateExceptions(err, [&]{
+		ssc_data_set_number(ptr, "hs_htf_mdot_max_frac", number);
+	});
+}
+
 SAM_EXPORT void SAM_TroughPhysicalIph_HeatSink_hs_phys_P_steam_hot_des_nset(SAM_table ptr, double number, SAM_error *err){
 	translateExceptions(err, [&]{
 		ssc_data_set_number(ptr, "hs_phys_P_steam_hot_des", number);
@@ -2738,6 +2744,15 @@ SAM_EXPORT double SAM_TroughPhysicalIph_SolarField_wind_stow_speed_nget(SAM_tabl
 	translateExceptions(err, [&]{
 	if (!ssc_data_get_number(ptr, "wind_stow_speed", &result))
 		make_access_error("SAM_TroughPhysicalIph", "wind_stow_speed");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_TroughPhysicalIph_HeatSink_hs_htf_mdot_max_frac_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "hs_htf_mdot_max_frac", &result))
+		make_access_error("SAM_TroughPhysicalIph", "hs_htf_mdot_max_frac");
 	});
 	return result;
 }

@@ -530,6 +530,12 @@ SAM_EXPORT void SAM_FresnelPhysicalIph_ColRec_reflectivity_nset(SAM_table ptr, d
 	});
 }
 
+SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_htf_mdot_max_frac_nset(SAM_table ptr, double number, SAM_error *err){
+	translateExceptions(err, [&]{
+		ssc_data_set_number(ptr, "hs_htf_mdot_max_frac", number);
+	});
+}
+
 SAM_EXPORT void SAM_FresnelPhysicalIph_HeatSink_hs_phys_P_steam_hot_des_nset(SAM_table ptr, double number, SAM_error *err){
 	translateExceptions(err, [&]{
 		ssc_data_set_number(ptr, "hs_phys_P_steam_hot_des", number);
@@ -2081,6 +2087,15 @@ SAM_EXPORT double SAM_FresnelPhysicalIph_ColRec_reflectivity_nget(SAM_table ptr,
 	translateExceptions(err, [&]{
 	if (!ssc_data_get_number(ptr, "reflectivity", &result))
 		make_access_error("SAM_FresnelPhysicalIph", "reflectivity");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_FresnelPhysicalIph_HeatSink_hs_htf_mdot_max_frac_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "hs_htf_mdot_max_frac", &result))
+		make_access_error("SAM_FresnelPhysicalIph", "hs_htf_mdot_max_frac");
 	});
 	return result;
 }

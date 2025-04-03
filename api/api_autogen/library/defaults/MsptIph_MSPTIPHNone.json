@@ -9533,6 +9533,7 @@
 			"u_tank": 0.4
 		},
 		"HeatSink": {
+			"hs_htf_mdot_max_frac": 1.1,
 			"hs_phys_P_steam_hot_des": 4.762,
 			"hs_phys_Q_steam_hot_des": 0.75,
 			"hs_phys_T_steam_cold_des": 120,
