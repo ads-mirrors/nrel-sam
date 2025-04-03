@@ -645,7 +645,9 @@ void MainWindow::OnInternalCommand( wxCommandEvent &evt )
 
 			fis.Read(os);
 			rapidjson::StringStream is(os.GetString().c_str());
-			doc.ParseStream(is);
+			//	doc.ParseStream(is);
+				// SAM issue 1856 handle parsing Inf values for max tier usage values.
+			doc.ParseStream< rapidjson::kParseNanAndInfFlag>(is);
 			if (doc.HasParseError()) {
 				wxLogError(wxS("Could not read the json file string conversion '%s'."), sfn);
 				break;
@@ -721,7 +723,9 @@ void MainWindow::OnInternalCommand( wxCommandEvent &evt )
 
 			fis.Read(os);
 			rapidjson::StringStream is(os.GetString().c_str());
-			doc.ParseStream(is);
+//	doc.ParseStream(is);
+	// SAM issue 1856 handle parsing Inf values for max tier usage values.
+	doc.ParseStream< rapidjson::kParseNanAndInfFlag>( is);
 			if (doc.HasParseError()) {
 				wxLogError(wxS("Could not read the json file string conversion '%s'."), sfn);
 				break;
@@ -1683,7 +1687,9 @@ bool InputPageData::Read_JSON(const std::string& file, wxString& ui_path)
 	std::ifstream ifs(file);
 	rapidjson::IStreamWrapper is(ifs);
 
-	doc.ParseStream(is);
+	//	doc.ParseStream(is);
+		// SAM issue 1856 handle parsing Inf values for max tier usage values.
+	doc.ParseStream< rapidjson::kParseNanAndInfFlag>(is);
 
 	if (doc.HasParseError()) {
 		wxLogError(wxS("Could not read the json file '%s'.\nError: %d"), file.c_str(), doc.GetParseError());
@@ -2624,7 +2630,9 @@ bool SamApp::VarTablesFromJSONFile(ConfigInfo* ci, std::vector<VarTable>& vt, co
 
 		rapidjson::StringStream is(os.GetString().c_str());
 
-		doc.ParseStream(is);
+		//	doc.ParseStream(is);
+			// SAM issue 1856 handle parsing Inf values for max tier usage values.
+		doc.ParseStream< rapidjson::kParseNanAndInfFlag>(is);
 		if (doc.HasParseError()) {
 			wxLogError(wxS("Could not read the json file string conversion '%s'."), file);
 			return false;
