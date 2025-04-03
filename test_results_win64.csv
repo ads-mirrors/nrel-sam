@@ -119,10 +119,10 @@ MSLF IPH,None,fail,fail,fail
 MSLF IPH,LCOH Calculator,fail,fail,fail
 MSLF IPH,Single Owner,fail,fail,fail
 MSLF IPH,Commercial,fail,fail,fail
-MEwave,Single Owner,65589748,68.5635,60.3986,; Warning: NPV is $-5.95154e+07. A negative NPV indicates project costs are higher than revenues.
+MEwave,Single Owner,65589748,69.0145,60.3986,; Warning: NPV is $-6.28026e+07. A negative NPV indicates project costs are higher than revenues.
 MEwave,LCOE Calculator,59434320,NA,NA,; 
 MEwave,None,594343,NA,NA,; 
-MEwave Battery,Single Owner,65027312,70.198,60.3993,; Warning: NPV is $-7.08207e+07. A negative NPV indicates project costs are higher than revenues.
+MEwave Battery,Single Owner,65027312,70.6528,60.3993,; Warning: NPV is $-7.41079e+07. A negative NPV indicates project costs are higher than revenues.
 MEtidal,LCOE Calculator,2.16152e+06,NA,NA,; 
 MEtidal,None,2.16152e+06,NA,NA,; 
 Wind Power,Residential,48358.4,19.1809,NA,; 
