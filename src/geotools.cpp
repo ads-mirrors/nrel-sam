@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <clocale>
 #include <wx/wx.h>
+#include<wx/tokenzr.h>
 
 #include <wex/easycurl.h>
 
@@ -60,24 +61,66 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
     str.Replace("east", "e");
     str.Replace("west", "w");
 
-    size_t x = -1;
-	for (int i = 0; i < str.Length(); i++) {
+    wxString err = "";
+
+    int x = -1;
+    int n = 0;
+    bool is_numeric = true;
+
+    std::locale loc{ "" };
+    char decimal_symbol = std::use_facet< std::numpunct<char> >(loc).decimal_point();
+
+    /*
+    for (int i = 0; i < str.Length(); i++) {
 		if (str[i] == 'n' || str[i] == 's' ) {
-			x=size_t(i);
+            x=size_t(i);
+            n++;
 		}
-	}
+	}*/
+    int i = 0;
+    for (wxString::const_iterator it = str.begin(); it != str.end(); ++it) {
+        wxUniChar c = *it;
+        if (wxIsalpha(c) && c!=decimal_symbol) {
+            is_numeric = false;
+        }
+        if (c == 'n' || c == 's') {
+            x = i;
+            n++;
+        }
+        i++;
+    }
 
 	if (x == -1) {
-		wxMessageBox(wxString::Format("GeoTools error!\nCould not convert coordinates (%s) to a latitude/longitude pair", coord));
-        return false;
+        if (is_numeric) {
+            wxStringTokenizer tk(str, ',');
+            //wxArrayString arr = wxSplit(str, ',');
+            if (tk.CountTokens() == 2) {
+                lat = tk.GetNextToken();
+                lon = tk.GetNextToken();
+            }
+            else
+                err = "No n/s/e/w indicator or comma decimal degree separator";
+        }
+        else 
+		    err = "No n/s/e/w indicator";
+	}
+	else if (n > 1) {
+		err = "More than one latitude / longitude found";
+	}
+	else if (n == 0) {
+		err = "No latitude / longitude found";
 	}
 	else {
-        wxMessageBox(str);
-        wxMessageBox(str.Left(17));
         lat = str.Left(x + 1);
         lon = str.Right(str.Length() - x - 1);
-        return true;
 	}
+
+	if (err == "")
+		return true;
+    else {
+        wxMessageBox(wxString::Format("GeoTools error.\nCould not convert coordinates (%s) to a latitude / longitude pair: %s", coord, err));
+        return false;
+    }
 }
 
 bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
@@ -96,7 +139,7 @@ bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
 		err = "Degrees must be between -180 and 180";
 	}
 	else if ((d != int(d)) && (m != 0 || s != 0)) {
-		err = "Degrees must be a integer if minutes and seconds are not zero";
+		err = "Degrees must be an integer if minutes and seconds are not zero";
 	}
 	else if (m != int(m) && s != 0) {
 		err = "Minutes must be an integer if seconds are not zero";
@@ -112,7 +155,7 @@ bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
         return true;
 	}
 	else {
-        wxMessageBox(wxString::Format("GeoTools error!\nCould not convert DMS (%g, %g, %g) to DD: %s", d, m, s, err));
+        wxMessageBox(wxString::Format("GeoTools error.\nCould not convert DMS (%g, %g, %g) to DD: %s", d, m, s, err));
         return false;
     }
 }
@@ -133,8 +176,8 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
     int n = 0;
     std::string num = "";
     int sign = 1;
-	wxString err = "";
-	double dms[3] = { 0, 0, 0 };
+	wxString err = ""; // implement error check later?
+	double dms[3] = { 0.0, 0.0, 0.0 };
 
     for (int i = 0; i < str.Length(); i++) {
         char c = str[i];
@@ -144,7 +187,7 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
         else if (c == 's' || c == 'w' || c == '-') {
             sign = -1;
         }
-        else if (std::isdigit(c_prev)) {
+        else if (std::isdigit(c_prev) && n<3) {
 			dms[n] = std::stod(num);
             num = "";
             n++;
@@ -152,22 +195,19 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
         c_prev = c;
     }
 
-    if (n == 0) {
-        dms[0] = std::stod(num);
-    }
-
-    dms[0] = dms[0] * sign;
-
 	if (err == "") {
-        *d = dms[0];
+        if (n == 0) 
+            dms[0] = std::stod(num);
+        *d = dms[0] * sign;
 		*m = dms[1];
 		*s = dms[2];
-		return true;
+        return true;
 	}
-	else {
-		wxMessageBox(wxString::Format("GeoTools error!\nCould not convert coordinate (%s)", coord));
+    else {
+		wxMessageBox(wxString::Format("GeoTools error.\nCould not convert coordinates (%s) to DMS: %s", coord, err));
 		return false;
 	}
+
 }
 
 // Geocode using Google API for non-NREL builds of SAM
@@ -372,8 +412,15 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     plusaddr.Replace("  ", " ");
     plusaddr.Replace(" ", "+");
 
-    wxString url = SamApp::WebApi("nrel_geocode_api") + "&location=" + plusaddr;
-    url.Replace("<GEOCODEAPIKEY>", wxString(geocode_api_key));
+	wxString url = ""; 
+	wxString webapi_string = SamApp::WebApi("nrel_geocode_api");
+
+    if (webapi_string == "debug-mock-api")
+        url = address;
+    else {
+        url = SamApp::WebApi("nrel_geocode_api") + "&location=" + plusaddr;
+        url.Replace("<GEOCODEAPIKEY>", wxString(geocode_api_key));
+    }
 
     wxEasyCurl curl;
     wxBusyCursor curs;
@@ -398,37 +445,24 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     rapidjson::ParseResult ok = reader.Parse(str.c_str());
 
-
-    /* 
-    example for "denver, co"
-{"info":
-    {"statuscode":0,"copyright":
-        {"text":"© 2024 MapQuest, Inc.","imageUrl":"http://api.mqcdn.com/res/mqlogo.gif","imageAltText":"© 2024 MapQuest, Inc."}
-    ,"messages":[]}
-    ,"options":{"maxResults":-1,"ignoreLatLngInput":false}
-    ,"results":
-    [{"providedLocation":{"location":"denver co"},"locations":
-        [{"street":"","adminArea6":"","adminArea6Type":"Neighborhood","adminArea5":"Denver","adminArea5Type":"City","adminArea4":"Denver","adminArea4Type":"County","adminArea3":"CO","adminArea3Type":"State","adminArea1":"US","adminArea1Type":"Country","postalCode":"","geocodeQualityCode":"A5XAX","geocodeQuality":"CITY","dragPoint":false,"sideOfStreet":"N","linkId":"0","unknownInput":"","type":"s","latLng":{"lat":39.74001,"lng":-104.99202},"displayLatLng":{"lat":39.74001,"lng":-104.99202},"mapUrl":""}]
-    }
-]}
-        */
-
     if (!reader.HasParseError()) {
         if (reader.HasMember(L"results")) {
-            if (reader[L"results"].IsArray()) {
-                if (reader[L"results"][0].HasMember(L"locations")) {
-                    if (reader[L"results"][0][L"locations"].IsArray()) {
-                        if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
-                            if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
-                                if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
-                                    *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
-                                    success = true;
+            if (!reader[L"results"].Empty()) {
+                if (reader[L"results"].IsArray()) {
+                    if (reader[L"results"][0].HasMember(L"locations")) {
+                        if (reader[L"results"][0][L"locations"].IsArray()) {
+                            if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
+                                if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
+                                    if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
+                                        *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
+                                        success = true;
+                                    }
                                 }
-                            }
-                            if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
-                                if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
-                                    *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
-                                    success &= true;
+                                if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
+                                    if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
+                                        *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
+                                        success &= true;
+                                    }
                                 }
                             }
                         }
@@ -436,6 +470,7 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
                 }
             }
         }
+
         // check status code
         success = false;//overrides success of retrieving data
 
@@ -451,13 +486,13 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
     }
 
-    if (!success)
-        return false;
-
-    if (tz != 0) 
+	// if geocode was successful, get timezone
+    if (success) {
         success = GeoTools::TimeZoneBing(lat, lon, tz, showprogress);
- 
+    }
+
     return success;
+
 }
 
 

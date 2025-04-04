@@ -3794,7 +3794,6 @@ void fcall_geocode(lk::invoke_t& cxt)
 		"(string):table");
 
 	wxString err = "";
-	double lat = 0, lon = 0, tz = 0;
 
 	// if input string contains any non-numeric characters other than n/s/e/w, assume it is an address for geocoding
 	lk_string str = cxt.arg(0).as_string();
@@ -3807,13 +3806,10 @@ void fcall_geocode(lk::invoke_t& cxt)
 	address.Replace("west", "w");
 
 	bool is_address = false;
+	bool ok = false;
 
 	for (wxString::const_iterator it = address.begin(); it != address.end(); ++it) {
 		wxUniChar c = *it;
-		bool test_digit = wxIsdigit(c);
-		bool test_alpha = wxIsalpha(c);
-		bool test_ascii = wxIsascii(c);
-		//char test_char = wxUniChar::GetValue(c);
 		if (!wxIsdigit(c) && wxIsalpha(c)) {
 			if (c != 'n' && c != 's' && c != 'e' && c != 'w') {
 				is_address = true;
@@ -3822,62 +3818,44 @@ void fcall_geocode(lk::invoke_t& cxt)
 
 	}
 
+	double lat = 0, lon = 0; // lat, lon in decimal degrees (DD)
+	double tz = 0;
 	if (is_address) {
 		// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
-		bool ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
-		if (ok) {
-			cxt.result().empty_hash();
-			cxt.result().hash_item("lat").assign(lat);
-			cxt.result().hash_item("lon").assign(lon);
-			cxt.result().hash_item("tz").assign(tz);
-			cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
-			return;
+		ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
+		if (!ok) {
+			err = wxString::Format("Call to geocoding API failed for address: %s", address);
 		}
-		else {
-			err = wxString::Format("Geocoding failed for address: %s", err);
-		}
+
 	}
-	else { // assume input is lat/lon and try to parse cpg WHAT TO DO ABOUT TZ
+	else { // assume input string is lat/lon pair and try to parse
 		wxString coordinates = cxt.arg(0).as_string();
-
-		wxString lat; // string of latitude and longitude coordinates
-		double  lat_d = 0, lat_m = 0, lat_s = 0, lat_dd=0; // latitude degree, minute, seconds, decimal degrees
-
-		wxString lon; // string of latitude and longitude coordinates
-		double lon_d = 0, lon_m = 0, lon_s = 0, lon_dd=0; // longitude degree, minute, seconds, decimal degrees
-		
-		if (GeoTools::coordinates_to_lat_lon(coordinates, lat, lon)) {
-			wxMessageBox(wxString::Format("Coordinates (%s) parsed to %s, %s", coordinates, lat, lon));
-			if (GeoTools::coordinate_to_dms(lat, &lat_d, &lat_m, &lat_s) && GeoTools::coordinate_to_dms(lon, &lon_d, &lon_m, &lon_s)) {
-				wxMessageBox(wxString::Format("Lat (%s) Lon (%s) converted to DMS: (%g, %g, %g), (%g, %g, %g)", lat, lon, lat_d, lat_m, lat_s, lon_d, lon_m, lon_s));
-				if ( GeoTools::dms_to_dd(lat_d, lat_m, lat_s, &lat_dd) && GeoTools::dms_to_dd(lon_d, lon_m, lon_s, &lon_dd) ) {
-					wxMessageBox(wxString::Format("Coordinates (%s) converted to DD!\n(%g), (%g)", coordinates, lat_dd, lon_dd));
-					if (GeoTools::TimeZoneBing(&lat_dd, &lon_dd, &tz, true)) {
-						wxMessageBox(wxString::Format("Timezone for (%g, %g) is %g", lat_dd, lon_dd, tz));
+		wxString lat_str, lon_str;
+		ok = GeoTools::coordinates_to_lat_lon(coordinates, lat_str, lon_str);
+		if (ok) {
+			double lat_d = 0, lat_m = 0, lat_s = 0; // degree, minute, seconds
+			double lon_d = 0, lon_m = 0, lon_s = 0; 
+			ok = GeoTools::coordinate_to_dms(lat_str, &lat_d, &lat_m, &lat_s) && GeoTools::coordinate_to_dms(lon_str, &lon_d, &lon_m, &lon_s);
+			if (ok) {
+				ok = GeoTools::dms_to_dd(lat_d, lat_m, lat_s, &lat) && GeoTools::dms_to_dd(lon_d, lon_m, lon_s, &lon);
+				if (ok) {
+					ok = GeoTools::TimeZoneBing(&lat, &lon, &tz, true);
+					if (!ok) {
+						err = wxString::Format("Timezone not found for: (%g, %g)", lat, lon);
 					}
-					else {
-						err = wxString::Format("Timezone not found for: (%g, %g)", lat_dd, lon_dd);
-					}
-					cxt.result().empty_hash();
-					cxt.result().hash_item("lat").assign(lat_dd);
-					cxt.result().hash_item("lon").assign(lon_dd);
-					cxt.result().hash_item("tz").assign(tz);
-					cxt.result().hash_item("ok").assign(1.0);
-					return;
-				}
-				else {
-					err = wxString::Format("Coordinates not converted to DD for: (%s)", coordinates);
 				}
 			}
-			else {
-				err = wxString::Format("Coordinates not converted to DMS for: Lat (%s), Lon (%s)", lat, lon);
-			}
-		}
-		else {
-			err = wxString::Format("Coordinates not parsed for: %s", coordinates);
 		}
 	}
 
+	cxt.result().empty_hash();
+	cxt.result().hash_item("lat").assign(lat);
+	cxt.result().hash_item("lon").assign(lon);
+	cxt.result().hash_item("tz").assign(tz);
+	cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
+
+	if (err != "")
+		wxMessageBox(wxString::Format("Geocode error.\n%s", err));
 }
 
 
