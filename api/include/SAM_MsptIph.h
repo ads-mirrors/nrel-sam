@@ -1525,6 +1525,14 @@ extern "C"
 	//
 
 	/**
+	 * Set hs_htf_mdot_max_frac: Maximum HTF mass flow to heat sink relative to design point
+	 * options: None
+	 * constraints: None
+	 * required if: *
+	 */
+	SAM_EXPORT void SAM_MsptIph_HeatSink_hs_htf_mdot_max_frac_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
 	 * Set hs_phys_P_steam_hot_des: Steam outlet (and inlet) pressure for physical heat sink [bar]
 	 * options: None
 	 * constraints: None
@@ -2357,6 +2365,8 @@ extern "C"
 	/**
 	 * HeatSink Getters
 	 */
+
+	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_htf_mdot_max_frac_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_MsptIph_HeatSink_hs_phys_P_steam_hot_des_nget(SAM_table ptr, SAM_error *err);
 

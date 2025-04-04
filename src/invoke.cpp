@@ -1940,23 +1940,30 @@ void fcall_var_exists(lk::invoke_t& cxt)
 {
 	LK_DOC("var_exists", "Check by name if an input or output variable exists in current case", "(string:name):bool");
 
-	if (Case* c = SamApp::Window()->GetCurrentCase()) {
-		wxString name = cxt.arg(0).as_string();
-		auto cfg = c->GetConfiguration();
-		int ndxHybrid = 0;
-		VarValue* vv = NULL;
-		bool bfound = false;
-		for (size_t ndx = 0; ndx < cfg->Technology.size(); ndx++ ) { // select ndxHybrid based on compute module position in 		
-			if (vv = c->Values(ndxHybrid).Get(name)) {
-				bfound = true;
-				ndxHybrid = ndx;
-			}
-		}
-		if (bfound)
-			cxt.result().assign(1);
-		else
-			cxt.result().assign((double)0);
-	}
+    Case* c = nullptr;
+    if (CaseCallbackContext* ci = static_cast<CaseCallbackContext*>(cxt.user_data()))
+        *c = ci->GetCase();
+    else if (SamApp::Window()->GetEquationCase() != nullptr)
+        c = SamApp::Window()->GetEquationCase();
+    else
+        c = SamApp::Window()->GetCurrentCase();
+    if (c != nullptr) {
+        wxString name = cxt.arg(0).as_string();
+        auto cfg = c->GetConfiguration();
+        int ndxHybrid = 0;
+        VarValue* vv = NULL;
+        bool bfound = false;
+        for (size_t ndx = 0; ndx < cfg->Technology.size(); ndx++) { // select ndxHybrid based on compute module position in
+            if (vv = c->Values(ndxHybrid).Get(name)) {
+                bfound = true;
+                ndxHybrid = ndx;
+            }
+        }
+        if (bfound)
+            cxt.result().assign(1);
+        else
+            cxt.result().assign((double)0);
+    }
 	else
 		cxt.result().assign((double)0);
 }
@@ -3026,7 +3033,7 @@ void fcall_wavetoolkit(lk::invoke_t& cxt)
                     SamApp::Settings().Write("wave_data_paths", wxJoin(paths, ';'));
                 }
             }
-            if (file_list != "") wxMessageBox("Download complete.\n\nThe following files have been downloaded and added to your solar resource library:\n\n" + file_list, "NREL Hindcast Wave Data Download Message", wxOK);
+            if (file_list != "") wxMessageBox("Download complete.\n\nThe following files have been downloaded and added to your resource library:\n\n" + file_list, "NREL Hindcast Wave Data Download Message", wxOK);
             //EndModal(wxID_OK);
         }
 
