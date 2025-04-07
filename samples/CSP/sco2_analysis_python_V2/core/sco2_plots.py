@@ -135,6 +135,8 @@ class C_sco2_cycle_TS_plot:
         
         if(self.dict_cycle_data["cycle_config"] == 1 or self.dict_cycle_data["cycle_config"] == 3):
             self.plot_RC_points_and_lines(ax_in)
+        elif(self.dict_cycle_data["cycle_config"] == 4):
+            self.plot_TSF_points_and_lines(ax_in)
         else:
             self.plot_PC_points_and_lines(ax_in)
             
@@ -181,6 +183,8 @@ class C_sco2_cycle_TS_plot:
     
     def annotate(self, ax_in):
     
+        cycle_config = self.dict_cycle_data["cycle_config"]
+
         if(self.is_annotate_HTR and (not(math.isnan(float(self.dict_cycle_data["q_dot_HTR"]))))):
             HTR_title = r'$\bf{High}$' + " " + r'$\bf{Temp}$' + " " + r'$\bf{Recup}$'
             q_dot_text = "\nDuty = " + '{:.1f}'.format(self.dict_cycle_data["q_dot_HTR"]) + " MWt"
@@ -238,9 +242,13 @@ class C_sco2_cycle_TS_plot:
             T_PHX_in = T_states[5] + dT_PHX_hot_approach
             s_PHX_in = s_states[5]
 
+            PHX_sco2_in_index = 4
+            if cycle_config == 4:
+                PHX_sco2_in_index = 2
+
             dT_PHX_cold_approach = self.dict_cycle_data["dT_PHX_cold_approach"]
-            T_PHX_out = T_states[4] + dT_PHX_cold_approach
-            s_PHX_out = s_states[4]
+            T_PHX_out = T_states[PHX_sco2_in_index] + dT_PHX_cold_approach
+            s_PHX_out = s_states[PHX_sco2_in_index]
 
             if self.dict_cycle_data['htf'] == 50: # User-defined properties
                 # Plotting Phase Change in HTF
@@ -288,6 +296,13 @@ class C_sco2_cycle_TS_plot:
                 ax_in.plot([s_PHX_in, s_PHX_out], [T_PHX_in, T_PHX_out], color = '#ff9900', ls = "-")
                 s_PHX_avg = 0.90*s_PHX_in + 0.10*s_PHX_out
                 T_PHX_avg = 0.90*T_PHX_in + 0.10*T_PHX_out
+
+                if(cycle_config == 3 and self.dict_cycle_data["bypass_frac"] > 0):
+                    T_BPX_in = T_PHX_out
+                    T_BPX_out = self.dict_cycle_data["T_htf_cold_des"]
+                    s_BPX_in = s_PHX_out
+                    s_BPX_out = s_states[3]
+                    ax_in.plot([s_BPX_in, s_BPX_out], [T_BPX_in, T_BPX_out], color = '#ff9900', ls = "-")
             
             PHX_title = r'$\bf{Primary}$' + " " + r'$\bf{HX}$'
             q_dot_text = "\nDuty = " + '{:.1f}'.format(self.dict_cycle_data["q_dot_PHX"]) + " MWt"
@@ -364,20 +379,33 @@ class C_sco2_cycle_TS_plot:
         T_states = self.dict_cycle_data["T_state_points"]
         s_states = self.dict_cycle_data["s_state_points"]
         
-        T_LTR_hot = [T_states[2],T_states[7]]
-        s_LTR_hot = [s_states[2],s_states[7]]
+        cycle_config = self.dict_cycle_data['cycle_config']
+
+        # Nodes for cycles except TSF
+        LTR_hot_index = [2,7]
+        LTR_cold_index = [1,8]
+        HTR_cold_index = [3,7]
+        HTR_hot_index = [4,6]
+        if(cycle_config == 4):
+            LTR_hot_index = [2,14]
+            LTR_cold_index = [1,8]
+            HTR_cold_index = [1,7]
+            HTR_hot_index = [4,6]
+
+        T_LTR_hot = [T_states[LTR_hot_index[0]],T_states[LTR_hot_index[1]]]
+        s_LTR_hot = [s_states[LTR_hot_index[0]],s_states[LTR_hot_index[1]]]
         ax_in.plot(s_LTR_hot, T_LTR_hot, 'b-.', lw = 0.7, alpha = 0.9)
         
-        T_LTR_cold = [T_states[1],T_states[8]]
-        s_LTR_cold = [s_states[1],s_states[8]]
+        T_LTR_cold = [T_states[LTR_cold_index[0]],T_states[LTR_cold_index[1]]]
+        s_LTR_cold = [s_states[LTR_cold_index[0]],s_states[LTR_cold_index[1]]]
         ax_in.plot(s_LTR_cold, T_LTR_cold, 'b-.', lw = 0.7, alpha = 0.9)
         
-        T_HTR_cold = [T_states[3],T_states[7]]
-        s_HTR_cold = [s_states[3],s_states[7]]
+        T_HTR_cold = [T_states[HTR_cold_index[0]],T_states[HTR_cold_index[1]]]
+        s_HTR_cold = [s_states[HTR_cold_index[0]],s_states[HTR_cold_index[1]]]
         ax_in.plot(s_HTR_cold, T_HTR_cold, 'r-.', lw = 0.7, alpha = 0.9)
         
-        T_HTR_hot = [T_states[4],T_states[6]]
-        s_HTR_hot = [s_states[4],s_states[6]]
+        T_HTR_hot = [T_states[HTR_hot_index[0]],T_states[HTR_hot_index[1]]]
+        s_HTR_hot = [s_states[HTR_hot_index[0]],s_states[HTR_hot_index[1]]]
         ax_in.plot(s_HTR_hot, T_HTR_hot, 'r-.', lw = 0.7, alpha = 0.9)
         
         return ax_in
@@ -469,6 +497,28 @@ class C_sco2_cycle_TS_plot:
         
         return ax_in
     
+    def plot_TSF_points_and_lines(self, ax_in):
+        self.plot_hx(ax_in)
+
+        T_states = self.dict_cycle_data["T_state_points"]
+        s_states = self.dict_cycle_data["s_state_points"]
+        
+        T_mc_plot = [T_states[0],T_states[1]]
+        s_mc_plot = [s_states[0],s_states[1]]
+        ax_in.plot(s_mc_plot, T_mc_plot, self.lc)
+        
+        T_t_plot = [T_states[5],T_states[6]]
+        s_t_plot = [s_states[5],s_states[6]]
+        ax_in.plot(s_t_plot, T_t_plot, self.lc)
+
+        T_t2_plot = [T_states[4],T_states[14]]
+        s_t2_plot = [s_states[4],s_states[14]]
+        ax_in.plot(s_t2_plot, T_t2_plot, self.lc)
+        
+        ax_in.plot(s_states[0:15], T_states[0:15], self.lc + self.mt, markersize = self.markersize)
+
+        return ax_in
+
     def plot_constP(self, ax_in):
 
         fileDir = os.path.dirname(os.path.abspath(__file__))
@@ -509,6 +559,11 @@ class C_sco2_cycle_TS_plot:
 def get_plot_name(dict_cycle_data):
     
     eta_str = "Thermal Efficiency = " + '{:.1f}'.format(dict_cycle_data["eta_thermal_calc"] * 100) + "%"
+    
+    if 'config_name' in dict_cycle_data:
+        plot_title = dict_cycle_data['config_name'] + ', ' + eta_str
+        return plot_title
+
 
     if ((dict_cycle_data["cycle_config"] == 3) and ('is_bypass_ok' in dict_cycle_data) and (dict_cycle_data['is_bypass_ok'] != 0)):
         plot_title = "Recompression with HTR Bypass"
@@ -551,6 +606,8 @@ class C_sco2_cycle_PH_plot:
         self.plot_from_existing_axes(ax1)
     
         plt.tight_layout(pad=0.0,h_pad=.30,rect=(0.02,0.01,0.99,0.98))
+
+        plt.show(block = True)
 
         if(self.is_save_plot):    
         
@@ -923,6 +980,8 @@ class C_sco2_TS_PH_plot:
 
         plt.tight_layout(pad=0.0,h_pad=2.0,w_pad=0.5,rect=(0.02,0.01,0.99,0.94))
         
+        plt.show(block=True)
+
         if(self.is_save_plot):
             
             if(self.file_name == ""):

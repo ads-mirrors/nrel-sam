@@ -9,7 +9,6 @@ coreFolder = os.path.join(parentDir, 'core')
 sys.path.append(exampleFolder)
 sys.path.append(coreFolder)
 
-from G3P3_analysis.sco2_baseline_sim_w_IP import get_sco2_G3P3
 import sco2_cycle_ssc as sco2_solve
 import design_point_examples as design_pt
 import design_point_tools as design_tools
@@ -24,10 +23,13 @@ def plot_z_axis(result_dict, X_info, Y_info, Z_info_list, title=""):
             Z_label = Z_info
 
         if(Z_label in result_dict):
-            design_tools.plot_scatter_pts([           
-                            [result_dict, {'label':'test', 'marker':'.'}],
-                            ], 
-                            X_info, Y_info, Z_info, show_legend=False, title=title)
+            try:
+                design_tools.plot_scatter_pts([           
+                                [result_dict, {'label':'test', 'marker':'.'}],
+                                ], 
+                                X_info, Y_info, Z_info, show_legend=False, title=title)
+            except:
+                print("couldn't plot " + Z_label)
 
     pass
 
@@ -54,7 +56,7 @@ def display_complete():
     partial_filename = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_10_20241218_121515\partial_G3P3_collection_10_20241218_172723.csv"
     htrbp_filename = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline\run_10_20241209_164644\htrbp_G3P3_collection_10_20241209_182054.csv"
 
-    is_reduced = False
+    is_reduced = True
     if is_reduced:
         tsf_filename = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline\run_5_20241209_163643\TSF_G3P3_collection_5_20241209_163832.csv"
         recomp_filename = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline\run_5_20241209_163643\recomp_G3P3_collection_5_20241209_163812.csv"

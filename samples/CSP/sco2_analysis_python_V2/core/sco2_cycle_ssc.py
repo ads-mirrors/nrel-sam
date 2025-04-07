@@ -716,6 +716,108 @@ class C_sco2_sim:
         
         self.solve_sco2_case()
 
+def get_config_name(cycle_config, recomp_frac, bypass_frac, is_LTR=True, is_HTR=True):
+
+        # Recompresion
+        if(cycle_config == 1):
+            if(recomp_frac == ''):
+                return "recompression"
+            
+            if(recomp_frac <= 0.0001):
+                if is_HTR and is_LTR:
+                    return "Simple Double Recup"
+                elif not is_HTR and not is_LTR:
+                    return "Simple No Recup"
+                else:
+                    return "Simple"
+            else:
+                if not is_HTR and not is_LTR:
+                    return "Recompression No Recup"
+                elif is_HTR == False:
+                    return "Recompression w/o HTR"
+                elif is_LTR == False:
+                    return "Recompression w/o LTR"
+                #if(recomp_frac > 0.3):
+                #    return "recompression 30 recomp"
+                else:
+                    return "Recompression"
+        # Partial
+        if(cycle_config == 2):
+            if(recomp_frac == ''):
+                return "partial"
+            
+            if(recomp_frac <= 0.0001):
+                if not is_HTR and not is_LTR:
+                    return "Partial Intercooling No Recup"
+                elif(is_HTR == False):
+                    return "Partial Intercooling w/o HTR"
+                elif(is_LTR == False):
+                    return "Partial Intercooling w/o LTR"
+                else:
+                    return "Partial Intercooling"
+            if(recomp_frac == 1):
+                return "Partial Simple"
+            else:
+                if not is_HTR and not is_LTR:
+                    return "Partial No Recup"
+                elif(is_HTR == False):
+                    return "Partial w/o HTR"
+                elif(is_LTR == False):
+                    return "Partial w/o LTR"
+                #if(recomp_frac > 0.3):
+                #    return "partial 30 recomp"
+                else:
+                    return "Partial"
+        # TSF
+        elif(cycle_config == 4):
+
+            if(is_HTR == False) and (is_LTR == False):
+                x = 0
+
+            if not is_HTR and not is_LTR:
+                return "Turbine Split Flow No Recup"
+            elif(is_HTR == False):
+                return "Turbine Split Flow w/o HTR"
+            elif(is_LTR == False):
+                return "Turbine Split Flow w/o LTR"
+            else:
+                return "Turbine Split Flow"
+        #HTR BP
+        elif(cycle_config == 3):
+            if(bypass_frac == ''):
+                return "htr bp"
+            
+            # No Bypass Fraction
+            elif bypass_frac == 0:
+                return get_config_name(1, recomp_frac, 0, is_LTR, is_HTR)
+
+            # No BPX because no HTR
+            elif is_HTR == False:
+                return get_config_name(1, recomp_frac, 0, is_LTR, is_HTR)
+
+            # Yes BPX, No Recomp
+            if bypass_frac != 0 and recomp_frac <= 0.01:
+                if not is_LTR and not is_HTR:
+                    return "Simple Split Flow Bypass no Recup"
+                elif not is_LTR:
+                    return "Simple Split Flow Bypass w/o LTR"
+                elif not is_HTR:
+                    return "Simple Split Flow Bypass w/o HTR"
+                else: 
+                    return "Simple Split Flow Bypass"
+            
+            # Yes BPX, no LTR
+            if bypass_frac != 0 and is_LTR == False:
+                return "HTR BP w/o LTR"
+
+            #if(recomp_frac > 0.3):
+            #        return "htr bp 30 recomp"
+            
+            return "HTR BP"
+        
+        return ""
+
+
 class C_sco2_sim_result_collection:
 
     class C_sco2_solve_dict_item:
@@ -755,7 +857,7 @@ class C_sco2_sim_result_collection:
             if('recomp_frac' in solve_dict):
                 recomp_frac = solve_dict["recomp_frac"]
 
-            config_name = self.get_config_name(solve_dict["cycle_config"], recomp_frac, bypass_frac)
+            config_name = get_config_name(solve_dict["cycle_config"], recomp_frac, bypass_frac)
             solve_dict["config_name"] = config_name
 
         #self.solve_dict_list.append(solve_dict)
@@ -794,6 +896,100 @@ class C_sco2_sim_result_collection:
         f.close()
 
         return
+
+    def open_csv_list(self, file_name_list):
+
+        self.csv_array = []
+        local_csv_array_list = []
+        col = 0
+        for file_name in file_name_list:
+            # Read in csv array
+            local_csv_array = []
+            f = open(file_name, "r")
+            for row in f:
+                items = row.split(', ')
+                items[len(items)-1] = items[len(items)-1].replace('\n','')
+                local_csv_array.append(items)
+            f.close()
+
+            # Fill in missing vals at end of rows
+            NVal = len(local_csv_array[0]) - self.csv_col_offset
+            for row in local_csv_array:
+                N_missing_cols = NVal - (len(row) - self.csv_col_offset)
+                for x in range(N_missing_cols):
+                    row.append('')
+            local_csv_array_list.append(local_csv_array)
+
+        # Combine csv arrays
+        self.csv_array = local_csv_array_list[0]
+        for i in range(1, len(local_csv_array_list)):
+            # Go row by row adding values
+            for row_index in range(len(self.csv_array)):
+                row_old = self.csv_array[row_index]
+                row_new = local_csv_array_list[i][row_index]
+                var_name_old = row_old[0]
+                var_name_new = row_new[0]
+
+                if(var_name_old != var_name_new):
+                    print("Critical error: key name mismatch when merging save files")
+                    return
+
+                for col_index in range(self.csv_col_offset, len(row_new)):
+                    self.csv_array[row_index].append(row_new[col_index])
+                    y = 0
+
+        # Verify
+        total_cols = 0
+        for csv_array in local_csv_array_list:
+            total_cols += len(csv_array[0]) - self.csv_col_offset
+        total_cols += self.csv_col_offset
+
+        total_cols_actual = len(self.csv_array[0])
+
+        # Add config name (if it doesn't exist)
+        config_name_exists = False
+        bypass_frac_row_id = 0
+        recomp_frac_row_id = 0
+        cycle_config_row_id = -1
+        NRows = len(self.csv_array)
+        for row_id in range(NRows):
+            key = self.csv_array[row_id][0]
+            if(key == 'config_name'):
+                config_name_exists = True
+                break
+            elif(key == 'bypass_frac'):
+                bypass_frac_row_id = row_id
+            elif(key == 'recomp_frac'):
+                recomp_frac_row_id = row_id
+            elif(key == 'cycle_config'):
+                cycle_config_row_id = row_id
+        if(config_name_exists == False):
+            self.csv_array.append(['config_name', 'single', '0', '0'])
+            
+            for run_id in range(NVal):
+                bypass_frac = self.csv_array[bypass_frac_row_id][run_id + self.csv_col_offset]
+                if(bypass_frac != ''):
+                    bypass_frac = float(bypass_frac)
+                
+                recomp_frac = self.csv_array[recomp_frac_row_id][run_id + self.csv_col_offset]
+                if(recomp_frac != ''):
+                    recomp_frac = float(recomp_frac)
+
+                cycle_config = int(float(self.csv_array[cycle_config_row_id][run_id + self.csv_col_offset]))
+                config_name = get_config_name(cycle_config, recomp_frac, bypass_frac)
+                self.csv_array[NRows].append(config_name)
+
+
+        ## Form dicts for each run (by unflattening)
+        #NRuns = len(self.csv_array[0]) - self.csv_col_offset
+        #for run in range(NRuns):
+        #    solve_dict = self.unflatten(self.csv_array, run)
+        #    self.solve_dict_list.append(solve_dict)
+        #    self.num_cases = self.num_cases + 1
+        #    self.flattened_solve_list.append(self.flatten(solve_dict))
+
+        # Form old result dict
+        self.form_old_result_dict_from_csv_array()
 
     def open_csv(self, file_name):
         # Read in csv array
@@ -842,7 +1038,7 @@ class C_sco2_sim_result_collection:
                     recomp_frac = float(recomp_frac)
 
                 cycle_config = int(float(self.csv_array[cycle_config_row_id][run_id + self.csv_col_offset]))
-                config_name = self.get_config_name(cycle_config, recomp_frac, bypass_frac)
+                config_name = get_config_name(cycle_config, recomp_frac, bypass_frac)
                 self.csv_array[NRows].append(config_name)
 
 
@@ -1162,46 +1358,6 @@ class C_sco2_sim_result_collection:
             row_num = row_num + 1
 
         return
-
-    def get_config_name(self, cycle_config, recomp_frac, bypass_frac):
-
-        # Recompresion
-        if(cycle_config == 1):
-            if(recomp_frac == ''):
-                return "recompression"
-
-            if(recomp_frac <= 0.0001):
-                return "simple"
-            else:
-                return "recompression"
-        # Partial
-        if(cycle_config == 2):
-            if(recomp_frac == ''):
-                return "partial"
-            
-            if(recomp_frac <= 0.0001):
-                return "partial intercooling"
-            else:
-                return "partial"
-        # TSF
-        elif(cycle_config == 4):
-            return "turbine split flow"
-        #HTR BP
-        elif(cycle_config == 3):
-            if(bypass_frac == ''):
-                return "htr bp"
-            if bypass_frac != 0 and recomp_frac <= 0.01:
-                return "simple split flow bypass"
-            elif recomp_frac <= 0.01 and bypass_frac == 0:
-                return "simple"
-            elif bypass_frac == 0:
-                return "recompression"
-            else:
-                return "htr bp"
-        
-        return ""
-
-
 
 def solve_default_des_and_compare_od_at_des(cycle_config = 1):
     

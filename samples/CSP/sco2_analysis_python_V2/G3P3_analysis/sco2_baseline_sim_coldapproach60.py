@@ -13,13 +13,32 @@ sys.path.append(exampleFolder)
 sys.path.append(coreFolder)
 
 import design_point_examples as design_pt
+import json
 
 # Global variables
 
-folder_location = "C:\\Users\\tbrown2\\OneDrive - NREL\\sCO2-CSP 10302.41.01.40\\Notes\\G3P3\\runs\\baseline_w_IP\\"
-Nproc = 20
-eta_cutoff = 0.3
+#folder_location = "C:\\Users\\tbrown2\\OneDrive - NREL\\sCO2-CSP 10302.41.01.40\\Notes\\G3P3\\runs\\baseline_FINAL\\"
+#Nproc = 16
+run_name = "coldapproach60"
+
+global_var_dict = {}
+is_global_var = False
+
+eta_cutoff = 0.2
 N_per_batch = 50000
+
+def initialize_global_var():
+    local_var_dict = {}
+
+    json_file_path = os.path.join(parentDir, 'local_var.json')
+    if os.path.exists(json_file_path):
+        with open(json_file_path, 'r') as json_file:
+            local_var_dict = json.load(json_file)
+
+    global global_var_dict
+    global is_global_var
+    global_var_dict = local_var_dict
+    is_global_var = True
 
 # Default Case Parameters
 
@@ -34,20 +53,20 @@ def get_sco2_G3P3():
     W_air_cooler = 0.1      # [MWe] Air Cooler Parasitic
     W_thermo_gross = W_thermo_net + W_air_cooler    #[MWe]
     des_par["W_dot_net_des"] = W_thermo_gross       #[MWe]
-    des_par["fan_power_frac"] = W_air_cooler/W_thermo_net  # [-] Fraction of net cycle power consumed by air cooler fan
+    des_par["fan_power_frac"] = W_air_cooler/W_thermo_gross  # [-] Fraction of net cycle power consumed by air cooler fan
 
     # HTF
     T_HTF_in = 775                          # [C]
-    T_turbine_in = 720                      # [C] sco2 turbine inlet temp    
+    T_turbine_in = 700                      # [C] sco2 turbine inlet temp    
     des_par["T_htf_hot_des"] = T_HTF_in     # [C] HTF design hot temperature (PHX inlet)
     des_par["dT_PHX_hot_approach"] = T_HTF_in - T_turbine_in     # [C/K] Temperature difference between hot HTF and turbine inlet
-    des_par["dT_PHX_cold_approach"] = 20     # [C/K] Temperature difference between cold HTF and hot sco2
+    des_par["dT_PHX_cold_approach"] = 60     # [C/K] Temperature difference between cold HTF and hot sco2
 
     des_par["set_HTF_mdot"] = 0
 
     # Efficiency (ASSUMPTION)
-    des_par["eta_isen_t"] = 0.85   # [-] Turbine isentropic efficiency
-    des_par["eta_isen_t2"] = 0.85  # [-] Secondary turbine isentropic efficiency
+    des_par["eta_isen_t"] = 0.90   # [-] Turbine isentropic efficiency
+    des_par["eta_isen_t2"] = 0.90  # [-] Secondary turbine isentropic efficiency
     des_par["eta_isen_mc"] = 0.85  # [-] Main compressor isentropic efficiency
     des_par["eta_isen_pc"] = 0.85  # [-] Precompressor isentropic efficiency
     des_par["eta_isen_rc"] = 0.85  # [-] Recompressor Polytropic efficiency
@@ -71,41 +90,44 @@ def get_sco2_G3P3():
     des_par["cycle_config"] = 4  # [1] = RC, [2] = PC, [3] = HTRBP, [4] = TSF
 
     # Ambient
-    des_par["T_amb_des"] = 25.0  # [C] Ambient temperature at design
-    des_par["dT_mc_approach"] = 8.0  # [C] Use 6 here per Neises & Turchi 19. Temperature difference between main compressor CO2 inlet and ambient air
+    des_par["T_amb_des"] = 30  # [C] Ambient temperature at design
+    des_par["dT_mc_approach"] = 6.0  # [C] Use 6 here per Neises & Turchi 19. Temperature difference between main compressor CO2 inlet and ambient air
 
     # Pressure
-    des_par["PHX_co2_deltaP_des_in"] = -200  # [kPa] Absolute pressure loss
+    des_par["PHX_co2_deltaP_des_in"] = 0.0056  # [kPa] Relative pressure loss
     des_par["deltaP_cooler_frac"] = 0.005  # [-] Fraction of CO2 inlet pressure that is design point cooler CO2 pressure drop
-    des_par["LTR_LP_deltaP_des_in"] = 0.01  # [-]
-    des_par["HTR_LP_deltaP_des_in"] = 0.01  # [-]
     des_par["is_P_high_fixed"] = 1  # 0 = No, optimize. 1 = Yes (=P_high_limit)
     des_par["P_high_limit"] = 25  # [MPa] Cycle high pressure limit
     
+    LP_deltaP = 0.031 # 3.1% from Neises (2023) Influence of air-cooled...
+    HP_deltaP = 0.0056 # 0.56% from ^
+    des_par["LTR_LP_deltaP_des_in"] = LP_deltaP  # [-]
+    des_par["HTR_LP_deltaP_des_in"] = LP_deltaP  # [-]
+    des_par["LTR_HP_deltaP_des_in"] = HP_deltaP  # [-]
+    des_par["HTR_HP_deltaP_des_in"] = HP_deltaP  # [-]
 
     # Recuperators
-    
+    eff_max = 0.999
         # LTR
     des_par["LTR_design_code"] = 2        # 1 = UA, 2 = min dT, 3 = effectiveness
     des_par["LTR_min_dT_des_in"] = 10.0   # [C] (required if LTR_design_code == 2)
-    
+    des_par["LT_recup_eff_max"] = eff_max    # [-] Maximum effectiveness low temperature recuperator
 
         # HTR
     des_par["HTR_design_code"] = 2        # 1 = UA, 2 = min dT, 3 = effectiveness
     des_par["HTR_min_dT_des_in"] = 10.0   # [C] (required if LTR_design_code == 2)
+    des_par["HT_recup_eff_max"] = eff_max  # [-] Maximum effectiveness high temperature recuperator
+
+    des_par["eta_thermal_cutoff"] = eta_cutoff
 
     # DEFAULTS
 
     # ADDED to converge LTR and HTR 
-    des_par["HTR_n_sub_hx"] = 10
-    des_par["LTR_n_sub_hx"] = 10
-
-        # Pressure
-    des_par["LTR_HP_deltaP_des_in"] = 0.01  # [-]
-    des_par["HTR_HP_deltaP_des_in"] = 0.01  # [-]
+    des_par["HTR_n_sub_hx"] = 50
+    des_par["LTR_n_sub_hx"] = 50
  
         # System design parameters
-    des_par["htf"] = 17  # [-] Solar salt
+    des_par["htf"] = 36  # [-] Bauxite
     des_par["site_elevation"] = 588  # [m] Elevation of Daggett, CA. Used to size air cooler...
 
     # Convergence and optimization criteria
@@ -113,20 +135,21 @@ def get_sco2_G3P3():
 
     # Default
     des_par["deltaP_counterHX_frac"] = 0.0054321  # [-] Fraction of CO2 inlet pressure that is design point counterflow HX (recups & PHX) pressure drop
-
-
+    des_par["deltaT_bypass"] = 0
+    
+    des_par["yr_inflation"] = 2024
 
     # NOT USED
 
     # LTR
-    eff_max = 1
+    
     
     des_par["LTR_eff_des_in"] = 0.895     # [-] (required if LTR_design_code == 3)
-    des_par["LT_recup_eff_max"] = eff_max    # [-] Maximum effectiveness low temperature recuperator
+    
     
     # HTR
     des_par["HTR_eff_des_in"] = 0.945      # [-] (required if LTR_design_code == 3)
-    des_par["HT_recup_eff_max"] = eff_max  # [-] Maximum effectiveness high temperature recuperator
+    
 
     des_par["eta_thermal_des"] = 0.44  # [-] Target power cycle thermal efficiency (used when design_method == 1)
     
@@ -141,7 +164,7 @@ def run_G3P3_tsf_sweep(n_par, run_folder = ''):
     # Define constant parameters
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 4
-    default_par["eta_thermal_cutoff"] = eta_cutoff
+    
 
     # Organize Variable Combinations
     Npts = n_par
@@ -173,10 +196,10 @@ def run_G3P3_tsf_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "TSF_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -186,7 +209,6 @@ def run_G3P3_recomp_sweep(n_par, run_folder = ''):
     # Define constant parameters
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 1
-    default_par["eta_thermal_cutoff"] = eta_cutoff
 
     # Organize Variable Combinations
     Npts = n_par
@@ -220,10 +242,10 @@ def run_G3P3_recomp_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "recomp_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -234,8 +256,6 @@ def run_G3P3_htrbp_sweep(n_par, run_folder = ''):
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 3
     default_par["T_bypass_target"] = 0 # (not used)
-    default_par["deltaT_bypass"] = 0
-    default_par["eta_thermal_cutoff"] = eta_cutoff
 
     # Organize Variable Combinations
     Npts = n_par
@@ -269,10 +289,10 @@ def run_G3P3_htrbp_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "htrbp_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -282,7 +302,6 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
     # Define constant parameters
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 2
-    default_par["eta_thermal_cutoff"] = eta_cutoff
 
     # Organize Variable Combinations
     Npts = n_par
@@ -318,10 +337,10 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "partial_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -331,11 +350,15 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
 
 def run_G3P3_sweeps(n_par):
     
+    if is_global_var == False:
+        initialize_global_var()
+
     # Get Run Meta Data
     time = design_pt.get_time_string()
     py_basename = os.path.basename(__file__)
     py_basename_no_ext, py_ext = os.path.splitext(py_basename)
-    run_folder_name = 'run_' + str(n_par) + '_' + time + '\\'
+    run_folder_name = run_name + '\\run_' + str(n_par) + '_' + time + '\\'
+
 
     # Run Sweeps
     run_G3P3_partial_sweep(n_par, run_folder_name)
@@ -344,9 +367,9 @@ def run_G3P3_sweeps(n_par):
     run_G3P3_htrbp_sweep(n_par, run_folder_name)
 
     # Copy this py script to save folder
-    shutil.copy(__file__, folder_location + run_folder_name) 
-    py_copy_name = folder_location + run_folder_name + py_basename
-    py_copy_newname = folder_location + run_folder_name + py_basename_no_ext + time + py_ext
+    shutil.copy(__file__, global_var_dict['folder_location'] + run_folder_name) 
+    py_copy_name = global_var_dict['folder_location'] + run_folder_name + py_basename
+    py_copy_newname = global_var_dict['folder_location'] + run_folder_name + py_basename_no_ext + time + py_ext
     os.rename(py_copy_name, py_copy_newname)
     
 
@@ -354,4 +377,5 @@ def run_G3P3_sweeps(n_par):
 # Main function
 
 if __name__ == "__main__":
-    run_G3P3_sweeps(15)
+    initialize_global_var()
+    run_G3P3_sweeps(10)

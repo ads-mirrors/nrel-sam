@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.backend_bases import MouseButton
+import numpy as np
 
 parentDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parentDir)
@@ -219,6 +220,12 @@ def get_bounds(design_var_arr, result_dict):
 
     return design_var_dict
 
+def compare_val(val1, val2, tol=0):
+    err = abs((val1 - val2) / val2)
+    if(err > tol):
+        return False, err
+    else:
+        return True, err
 
 
 def compare_new_vs_old_plots():
@@ -474,6 +481,7 @@ def compare_sweeps_complete(sweep1_filename, sweep2_filename,
     no_input_match_vec = []
     outputs_match_vec = []
     outputs_no_match_vec = []
+    err_vec = []
 
     # Loop through every result in sweep1
     diff_dict_vec = []
@@ -501,20 +509,122 @@ def compare_sweeps_complete(sweep1_filename, sweep2_filename,
         cases_match = True
         if(equal_inputs == True):
             # Collect Results
+            err_list_local = []
             for output_key in output_var_vec:
-                if(sim_result_dict1[output_key][i] != sim_result_dict2[output_key][match_id]):
+                val1 = sim_result_dict1[output_key][i]
+                val2 = sim_result_dict2[output_key][match_id]
+                tol = 0.02
+                err_pass, err_val = compare_val(val1, val2, tol)
+                err_list_local.append(err_val)
+                if(err_pass == False):
                     # Case Results do not match
                     cases_match = False
+
             if(cases_match == True):
                 outputs_match_vec.append(i)
             else:
                 outputs_no_match_vec.append(i)
+                err_vec.append(np.average(err_list_local))
         else:
             cases_match = False
             no_input_match_vec.append(i)
 
 
-    return no_input_match_vec, outputs_match_vec, outputs_no_match_vec        
+    return no_input_match_vec, outputs_match_vec, outputs_no_match_vec, err_vec     
+
+def compare_sweeps_nodes(sweep1_filename, sweep2_filename, 
+                         input_var_vec, output_var_vec):
+    
+    print("Opening " + sweep1_filename)
+    sim_collection1 = sco2_solve.C_sco2_sim_result_collection()
+    sim_collection1.open_csv(sweep1_filename)
+    print(sweep1_filename + " opened")
+
+    print("Opening " + sweep2_filename)
+    sim_collection2 = sco2_solve.C_sco2_sim_result_collection()
+    sim_collection2.open_csv(sweep2_filename)
+    print(sweep2_filename + " opened")
+
+    sim_result_dict1 = sim_collection1.old_result_dict
+    sim_result_dict2 = sim_collection2.old_result_dict
+
+    # Sort by first input key
+    sim_result_dict1 = design_tools.sort_by_key(sim_result_dict1, input_var_vec[0], reverse=False)
+    sim_result_dict2 = design_tools.sort_by_key(sim_result_dict2, input_var_vec[0], reverse=False)
+
+    # Allocate Results
+    no_input_match_vec = []
+    outputs_match_vec = []
+    outputs_no_match_vec = []
+    err_vec = []
+
+    # Allocate Error Dictionary
+    error_dict = {}
+    for key in input_var_vec:
+        error_dict[key] = []
+    for key in output_var_vec:
+        error_dict[key] = []
+        error_dict[key+'_val1'] = []
+        error_dict[key+'_val2'] = []
+        error_dict[key+'_diff'] = []
+
+    # Loop through every result in sweep1
+    diff_dict_vec = []
+    NVals = len(sim_result_dict1[input_var_vec[0]])
+    for i in range(NVals):
+        input_dict = {}
+        # Loop through design inputs
+        for input_key in input_var_vec:
+            input_dict[input_key] = sim_result_dict1[input_key][i]
+
+        # Find case with same parameters
+        NVals2 = len(sim_result_dict2[input_var_vec[0]])
+        match_id = -1
+        for i2 in range(NVals2):
+            equal_inputs = True
+            for key1 in input_dict:
+                if(input_dict[key1] != sim_result_dict2[key1][i2]):
+                    equal_inputs = False
+                    continue
+            if equal_inputs == True:
+                match_id = i2
+                break
+        
+        # Compare results
+        cases_match = True
+        if(equal_inputs == True):
+            # Collect Results
+            err_list_local = []
+
+            for key in input_var_vec:
+                error_dict[key].append(sim_result_dict1[key][i])
+
+            for output_key in output_var_vec:
+                val1 = sim_result_dict1[output_key][i]
+                val2 = sim_result_dict2[output_key][match_id]
+                tol = 0.02
+                err_pass, err_val = compare_val(val1, val2, tol)
+                err_list_local.append(err_val)
+
+                error_dict[output_key].append(err_val)
+                error_dict[output_key+'_val1'].append(val1)
+                error_dict[output_key+'_val2'].append(val2)
+                error_dict[output_key+'_diff'].append(abs(val2-val1))
+                if(err_pass == False):
+                    # Case Results do not match
+                    cases_match = False
+
+            if(cases_match == True):
+                outputs_match_vec.append(i)
+            else:
+                outputs_no_match_vec.append(i)
+                err_vec.append(np.average(err_list_local))
+        else:
+            cases_match = False
+            no_input_match_vec.append(i)
+
+
+    return no_input_match_vec, outputs_match_vec, outputs_no_match_vec, error_dict 
 
 def test_compare_sweeps():
     recomp_filename_old = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\reduced\recomp_G3P3_collection_5_20240426_163437.csv"
@@ -536,6 +646,314 @@ def test_compare_sweeps():
 
     x = 0
 
+def compare_htf():
+    
+    if False:
+        filename_htrbp_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20241230_113100\htrbp_G3P3_collection_5_20241230_113751_000.csv"
+        filename_partial_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20241230_113100\partial_G3P3_collection_5_20241230_113100_000.csv"
+        filename_recomp_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20241230_113100\recomp_G3P3_collection_5_20241230_113702_000.csv"
+        filename_tsf_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20241230_113100\TSF_G3P3_collection_5_20241230_113730_000.csv"
+        
+        filename_htrbp_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\htrbp_G3P3_collection_5_20241230_111259_000.csv"
+        filename_partial_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\partial_G3P3_collection_5_20241230_110610_000.csv"
+        filename_recomp_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\recomp_G3P3_collection_5_20241230_111211_000.csv"
+        filename_tsf_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\TSF_G3P3_collection_5_20241230_111238_000.csv"
+
+    filename_htrbp_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20250102_154446\htrbp_G3P3_collection_5_20250102_155151_000.csv"
+    filename_partial_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20250102_154446\partial_G3P3_collection_5_20250102_154446_000.csv"
+    filename_recomp_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20250102_154446\recomp_G3P3_collection_5_20250102_155059_000.csv"
+    filename_tsf_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP\run_5_20250102_154446\TSF_G3P3_collection_5_20250102_155130_000.csv"
+    
+    filename_htrbp_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20250102_153016\htrbp_G3P3_collection_5_20250102_153729_000.csv"
+    filename_partial_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20250102_153016\partial_G3P3_collection_5_20250102_153016_000.csv"
+    filename_recomp_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20250102_153016\recomp_G3P3_collection_5_20250102_153639_000.csv"
+    filename_tsf_bauxite = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20250102_153016\TSF_G3P3_collection_5_20250102_153708_000.csv"
+
+    #Y_Info = ["T_htf_cold_des", "C", "HTF Outlet Temperature"]
+    Y_Info = ["cycle_cost", "M$", "Cycle Cost"]
+
+    plot_compare_sweeps(filename_htrbp_orig, filename_htrbp_bauxite,
+                        ["eta_thermal_calc", "", "Cycle Thermal Efficiency"],
+                        Y_Info, 'htrbp',
+                        label1='Salt', label2='Bauxite')
+    
+    plot_compare_sweeps(filename_partial_orig, filename_partial_bauxite,
+                        ["eta_thermal_calc", "", "Cycle Thermal Efficiency"],
+                        Y_Info, 'partial',
+                        label1='Salt', label2='Bauxite')
+    
+    plot_compare_sweeps(filename_recomp_orig, filename_recomp_bauxite,
+                        ["eta_thermal_calc", "", "Cycle Thermal Efficiency"],
+                        Y_Info, 'recomp',
+                        label1='Salt', label2='Bauxite')
+    
+    plot_compare_sweeps(filename_tsf_orig, filename_tsf_bauxite,
+                        ["eta_thermal_calc", "", "Cycle Thermal Efficiency"],
+                        Y_Info, 'tsf',
+                        label1='Salt', label2='Bauxite')
+
+def compare_old_and_new():
+    filename_htrbp_old = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\htrbp_G3P3_collection_5_20241230_111259_000.csv"
+    filename_partial_old = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\partial_G3P3_collection_5_20241230_110610_000.csv"
+    filename_recomp_old = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\recomp_G3P3_collection_5_20241230_111211_000.csv"
+    filename_tsf_old = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_w_IP_bauxite\run_5_20241230_110610\TSF_G3P3_collection_5_20241230_111238_000.csv"
+
+    filename_htrbp_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\htrbp_G3P3_collection_5_20241230_151807_000.csv"
+    filename_partial_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\partial_G3P3_collection_5_20241230_145903_000.csv"
+    filename_recomp_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\recomp_G3P3_collection_5_20241230_151717_000.csv"
+    filename_tsf_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\TSF_G3P3_collection_5_20241230_151745_000.csv"
+ 
+    X_Info = ["eta_thermal_calc", "", "Cycle Thermal Efficiency"]
+    Y_Info = ["T_htf_cold_des", "C", "HTF Outlet Temperature"]
+    #Y_Info = ["cycle_cost", "M$", "Cycle Cost"]
+
+    plot_compare_sweeps(filename_htrbp_old, filename_htrbp_new,
+                        X_Info,
+                        Y_Info, 'htrbp',
+                        label1='Old', label2='New')
+    
+    plot_compare_sweeps(filename_partial_old, filename_partial_new,
+                        X_Info,
+                        Y_Info, 'partial',
+                        label1='Old', label2='New')
+    
+    plot_compare_sweeps(filename_recomp_old, filename_recomp_new,
+                        X_Info,
+                        Y_Info, 'recomp',
+                        label1='Old', label2='New')
+    
+    plot_compare_sweeps(filename_tsf_old, filename_tsf_new,
+                        X_Info,
+                        Y_Info, 'tsf',
+                        label1='Old', label2='New')
+    
+    # Pareto (Temp vs ETA)
+    design_tools.plot_scatter_pts([
+                [filename_htrbp_new, {'label':"htrbp", 'marker':'.'}],
+                [filename_partial_new, {'label':"partial", 'marker':'.'}],             
+                [filename_recomp_new, {'label':"recomp", 'marker':'.'}],
+                [filename_tsf_new, {'label':"tsf", 'marker':'.'}]
+                ], 
+                X_Info, Y_Info, show_legend=True)
+
+def compare_air_cooler_fix():
+    filename_htrbp_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\htrbp_G3P3_collection_5_20241230_151807_000.csv"
+    filename_partial_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\partial_G3P3_collection_5_20241230_145903_000.csv"
+    filename_recomp_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\recomp_G3P3_collection_5_20241230_151717_000.csv"
+    filename_tsf_orig = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\TSF_G3P3_collection_5_20241230_151745_000.csv"
+
+    filename_htrbp_ac_fix = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\htrbp_G3P3_collection_5_20241230_154150_000.csv"
+    filename_partial_ac_fix = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\partial_G3P3_collection_5_20241230_153453_000.csv"
+    filename_recomp_ac_fix = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\recomp_G3P3_collection_5_20241230_154058_000.csv"
+    filename_tsf_ac_fix = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\TSF_G3P3_collection_5_20241230_154127_000.csv"
+ 
+    X_Info = ["eta_thermal_calc", "", "Cycle Thermal Efficiency"]
+    #Y_Info = ["T_htf_cold_des", "C", "HTF Outlet Temperature"]
+    Y_Info = ["cycle_cost", "M$", "Cycle Cost"]
+    label1 = "Orig"
+    label2 = "Air Cooler Fix"
+
+    plot_compare_sweeps(filename_htrbp_orig, filename_htrbp_ac_fix,
+                        X_Info,
+                        Y_Info, 'htrbp',
+                        label1=label1, label2=label2)
+    
+    plot_compare_sweeps(filename_partial_orig, filename_partial_ac_fix,
+                        X_Info,
+                        Y_Info, 'partial',
+                        label1=label1, label2=label2)
+    
+    plot_compare_sweeps(filename_recomp_orig, filename_recomp_ac_fix,
+                        X_Info,
+                        Y_Info, 'recomp',
+                        label1=label1, label2=label2)
+    
+    plot_compare_sweeps(filename_tsf_orig, filename_tsf_ac_fix,
+                        X_Info,
+                        Y_Info, 'tsf',
+                        label1=label1, label2=label2)
+    return
+    input_var_vec = ["is_recomp_ok", "is_bypass_ok", "HTR_UA_des_in", "LTR_UA_des_in",
+                      "P_high_limit", "is_PR_fixed", "is_IP_fixed", "is_turbine_split_ok",
+                      "eta_isen_mc", "dT_PHX_cold_approach"]
+
+    output_var_vec = ["eta_thermal_calc"]
+
+    file_list = [[filename_htrbp_orig, filename_htrbp_ac_fix],
+                 [filename_partial_orig, filename_partial_ac_fix],
+                 [filename_recomp_orig, filename_recomp_ac_fix],
+                 [filename_tsf_orig, filename_tsf_ac_fix]]
+    
+    for file_duo in file_list:
+        no_input_match_vec, outputs_match_vec, outputs_no_match_vec, err_vec = compare_sweeps_complete(file_duo[0], file_duo[1], input_var_vec, output_var_vec)
+    
+        total_cases = len(no_input_match_vec) + len(outputs_match_vec) + len(outputs_no_match_vec)
+        total_input_match = total_cases - len(no_input_match_vec)
+        missing_percent = (len(no_input_match_vec) / total_cases) * 100
+        match_percent = (len(outputs_match_vec) / total_input_match) * 100
+        no_match_percent = (len(outputs_no_match_vec) / total_input_match) * 100
+
+        x = 0
+    
+def compare_nodes():
+    filename_htrbp_10 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\htrbp_G3P3_collection_5_20241230_154150_000.csv"
+    filename_partial_10 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\partial_G3P3_collection_5_20241230_153453_000.csv"
+    filename_recomp_10 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\recomp_G3P3_collection_5_20241230_154058_000.csv"
+    filename_tsf_10 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_air_cooler\run_5_20241230_153453\TSF_G3P3_collection_5_20241230_154127_000.csv"
+
+    filename_htrbp_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\htrbp_G3P3_collection_5_20241231_113750_000.csv"
+    filename_partial_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\partial_G3P3_collection_5_20241231_113034_000.csv"
+    filename_recomp_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\recomp_G3P3_collection_5_20241231_113655_000.csv"
+    filename_tsf_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\TSF_G3P3_collection_5_20241231_113728_000.csv"
+
+    file_list = [[filename_htrbp_10, filename_htrbp_100],
+                 [filename_partial_10, filename_partial_100],
+                 [filename_recomp_10, filename_recomp_100],
+                 [filename_tsf_10, filename_tsf_100]]
+
+    input_var_vec = ["is_recomp_ok", "is_bypass_ok", "HTR_UA_des_in", "LTR_UA_des_in",
+                      "P_high_limit", "is_PR_fixed", "is_IP_fixed", "is_turbine_split_ok",
+                      "eta_isen_mc", "dT_PHX_cold_approach"]
+
+    eta = "eta_thermal_calc"
+    cost = "cycle_cost"
+    T_htf = "T_htf_cold_des"
+    output_var_vec = [eta, cost, T_htf]
+
+    for file_duo in file_list:
+        no_input_match_vec, outputs_match_vec, outputs_no_match_vec, error_dict = compare_sweeps_nodes(file_duo[0], file_duo[1], input_var_vec, output_var_vec)
+    
+        total_cases = len(no_input_match_vec) + len(outputs_match_vec) + len(outputs_no_match_vec)
+        total_input_match = total_cases - len(no_input_match_vec)
+        missing_percent = (len(no_input_match_vec) / total_cases) * 100
+        match_percent = (len(outputs_match_vec) / total_input_match) * 100
+        no_match_percent = (len(outputs_no_match_vec) / total_input_match) * 100
+
+        # Find worst case
+        max_index_eta = np.argmax(error_dict[eta+'_diff'])
+        max_dict = {}
+
+        # Collect Worst Case Dictionary
+        for input_label in input_var_vec:
+            max_dict[input_label] = error_dict[input_label][max_index_eta]
+
+        for output_label in output_var_vec:
+            max_dict[output_label] = error_dict[output_label][max_index_eta]
+            max_dict[output_label+"_val1"] = error_dict[output_label+"_val1"][max_index_eta]
+            max_dict[output_label+"_val2"] = error_dict[output_label+"_val2"][max_index_eta]
+            max_dict[output_label+"_diff"] = error_dict[output_label+"_diff"][max_index_eta]
+
+
+
+        max_err_eta = error_dict[eta][max_index_eta]
+        max_err_eta_val1 = error_dict[eta+'_val1'][max_index_eta]
+        max_err_eta_val2 = error_dict[eta+'_val2'][max_index_eta]
+        max_diff_eta = error_dict[eta+'_diff'][max_index_eta]
+        avg_err_eta = np.average(error_dict[eta])
+        avg_diff_eta = np.average(error_dict[eta+'_diff'])
+
+        max_index_cost = np.argmax(error_dict[cost+'_diff'])
+        max_err_cost = error_dict[cost][max_index_cost]
+        max_err_cost_val1 = error_dict[cost+'_val1'][max_index_cost]
+        max_err_cost_val2 = error_dict[cost+'_val2'][max_index_cost]
+        max_diff_cost = error_dict[cost+'_diff'][max_index_cost]
+        avg_err_cost = np.average(error_dict[cost])
+        avg_diff_cost = np.average(error_dict[cost+'_diff'])
+
+        max_index_T_htf = np.argmax(error_dict[T_htf+'_diff'])
+        max_err_T_htf = error_dict[T_htf][max_index_T_htf]
+        max_err_T_htf_val1 = error_dict[T_htf+'_val1'][max_index_T_htf]
+        max_err_T_htf_val2 = error_dict[T_htf+'_val2'][max_index_T_htf]
+        max_diff_T_htf = error_dict[T_htf+'_diff'][max_index_T_htf]
+        avg_err_T_htf = np.average(error_dict[T_htf])
+        avg_diff_T_htf = np.average(error_dict[T_htf+'_diff'])
+
+        x = 0
+
+def compare_nodes_50_100():
+    filename_htrbp_50 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_155852\htrbp_G3P3_collection_5_20241231_160605_000.csv"
+    filename_partial_50 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_155852\partial_G3P3_collection_5_20241231_155852_000.csv"
+    filename_recomp_50 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_155852\recomp_G3P3_collection_5_20241231_160511_000.csv"
+    filename_tsf_50 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_155852\TSF_G3P3_collection_5_20241231_160542_000.csv"
+
+    filename_htrbp_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\htrbp_G3P3_collection_5_20241231_113750_000.csv"
+    filename_partial_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\partial_G3P3_collection_5_20241231_113034_000.csv"
+    filename_recomp_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\recomp_G3P3_collection_5_20241231_113655_000.csv"
+    filename_tsf_100 = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL_nodes\run_5_20241231_113034\TSF_G3P3_collection_5_20241231_113728_000.csv"
+
+    file_list = [[filename_htrbp_50, filename_htrbp_100],
+                 [filename_partial_50, filename_partial_100],
+                 [filename_recomp_50, filename_recomp_100],
+                 [filename_tsf_50, filename_tsf_100]]
+
+    input_var_vec = ["is_recomp_ok", "is_bypass_ok", "HTR_UA_des_in", "LTR_UA_des_in",
+                      "P_high_limit", "is_PR_fixed", "is_IP_fixed", "is_turbine_split_ok",
+                      "eta_isen_mc", "dT_PHX_cold_approach"]
+
+    eta = "eta_thermal_calc"
+    cost = "cycle_cost"
+    T_htf = "T_htf_cold_des"
+    output_var_vec = [eta, cost, T_htf]
+
+    for file_duo in file_list:
+        no_input_match_vec, outputs_match_vec, outputs_no_match_vec, error_dict = compare_sweeps_nodes(file_duo[0], file_duo[1], input_var_vec, output_var_vec)
+    
+        total_cases = len(no_input_match_vec) + len(outputs_match_vec) + len(outputs_no_match_vec)
+        total_input_match = total_cases - len(no_input_match_vec)
+        missing_percent = (len(no_input_match_vec) / total_cases) * 100
+        match_percent = (len(outputs_match_vec) / total_input_match) * 100
+        no_match_percent = (len(outputs_no_match_vec) / total_input_match) * 100
+
+        # Find worst case
+        max_index_eta = np.argmax(error_dict[eta+'_diff'])
+        max_dict = {}
+
+        # Collect Worst Case Dictionary
+        for input_label in input_var_vec:
+            max_dict[input_label] = error_dict[input_label][max_index_eta]
+
+        for output_label in output_var_vec:
+            max_dict[output_label] = error_dict[output_label][max_index_eta]
+            max_dict[output_label+"_val1"] = error_dict[output_label+"_val1"][max_index_eta]
+            max_dict[output_label+"_val2"] = error_dict[output_label+"_val2"][max_index_eta]
+            max_dict[output_label+"_diff"] = error_dict[output_label+"_diff"][max_index_eta]
+
+
+
+        max_err_eta = error_dict[eta][max_index_eta]
+        max_err_eta_val1 = error_dict[eta+'_val1'][max_index_eta]
+        max_err_eta_val2 = error_dict[eta+'_val2'][max_index_eta]
+        max_diff_eta = error_dict[eta+'_diff'][max_index_eta]
+        avg_err_eta = np.average(error_dict[eta])
+        avg_diff_eta = np.average(error_dict[eta+'_diff'])
+
+        max_index_cost = np.argmax(error_dict[cost+'_diff'])
+        max_err_cost = error_dict[cost][max_index_cost]
+        max_err_cost_val1 = error_dict[cost+'_val1'][max_index_cost]
+        max_err_cost_val2 = error_dict[cost+'_val2'][max_index_cost]
+        max_diff_cost = error_dict[cost+'_diff'][max_index_cost]
+        avg_err_cost = np.average(error_dict[cost])
+        avg_diff_cost = np.average(error_dict[cost+'_diff'])
+
+        max_index_T_htf = np.argmax(error_dict[T_htf+'_diff'])
+        max_err_T_htf = error_dict[T_htf][max_index_T_htf]
+        max_err_T_htf_val1 = error_dict[T_htf+'_val1'][max_index_T_htf]
+        max_err_T_htf_val2 = error_dict[T_htf+'_val2'][max_index_T_htf]
+        max_diff_T_htf = error_dict[T_htf+'_diff'][max_index_T_htf]
+        avg_err_T_htf = np.average(error_dict[T_htf])
+        avg_diff_T_htf = np.average(error_dict[T_htf+'_diff'])
+
+        x = 0
+
+
+def plot_new():
+    filename_htrbp_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\htrbp_G3P3_collection_5_20241230_151807_000.csv"
+    filename_partial_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\partial_G3P3_collection_5_20241230_145903_000.csv"
+    filename_recomp_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\recomp_G3P3_collection_5_20241230_151717_000.csv"
+    filename_tsf_new = r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_5_20241230_145903\TSF_G3P3_collection_5_20241230_151745_000.csv"
+
+    plot_sweep(filename_tsf_new, filename_recomp_new, filename_partial_new, filename_htrbp_new)
+
 # Main Script
 
 if __name__ == "__main__":
@@ -545,5 +963,11 @@ if __name__ == "__main__":
     #compare_sweeps_tsf()
     #compare_sweeps_htrbp()
     #compare_new_vs_old_plots()
-    compare_sweeps_partial_IP()
+    #compare_sweeps_partial_IP()
+    compare_htf()
+    #compare_old_and_new()
+    #plot_new()
+    #compare_air_cooler_fix()
+    #compare_nodes()
+    #compare_nodes_50_100()
     plt.show(block = True)
