@@ -1278,6 +1278,10 @@ void OpenEIUtilityRateDialog::QueryUtilitiesByZipCode(wxString *err)
 	wxString zip_code = txtZipCode->GetValue();
 	lstUtilities->Clear();
 	lstRates->Clear();
+	lblUtilityCount->SetLabel("");
+	lblRateStatus->SetLabel("");
+	chkActiveOnly->SetLabel("Show active");
+
 	if (api.QueryUtilityCompaniesbyZipcode(zip_code, mUtilityCompanies, err))	{
 		lstUtilities->Freeze();
 		lstUtilities->Clear();
