@@ -162,7 +162,7 @@ public:
 
 	void StartHttp();
 	void QueryUtilities();
-	void QueryUtilitiesByZipCode();
+	void QueryUtilitiesByZipCode(wxString* err = NULL);
 	bool QueryRates(const wxString &utility_name);
 	void OnEvent(wxCommandEvent &evt);
 	void OnTimer(wxTimerEvent &evt);
