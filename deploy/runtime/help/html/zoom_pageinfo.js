@@ -494,7 +494,7 @@ pagedata = [ ["./3dshad-3d-scene.html","3D scene view","The 3D scene view gives 
 ["./hybrid_system_costs.html","Hybrid System Costs","Hybrid system costs are costs that apply to the entire hybrid system. These costs are in addition to subsystem costs defined on the Installation C...","./images/zoomimage.jpg"],
 ["./incentives.html","Incentives","The Incentives page allows you to define the parameters for the following types of tax credits and cash incentives.","./images/zoomimage.jpg"],
 ["./incentives_and_depreciation.html","Incentives and Depreciation","The Incentives and Depreciation input pages are where you describe financial incentives and depreciation parameters.","./images/zoomimage.jpg"],
-["./index.html","Introduction","This Help system describes SAM 2025.4.7 and was last revised on 4/7/2025.","./images/zoomimage.jpg"],
+["./index.html","Introduction","This Help system describes SAM 2025.4.16 and was last revised on 4/7/2025.","./images/zoomimage.jpg"],
 ["./inputs_browser.html","Inputs Browser","The inputs browser displays a list of the input variables in all cases in the active project. You can use it to:","./images/zoomimage.jpg"],
 ["./input_pages.html","Input Pages","Use the input pages to verify and change values of input variables for your analysis. ","./images/zoomimage.jpg"],
 ["./installation.html","Software Installation","To install SAM, download the package for your computer&#39;s operating system from the SAM website&#39;s Download page, and follow the installation instru...","./images/zoomimage.jpg"],
