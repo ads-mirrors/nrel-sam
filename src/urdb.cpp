@@ -1271,28 +1271,26 @@ void OpenEIUtilityRateDialog::QueryUtilities()
 
 }
 
-void OpenEIUtilityRateDialog::QueryUtilitiesByZipCode()
+void OpenEIUtilityRateDialog::QueryUtilitiesByZipCode(wxString *err)
 {
 	lblStatus->SetLabel("Loading companies...");
-	wxString err;
 	wxBusyInfo busy("Getting list of companies...", this);
 	wxString zip_code = txtZipCode->GetValue();
-	if (!api.QueryUtilityCompaniesbyZipcode(zip_code, mUtilityCompanies, &err))
-	{
-		busy.~wxBusyInfo();
-		lstUtilities->Clear();
-		wxMessageBox("Query by Zipcode Error\n\n" + err, "URDB Download Message");
-		return;
-	}
-
-	lstUtilities->Freeze();
 	lstUtilities->Clear();
-	lstUtilities->Append(mUtilityCompanies);
-	lstUtilities->Thaw();
+	lstRates->Clear();
+	lblUtilityCount->SetLabel("");
+	lblRateStatus->SetLabel("");
+	chkActiveOnly->SetLabel("Show active");
 
+	if (api.QueryUtilityCompaniesbyZipcode(zip_code, mUtilityCompanies, err))	{
+		lstUtilities->Freeze();
+		lstUtilities->Clear();
+		lstUtilities->Append(mUtilityCompanies);
+		lstUtilities->Thaw();
+		lblUtilityCount->SetLabel(wxString::Format("%d companies", (int)lstUtilities->Count()));
+		lstUtilities->SetFocus();
+	}
 	lblStatus->SetLabel("Ready.");
-	lblUtilityCount->SetLabel(wxString::Format("%d companies", (int)lstUtilities->Count()));
-	lstUtilities->SetFocus();
 }
 
 int OpenEIUtilityRateDialog::ShowModal()
@@ -1455,7 +1453,11 @@ void OpenEIUtilityRateDialog::OnEvent(wxCommandEvent &evt)
 		QueryUtilities();
 		break;
 	case ID_btnQueryZipCode:
-		QueryUtilitiesByZipCode();
+		wxString err ="";
+		QueryUtilitiesByZipCode(&err);
+		if (err != "")	{
+			wxMessageBox("Error getting list of companies by zip code.\n\n" + err, "URDB Download Message");
+		}
 		break;
 	}
 }
