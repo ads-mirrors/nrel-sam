@@ -12097,7 +12097,7 @@
             "Units": "$",
             "Group": "Geothermal Capital Costs",
             "IndexLabels": "",
-            "Flags": 3.0,
+            "Flags": 11.0,
             "DefaultValue": 1000000.0,
             "UIObject": "Numeric",
             "sscVariableName": "",
