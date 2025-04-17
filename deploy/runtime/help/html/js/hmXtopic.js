@@ -6,7 +6,7 @@ hmProjectInfo = {
 	copyright: "© 2025 National Renewable Energy Laboratory",
 	summary: "&nbsp;",
 	version: "0.0.1",
-	date: "Friday, April 4, 2025",
+	date: "Thursday, April 10, 2025",
 	language: "en-us",
 	mainfile: "index.html"
 	}
