@@ -74,6 +74,8 @@ static SamApp::ver releases[] = {
 	//intermediate version numbers are required in this list in order for the version upgrade script (versions.lk) to work correctly
 	//please clarify the reason for the new version in a comment. Examples: public release, variable changes, internal release, public beta release, etc.
 	//the top version should always be the current working version
+			{ 2025, 4, 16 }, // 2025.4.16 ssc 302 public release
+			{ 2025, 4, 7},	// 2025.4.7 ssc 301 release candidate
 			{ 2024, 12, 12},	// 2024.12.12 ssc 298 public release
 			{ 2024, 11, 14},	// 2024.11.14 ssc 295 beta release for IPH configurations expires 1/31/2025
 			{ 2024, 9, 15},		// 2024.09.15 Placeholder version number for updated NT variable names (replace with release version number)		
@@ -261,7 +263,8 @@ public:
 		//dc.SetBackground(wxBrush(wxColour(4, 16, 96))); // Navy Blue (Matt's birthday 4/16/96) 11/22/21
 		//dc.SetBackground(wxBrush(wxColour(182, 86, 42))); // Thanksgiving color palette https://www.color-hex.com/color-palette/27134
 		//dc.SetBackground(wxBrush(wxColour(49, 212, 179))); // 10/31/2023
-		dc.SetBackground(wxBrush(wxColour(255, 200, 45))); // 11/1/2024 University of Kansas KU Jayhawks
+		//dc.SetBackground(wxBrush(wxColour(255, 200, 45))); // 11/1/2024 University of Kansas KU Jayhawks
+		dc.SetBackground(wxBrush(wxColour(36, 70, 68)));	// 04/02/2025 Muted teal
 
 		dc.Clear();
 

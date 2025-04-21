@@ -9533,13 +9533,10 @@
 			"u_tank": 0.4
 		},
 		"HeatSink": {
-			"hs_phys_N_sub": 100,
+			"hs_htf_mdot_max_frac": 1.1,
 			"hs_phys_P_steam_hot_des": 4.762,
 			"hs_phys_Q_steam_hot_des": 0.75,
 			"hs_phys_T_steam_cold_des": 120,
-			"hs_phys_f_mdot_steam_max": 1.5,
-			"hs_phys_f_mdot_steam_min": 0.2,
-			"hs_phys_tol": 0.01,
 			"hs_type": 0,
 			"pb_pump_coef": 0.55
 		},
@@ -9555,20 +9552,20 @@
 		"Deprecated": {
 		},
 		"AdjustmentFactors": {
-			"constant": 4,
-			"en_periods": 0,
-			"en_timeindex": 0,
-			"periods": [
-				[0.000000, 0.000000, 0.000000]
-			],
-			"timeindex": [0.000000],
-			"adjust_constant": 5,
+			"adjust_constant": 4,
 			"adjust_en_periods": 0,
 			"adjust_en_timeindex": 0,
 			"adjust_periods": [
 				[0.000000, 0.000000, 0.000000]
 			],
-			"adjust_timeindex": [0.000000]
+			"adjust_timeindex": [0.000000],
+			"sf_adjust_constant": 5,
+			"sf_adjust_en_periods": 0,
+			"sf_adjust_en_timeindex": 0,
+			"sf_adjust_periods": [
+				[0.000000, 0.000000, 0.000000]
+			],
+			"sf_adjust_timeindex": [0.000000]
 		}
 	}
 }

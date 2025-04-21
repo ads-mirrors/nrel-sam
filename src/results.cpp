@@ -215,7 +215,7 @@ void PopulateSelectionList(wxDVSelectionListCtrl* sel, wxArrayString* names, Sim
                 else if (grp == "UR_DMP")
                     gbn = "Electricity Demand Data by Period"; // monthly period
                 else if (grp == "LIFETIME_MP")
-                    gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
+                        gbn = "Lifetime Merchant Plant"; // merchant plant output - SAM issue 485 - can be the same or different from other Lifetime data (e.g. hourly, 15minute, monthly, etc.)
                 else if (grp == "WTPCD")
                     gbn = "Wind Turbine Power Curve Data";
             }
@@ -699,29 +699,34 @@ void ResultsViewer::SetDViewState(wxDVPlotCtrlSettings& settings)
             }
 
 
-
-            //***TimeSeries Properties***
-            m_timeSeries->SetStackingOnYLeft(true); //Turn on stacked area plot
             m_timeSeries->SetTopSelectedNames(settings.GetProperty(wxT("tsTopSelectedNames")));
             m_timeSeries->SetBottomSelectedNames(settings.GetProperty(wxT("tsBottomSelectedNames")));
+            
 
             // select something by default
             if (m_timeSeries->GetNumberOfSelections() == 0) {
+
+                //***TimeSeries Properties***
+                m_timeSeries->SetStackingOnYLeft(true); //Turn on stacked area plot
+                
+
                 m_timeSeries->SelectDataSetAtIndex(batt_index, 0);
                 m_timeSeries->SelectDataSetAtIndex(grid_index, 0);
                 m_timeSeries->SelectDataSetAtIndex(gen_index, 0);
                 m_timeSeries->SelectDataSetAtIndex(batt_SOC_index, 0); //right y-axis, battery SOC percentage (%)
 
+                //Set min/max after setting plots to make sure there is an axis to set.
+                if (settings.GetProperty(wxT("tsAxisMin")).ToDouble(&min))
+                    m_timeSeries->SetViewMin(min);
+                /*
+                if (settings.GetProperty(wxT("tsAxisMax")).ToDouble(&max))
+                    m_timeSeries->SetViewMax(max);
+                */
+                m_timeSeries->SetViewMax(168); //24 hr/day * 7 days, show first week
+
             }
 
-            //Set min/max after setting plots to make sure there is an axis to set.
-            if (settings.GetProperty(wxT("tsAxisMin")).ToDouble(&min))
-                m_timeSeries->SetViewMin(min);
-            /*
-            if (settings.GetProperty(wxT("tsAxisMax")).ToDouble(&max))
-                m_timeSeries->SetViewMax(max);
-            */
-            m_timeSeries->SetViewMax(168); //24 hr/day * 7 days, show first week
+            
         }
         
         
@@ -2460,6 +2465,7 @@ public:
 
         if (vars.size() == 0) return;
 
+
         // don't report geothermal system output as minute data depending on analysis period
         UseLifetime = false;
         if (VarValue* lftm = results->GetValue("system_use_lifetime_output"))
@@ -2529,6 +2535,15 @@ public:
                         MinCount = cc.N;
 
                     StepsPerHour = cc.N / (8760 * Years);
+
+                    StringHash ui_hint = results->GetUIHints(vars[i]);
+
+                    if (ui_hint.find("GROUP") != ui_hint.end())
+                    {
+                        wxString grp = ui_hint["GROUP"];
+                        if (grp == "LIFETIME_MP")
+                            UseLifetime = true; // SAM issue 1891 - Merchant Plant values are always lifetime.
+                    }
 
                     cc.Label = vars[i];
                     wxString label = results->GetLabel(vars[i]);

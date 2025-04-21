@@ -1,7 +1,7 @@
 {
     "Name": "MSLF IPH System Control",
-    "Width": 841.0,
-    "Height": 413.0,
+    "Width": 840.0,
+    "Height": 389.0,
     "FormObjects": {
         "GroupBox": {
             "Visible": 1.0,
@@ -1682,89 +1682,6 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "disp_rsu_cost_rel"
-                },
-                "X": {
-                    "Type": 3.0,
-                    "Integer": 273.0
-                },
-                "Y": {
-                    "Type": 3.0,
-                    "Integer": 333.0
-                },
-                "Width": {
-                    "Type": 3.0,
-                    "Integer": 90.0
-                },
-                "Height": {
-                    "Type": 3.0,
-                    "Integer": 21.0
-                },
-                "Tool Tip": {
-                    "Type": 5.0,
-                    "String": ""
-                },
-                "Value": {
-                    "Type": 1.0,
-                    "Double": 0.0
-                },
-                "Mode": {
-                    "Type": 3.0,
-                    "Integer": 1.0
-                },
-                "Format": {
-                    "Type": 3.0,
-                    "Integer": 1.0
-                },
-                "Decimals": {
-                    "Type": 3.0,
-                    "Integer": 3.0
-                },
-                "Prefix": {
-                    "Type": 5.0,
-                    "String": ""
-                },
-                "Suffix": {
-                    "Type": 5.0,
-                    "String": ""
-                },
-                "ThousandsSep": {
-                    "Type": 2.0,
-                    "Boolean": 1.0
-                },
-                "Editable": {
-                    "Type": 2.0,
-                    "Boolean": 1.0
-                },
-                "ForeColour": {
-                    "Type": 4.0,
-                    "Color": {
-                        "Red": 0.0,
-                        "Green": 0.0,
-                        "Blue": 0.0,
-                        "Alpha": 255.0
-                    }
-                },
-                "BackColour": {
-                    "Type": 4.0,
-                    "Color": {
-                        "Red": 255.0,
-                        "Green": 255.0,
-                        "Blue": 255.0,
-                        "Alpha": 255.0
-                    }
-                },
-                "TabOrder": {
-                    "Type": 3.0,
-                    "Integer": -1.0
-                }
-            }
-        },
-        "Numeric": {
-            "Visible": 1.0,
-            "ObjectProperties": {
-                "Name": {
-                    "Type": 5.0,
                     "String": "disp_time_weighting"
                 },
                 "X": {
@@ -1988,7 +1905,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 171.0
+                    "Integer": 147.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -2199,7 +2116,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 381.0
+                    "Integer": 357.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -2282,7 +2199,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 357.0
+                    "Integer": 333.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -2702,19 +2619,6 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
-        "disp_rsu_cost_rel": {
-            "Version": 4.0,
-            "Type": 1.0,
-            "Label": "Receiver startup cost penalty",
-            "Units": "$/MWt-field/start",
-            "Group": "System Control",
-            "IndexLabels": "",
-            "Flags": 2.0,
-            "DefaultValue": 1.4,
-            "UIObject": "Default",
-            "sscVariableName": "",
-            "sscVariableValue": ""
-        },
         "disp_time_weighting": {
             "Version": 4.0,
             "Type": 1.0,
@@ -2823,21 +2727,23 @@
         "\ta[4] = ${SC_DISP_bop_par_2};\r",
         "\treturn a;\r",
         "};\r",
-        "\r",
-        "\r",
-        "equations{ 'is_dispatch' } = define() {\r",
-        "\treturn false;\r",
-        "};\r",
-        "\r",
         ""
     ],
     "Callbacks": [
         "on_load{'MSLF IPH System Control'} = define()\r",
         "{\r",
-        "\tenable('is_dispatch', false);\r",
-        "\tshow('is_dispatch', false);\r",
-        "\ton_change{\"is_dispatch\"}();\r",
-        "\tloss_adjustment_set();\r",
+        "  fin = financing();\r",
+        "  if ( fin == \"Commercial\" || fin == \"None\" || fin == \"LCOH Calculator\") \r",
+        "  {\r",
+        "    show('is_dispatch', false);\r",
+        "  }\r",
+        "  if( fin == \"Single Owner\" )\r",
+        "  {\r",
+        "    show('is_dispatch', true);\r",
+        "  }\r",
+        "  \r",
+        "  on_change{\"is_dispatch\"}();\r",
+        "  loss_adjustment_set();\t\r",
         "};\r",
         "\r",
         "\r",

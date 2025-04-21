@@ -35,10 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wex/easycurl.h>
 
 #include <rapidjson/reader.h>
+#include <rapidjson/error/en.h> // parser errors returned as char strings
 
 #include "main.h"
 #include "geotools.h"
 
+/*
 static wxString MyGet(const wxString& url)
 {
     wxEasyCurl curl;
@@ -47,7 +49,7 @@ static wxString MyGet(const wxString& url)
     curl.Get(url);
     return curl.GetDataAsString();
 }
-
+*/
 // Geocode using Google API for non-NREL builds of SAM
 bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
@@ -78,25 +80,26 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
             return false;
     }
 
-    rapidjson::Document reader;
-    auto str = curl.GetDataAsString();
+    // change from UTF8 to UTF16 encoding to address unicode characters per SAM GitHub issue 1848
+    rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
+    wxString str = curl.GetDataAsString();
     reader.Parse(str.c_str());
 
     if (!reader.HasParseError()) {
-        if (reader.HasMember("results")) {
-            if (reader["results"].IsArray()) {
-                if (reader["results"][0].HasMember("geometry")) {
-                    if (reader["results"][0]["geometry"].IsArray()) {
-                        if (reader["results"][0]["geometry"][0].HasMember("location")) {
-                            if (reader["results"][0]["geometry"][0]["location"].HasMember("lat")) {
-                                if (reader["results"][0]["geometry"][0]["location"]["lat"].IsNumber()) {
-                                    *lat = reader["results"][0]["geometry"][0]["location"]["lat"].GetDouble();
+        if (reader.HasMember(L"results")) {
+            if (reader[L"results"].IsArray()) {
+                if (reader[L"results"][0].HasMember(L"geometry")) {
+                    if (reader[L"results"][0][L"geometry"].IsArray()) {
+                        if (reader[L"results"][0][L"geometry"][0].HasMember(L"location")) {
+                            if (reader[L"results"][0][L"geometry"][0][L"location"].HasMember(L"lat")) {
+                                if (reader[L"results"][0][L"geometry"][0][L"location"][L"lat"].IsNumber()) {
+                                    *lat = reader[L"results"][0][L"geometry"][0][L"location"][L"lat"].GetDouble();
                                     success = true;
                                 }
                             }
-                            if (reader["results"][0]["geometry"][0]["location"].HasMember("lng")) {
-                                if (reader["results"][0]["geometry"][0]["location"]["lng"].IsNumber()) {
-                                    *lon = reader["results"][0]["geometry"][0]["location"]["lng"].GetDouble();
+                            if (reader[L"results"][0][L"geometry"][0][L"location"].HasMember(L"lng")) {
+                                if (reader[L"results"][0][L"geometry"][0][L"location"][L"lng"].IsNumber()) {
+                                    *lon = reader[L"results"][0][L"geometry"][0][L"location"][L"lng"].GetDouble();
                                     success &= true;
                                 }
                             }
@@ -110,9 +113,9 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
 
         success = false;//overrides success of retrieving data
 
-        if (reader.HasMember("status")) {
-            if (reader["status"].IsString()) {
-                str = reader["status"].GetString();
+        if (reader.HasMember(L"status")) {
+            if (reader[L"status"].IsString()) {
+                str = reader[L"status"].GetString();
                 success = str.Lower() == "ok";
             }
         }
@@ -125,7 +128,7 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
     if (tz != 0) {
         success = false;
 
-        // get timezone from Goolge timezone API
+        // get timezone from Google timezone API
         url = SamApp::WebApi("google_timezone_api") + wxString::Format("&location=%.14lf,%.14lf", *lat, *lon);
         url.Replace("<GOOGLEAPIKEY>", wxString(google_api_key));
 
@@ -140,13 +143,13 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
         reader.Parse(str.c_str());
 
         if (!reader.HasParseError()) {
-            if (reader.HasMember("rawOffset")) {
-                if (reader["rawOffset"].IsNumber()) {
-                    *tz = reader["rawOffset"].GetDouble() / 3600.0;
+            if (reader.HasMember(L"rawOffset")) {
+                if (reader[L"rawOffset"].IsNumber()) {
+                    *tz = reader[L"rawOffset"].GetDouble() / 3600.0;
                     success = true;
                 }
-                else if (reader["rawOffset"].IsInt()) {
-                    *tz = reader["rawOffset"].GetInt() / 3600.0;
+                else if (reader[L"rawOffset"].IsInt()) {
+                    *tz = reader[L"rawOffset"].GetInt() / 3600.0;
                     success = true;
                 }
             }
@@ -155,9 +158,9 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
         // check status code
         success = false;//overrides success of retrieving data
 
-        if (reader.HasMember("status")) {
-            if (reader["status"].IsString()) {
-                str = reader["status"].GetString();
+        if (reader.HasMember(L"status")) {
+            if (reader[L"status"].IsString()) {
+                str = reader[L"status"].GetString();
                 success = str.Lower() == "ok";
             }
         }
@@ -185,6 +188,12 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
 
     wxEasyCurl curl;
     wxBusyCursor curs;
+    
+    // SAM issue 1968 
+    curl.AddHttpHeader("Content-Type: application/json");
+    curl.AddHttpHeader("Accept: application/json");
+
+
     if (showprogress) {
         if (!curl.Get(url, "Geocoding address '" + address + "'..."))
             return false;
@@ -194,12 +203,15 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
             return false;
     }
  
-    rapidjson::Document reader;
-    auto str = curl.GetDataAsString();
-    reader.Parse(str.c_str());
+    // change from UTF8 to UTF16 encoding to address unicode characters per SAM GitHub issue 1848
+    rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
+    wxString str = curl.GetDataAsString();
+
+    rapidjson::ParseResult ok = reader.Parse(str.c_str());
 
 
-    /* example for "denver, co"
+    /* 
+    example for "denver, co"
 {"info":
     {"statuscode":0,"copyright":
         {"text":"© 2024 MapQuest, Inc.","imageUrl":"http://api.mqcdn.com/res/mqlogo.gif","imageAltText":"© 2024 MapQuest, Inc."}
@@ -213,20 +225,20 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         */
 
     if (!reader.HasParseError()) {
-        if (reader.HasMember("results")) {
-            if (reader["results"].IsArray()) {
-                if (reader["results"][0].HasMember("locations")) {
-                    if (reader["results"][0]["locations"].IsArray()) {
-                        if (reader["results"][0]["locations"][0].HasMember("latLng")) {
-                            if (reader["results"][0]["locations"][0]["latLng"].HasMember("lat")) {
-                                if (reader["results"][0]["locations"][0]["latLng"]["lat"].IsNumber()) {
-                                    *lat = reader["results"][0]["locations"][0]["latLng"]["lat"].GetDouble();
+        if (reader.HasMember(L"results")) {
+            if (reader[L"results"].IsArray()) {
+                if (reader[L"results"][0].HasMember(L"locations")) {
+                    if (reader[L"results"][0][L"locations"].IsArray()) {
+                        if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
+                            if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
+                                if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
+                                    *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
                                     success = true;
                                 }
                             }
-                            if (reader["results"][0]["locations"][0]["latLng"].HasMember("lng")) {
-                                if (reader["results"][0]["locations"][0]["latLng"]["lng"].IsNumber()) {
-                                    *lon = reader["results"][0]["locations"][0]["latLng"]["lng"].GetDouble();
+                            if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
+                                if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
+                                    *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
                                     success &= true;
                                 }
                             }
@@ -238,26 +250,38 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         // check status code
         success = false;//overrides success of retrieving data
 
-        if (reader.HasMember("info")) {
-            if (reader["info"].HasMember("statuscode")) {
-                if (reader["info"]["statuscode"].IsInt()) {
-                    success = reader["info"]["statuscode"].GetInt() == 0;
+        if (reader.HasMember(L"info")) {
+            if (reader[L"info"].HasMember(L"statuscode")) {
+                if (reader[L"info"][L"statuscode"].IsInt()) {
+                    success = reader[L"info"][L"statuscode"].GetInt() == 0;
                 }
             }
         }
+    }
+    else {
+        wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
     }
 
     if (!success)
         return false;
 
 
+
     if (tz != 0) 
     {
         success = false;
 
+        curl = wxEasyCurl();
+
+
+
         url = SamApp::WebApi("bing_maps_timezone_api");
         url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
         url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
+
+        curl.AddHttpHeader("Content-Type: application/json");
+        curl.AddHttpHeader("Accept: application/json");
+
 
         if (showprogress) 
         {
@@ -270,17 +294,18 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         }
 
         str = curl.GetDataAsString();
+
         reader.Parse(str.c_str());
 
         if (!reader.HasParseError()) {
-            if (reader.HasMember("resourceSets")) {
-                if (reader["resourceSets"].IsArray()) {
-                    if (reader["resourceSets"][0].HasMember("resources")) {
-                        if (reader["resourceSets"][0]["resources"].IsArray()) {
-                            if (reader["resourceSets"][0]["resources"][0].HasMember("timeZone")) {
-                                if (reader["resourceSets"][0]["resources"][0]["timeZone"].HasMember("utcOffset")) {
-                                    if (reader["resourceSets"][0]["resources"][0]["timeZone"]["utcOffset"].IsString()) {
-                                        wxString stz = reader["resourceSets"][0]["resources"][0]["timeZone"]["utcOffset"].GetString();
+            if (reader.HasMember(L"resourceSets")) {
+                if (reader[L"resourceSets"].IsArray()) {
+                    if (reader[L"resourceSets"][0].HasMember(L"resources")) {
+                        if (reader[L"resourceSets"][0][L"resources"].IsArray()) {
+                            if (reader[L"resourceSets"][0][L"resources"][0].HasMember(L"timeZone")) {
+                                if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"].HasMember(L"utcOffset")) {
+                                    if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].IsString()) {
+                                        wxString stz = reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].GetString();
                                         wxArrayString as = wxSplit(stz, ':');
                                         if (as.Count() != 2) return false;
                                         if (!as[0].ToDouble(tz)) return false;
@@ -301,9 +326,9 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
             // check status code
             success = false;//overrides success of retrieving data
 
-            if (reader.HasMember("statusDescription")) {
-                if (reader["statusDescription"].IsString()) {
-                    str = reader["statusDescription"].GetString();
+            if (reader.HasMember(L"statusDescription")) {
+                if (reader[L"statusDescription"].IsString()) {
+                    wxString str = reader[L"statusDescription"].GetString();
                     success = str.Lower() == "ok";
                 }
             }

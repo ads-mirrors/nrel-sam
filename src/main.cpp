@@ -214,6 +214,7 @@ MainWindow::MainWindow()
 	menuBar->Append( helpMenu, wxT("&Help")  );
 	SetMenuBar( menuBar );
 #endif
+	m_eqnCase = nullptr; // SAM 1922
 
 	m_topBook = new wxSimplebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE );
 
@@ -644,7 +645,9 @@ void MainWindow::OnInternalCommand( wxCommandEvent &evt )
 
 			fis.Read(os);
 			rapidjson::StringStream is(os.GetString().c_str());
-			doc.ParseStream(is);
+			//	doc.ParseStream(is);
+				// SAM issue 1856 handle parsing Inf values for max tier usage values.
+			doc.ParseStream< rapidjson::kParseNanAndInfFlag>(is);
 			if (doc.HasParseError()) {
 				wxLogError(wxS("Could not read the json file string conversion '%s'."), sfn);
 				break;
@@ -720,7 +723,9 @@ void MainWindow::OnInternalCommand( wxCommandEvent &evt )
 
 			fis.Read(os);
 			rapidjson::StringStream is(os.GetString().c_str());
-			doc.ParseStream(is);
+//	doc.ParseStream(is);
+	// SAM issue 1856 handle parsing Inf values for max tier usage values.
+	doc.ParseStream< rapidjson::kParseNanAndInfFlag>( is);
 			if (doc.HasParseError()) {
 				wxLogError(wxS("Could not read the json file string conversion '%s'."), sfn);
 				break;
@@ -1249,6 +1254,7 @@ bool MainWindow::SwitchToCaseWindow( const wxString &case_name )
 void MainWindow::OnCaseTabChange( wxCommandEvent &evt )
 {
 	int sel = evt.GetSelection();
+	m_caseTabList->SetFocus(); // SAM issue 1922 force any losefocus events to fire
 	SwitchToCaseWindow( m_caseTabList->GetLabel(sel) );
 	//wxMessageBox( wxString::Format("Case tab changed: %d", evt.GetSelection() ) );
 }
@@ -1681,7 +1687,9 @@ bool InputPageData::Read_JSON(const std::string& file, wxString& ui_path)
 	std::ifstream ifs(file);
 	rapidjson::IStreamWrapper is(ifs);
 
-	doc.ParseStream(is);
+	//	doc.ParseStream(is);
+		// SAM issue 1856 handle parsing Inf values for max tier usage values.
+	doc.ParseStream< rapidjson::kParseNanAndInfFlag>(is);
 
 	if (doc.HasParseError()) {
 		wxLogError(wxS("Could not read the json file '%s'.\nError: %d"), file.c_str(), doc.GetParseError());
@@ -2622,7 +2630,9 @@ bool SamApp::VarTablesFromJSONFile(ConfigInfo* ci, std::vector<VarTable>& vt, co
 
 		rapidjson::StringStream is(os.GetString().c_str());
 
-		doc.ParseStream(is);
+		//	doc.ParseStream(is);
+			// SAM issue 1856 handle parsing Inf values for max tier usage values.
+		doc.ParseStream< rapidjson::kParseNanAndInfFlag>(is);
 		if (doc.HasParseError()) {
 			wxLogError(wxS("Could not read the json file string conversion '%s'."), file);
 			return false;
