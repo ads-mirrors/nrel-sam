@@ -1034,7 +1034,7 @@ bool ParametricViewer::ImportAsMatrix(wxString& vals, VarValue& vv) {
 	return false;
 }
 
-bool ParametricViewer::ImportAsTable(wxString& vals, VarValue& vv) {
+bool ParametricViewer::ImportAsTable(wxString& vals, VarValue& _vv) {
 	wxArrayString entries = wxSplit(vals, '|');
 	if (entries.Count() < 2) return false;
 	VarTable vt;
@@ -1061,7 +1061,7 @@ bool ParametricViewer::ImportAsTable(wxString& vals, VarValue& vv) {
 		}
 		vt.Set(var[0], vv);
 	}
-	vv.Set(vt);
+	_vv.Set(vt);
 	return true;
 }
 
@@ -1566,7 +1566,7 @@ void ParametricViewer::SendToExcel()
 }
 
 
-void ParametricViewer::OnGridColSort(wxGridEvent& evt)
+void ParametricViewer::OnGridColSort(wxGridEvent& )
 {
 	RemoveAllPlots();
 	AddAllPlots();
@@ -2173,9 +2173,9 @@ void ParametricGridData::UpdateSetup()
 
 	// sorted order
 	m_var_names.Clear();
-	for (size_t i = 0; i < m_input_names.Count(); i++)
+	for (i = 0; i < m_input_names.Count(); i++)
 		m_var_names.push_back(m_input_names[i]);
-	for (size_t i = 0; i < m_output_names.Count(); i++)
+	for (i = 0; i < m_output_names.Count(); i++)
 		m_var_names.push_back(m_output_names[i]);
 
 	m_cols = m_par.Setup.size();
@@ -3662,7 +3662,7 @@ void Parametric_QS::OnEditValues(wxCommandEvent &)
 		{
 			if (ShowEditValuesDialog(
 				"Edit Parametric Values for '" + varinfo->Label +
-				((varinfo->Units != "") ? (" (" + varinfo->Units + ")'") : "'"),
+				((varinfo->Units != "") ? (" (" + varinfo->Units + ")'") : wxString("'")),
 				values, var_name, ndx_hybrid))
 			{
 				SetValuesList(m_input_names[idx], values);
@@ -3674,11 +3674,11 @@ void Parametric_QS::OnEditValues(wxCommandEvent &)
 }
 
 bool Parametric_QS::ShowFixedDomainDialog(const wxString &title,
-	const wxArrayString &names, const wxArrayString &labels, wxArrayString &list,
+	const wxArrayString &_names, const wxArrayString &labels, wxArrayString &list,
 	bool expand_all)
 {
 	SelectVariableDialog dlg(this, title);
-	dlg.SetItems(names, labels);
+	dlg.SetItems(_names, labels);
 	dlg.SetCheckedNames(list);
 	if (expand_all)
 		dlg.ShowAllItems();
@@ -3745,7 +3745,7 @@ bool Parametric_QS::ShowEditValuesDialog(const wxString &title,
 		{
 			// translate back to integer values
 			values.Clear();
-			for (int i = 0; i<(int)cur_items.Count(); i++)
+			for (i = 0; i<(int)cur_items.Count(); i++)
 				values.Add(wxString::Format("%d", fixed_items.Index(cur_items[i])));
 
 			return true;
@@ -4205,11 +4205,11 @@ void Parametric_QS::RefreshVariableList()
 	lstVariables->Freeze();
 	lstVariables->Clear();
 
-	for (size_t i = 0; i<m_input_names.Count(); i++)
+	for (size_t ii = 0; ii<m_input_names.Count(); ii++)
 	{
 		size_t ndx_hybrid;
 		wxString var_name;
-		UpdateVarNameNdxHybrid(m_input_names[i], &var_name, &ndx_hybrid);
+		UpdateVarNameNdxHybrid(m_input_names[ii], &var_name, &ndx_hybrid);
 
 		VarInfo *vi = m_case->Variables(ndx_hybrid).Lookup(var_name);
 		if (!vi)
@@ -4229,12 +4229,12 @@ void Parametric_QS::RefreshVariableList()
 
 		// update m_input_values if necessary
 		// add items
-		wxArrayString items = GetValuesDisplayList(m_input_names[i]);
+		wxArrayString items = GetValuesDisplayList(m_input_names[ii]);
 		if (items.Count() == 0) // add base case value
 		{
 			wxArrayString values;
-			values.Add(m_input_names[i]);
-			wxString val = GetBaseCaseValue(m_input_names[i]);
+			values.Add(m_input_names[ii]);
+			wxString val = GetBaseCaseValue(m_input_names[ii]);
 			values.Add(val);
 			m_input_values.push_back(values);
 		}
