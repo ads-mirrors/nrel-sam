@@ -119,6 +119,7 @@ enum { __idFirst = wxID_HIGHEST+592,
 	ID_CASE_DUPLICATE,
 	ID_CASE_DELETE,
 	ID_CASE_REPORT,
+	ID_RUN_TEST,
 	ID_CASE_EXCELEXCH,
 	ID_CASE_SIMULATE,
 	ID_CASE_RESET_DEFAULTS,
@@ -274,7 +275,8 @@ MainWindow::MainWindow()
 	entries.push_back( wxAcceleratorEntry( wxACCEL_NORMAL, WXK_F1, wxID_HELP));
 	entries.push_back( wxAcceleratorEntry( wxACCEL_NORMAL, WXK_F2, ID_CASE_RENAME ) );
 	entries.push_back( wxAcceleratorEntry( wxACCEL_NORMAL, WXK_F5, ID_CASE_SIMULATE ) );
-	entries.push_back( wxAcceleratorEntry( wxACCEL_NORMAL, WXK_F6, ID_CASE_REPORT ) );
+	entries.push_back(wxAcceleratorEntry(wxACCEL_NORMAL, WXK_F6, ID_CASE_REPORT));
+	entries.push_back(wxAcceleratorEntry(wxACCEL_ALT, WXK_F5, ID_RUN_TEST));
 	SetAcceleratorTable( wxAcceleratorTable( entries.size(), &entries[0] ) );
 }
 
@@ -1390,6 +1392,10 @@ void MainWindow::OnCaseMenu( wxCommandEvent &evt )
 		break;
 	case ID_CASE_REPORT:
 		cw->GenerateReport();
+		break;
+	case ID_RUN_TEST:
+		wxShell(wxString("cmd /k ") + SamApp::GetAppPath() + wxString("/Test.exe"));
+		wxMessageBox(wxString("Test ortools completed"));
 		break;
 	case ID_CASE_SIMULATE:
 		cw->RunBaseCase();
