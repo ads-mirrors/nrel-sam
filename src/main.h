@@ -453,7 +453,7 @@ private:
 
 bool ShowConfigurationDialog( wxWindow *parent, wxString *tech, wxString *fin, bool *reset );
 
-
+std::string ORTool_LinearProgrammingExample();
 
 #endif
 

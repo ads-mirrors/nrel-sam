@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wx/frame.h>
 #include <wx/stc/stc.h>
 #include <fstream>
+#include <sstream>
 
 #if defined(__WXMSW__)||defined(__WXOSX__)
 #include <wx/webview.h>
@@ -84,6 +85,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <rapidjson/filewritestream.h>
 #include <rapidjson/istreamwrapper.h>
 
+#include "ortools/linear_solver/linear_solver.h"
+
 
 //#include "private.h"
 //#include "welcome.h"
@@ -120,6 +123,7 @@ enum { __idFirst = wxID_HIGHEST+592,
 	ID_CASE_DELETE,
 	ID_CASE_REPORT,
 	ID_RUN_TEST,
+	ID_RUN_ORTOOLS_EXAMPLE,
 	ID_CASE_EXCELEXCH,
 	ID_CASE_SIMULATE,
 	ID_CASE_RESET_DEFAULTS,
@@ -277,6 +281,7 @@ MainWindow::MainWindow()
 	entries.push_back( wxAcceleratorEntry( wxACCEL_NORMAL, WXK_F5, ID_CASE_SIMULATE ) );
 	entries.push_back(wxAcceleratorEntry(wxACCEL_NORMAL, WXK_F6, ID_CASE_REPORT));
 	entries.push_back(wxAcceleratorEntry(wxACCEL_ALT, WXK_F5, ID_RUN_TEST));
+	entries.push_back(wxAcceleratorEntry(wxACCEL_ALT, WXK_F6, ID_RUN_ORTOOLS_EXAMPLE));
 	SetAcceleratorTable( wxAcceleratorTable( entries.size(), &entries[0] ) );
 }
 
@@ -1396,6 +1401,9 @@ void MainWindow::OnCaseMenu( wxCommandEvent &evt )
 	case ID_RUN_TEST:
 		wxShell(wxString("cmd /k ") + SamApp::GetAppPath() + wxString("/Test.exe"));
 		wxMessageBox(wxString("Test ortools completed"));
+		break;
+	case ID_RUN_ORTOOLS_EXAMPLE:
+		wxMessageBox(wxString(ORTool_LinearProgrammingExample()), "OR Tools Linear Programming Example");
 		break;
 	case ID_CASE_SIMULATE:
 		cw->RunBaseCase();
@@ -3225,6 +3233,74 @@ void ConfigDialog::OnCharHook( wxKeyEvent &evt )
 		OnOk( _evt );
 	}
 }
+
+// test example from https://github.com/google/or-tools/blob/stable/ortools/linear_solver/samples/linear_programming_example.cc
+std::string ORTool_LinearProgrammingExample() 
+{
+	std::stringstream ss;
+	// [START solver]
+	std::unique_ptr<operations_research::MPSolver> solver(operations_research::MPSolver::CreateSolver("SCIP"));
+	if (!solver) {
+		ss << "SCIP solver unavailable.";
+		return ss.str();
+	}
+	// [END solver]
+
+	// [START variables]
+	const double infinity = solver->infinity();
+	// x and y are non-negative variables.
+	operations_research::MPVariable* const x = solver->MakeNumVar(0.0, infinity, "x");
+	operations_research::MPVariable* const y = solver->MakeNumVar(0.0, infinity, "y");
+	ss << "Number of variables = " << solver->NumVariables() << std::endl;
+	ss << " x>=0 and y>=0 " << std::endl;
+	// [END variables]
+
+	// [START constraints]
+	// x + 2*y <= 14.
+	ss << " x + 2*y <= 14 " << std::endl;
+	operations_research::MPConstraint* const c0 = solver->MakeRowConstraint(-infinity, 14.0);
+	c0->SetCoefficient(x, 1);
+	c0->SetCoefficient(y, 2);
+
+	// 3*x - y >= 0.
+	ss << " 3*x - y >= 0 " << std::endl;
+	operations_research::MPConstraint* const c1 = solver->MakeRowConstraint(0.0, infinity);
+	c1->SetCoefficient(x, 3);
+	c1->SetCoefficient(y, -1);
+
+	// x - y <= 2.
+	ss << " x - y <= 2 " << std::endl;
+	operations_research::MPConstraint* const c2 = solver->MakeRowConstraint(-infinity, 2.0);
+	c2->SetCoefficient(x, 1);
+	c2->SetCoefficient(y, -1);
+	ss << "Number of constraints = " << solver->NumConstraints() << std::endl;
+	// [END constraints]
+
+	// [START objective]
+	// Objective function: 3x + 4y.
+	operations_research::MPObjective* const objective = solver->MutableObjective();
+	objective->SetCoefficient(x, 3);
+	objective->SetCoefficient(y, 4);
+	objective->SetMaximization();
+	// [END objective]
+
+	// [START solve]
+	const operations_research::MPSolver::ResultStatus result_status = solver->Solve();
+	// Check that the problem has an optimal solution.
+	if (result_status != operations_research::MPSolver::OPTIMAL) {
+		ss << "The problem does not have an optimal solution!" << std::endl;
+	}
+	// [END solve]
+
+	// [START print_solution]
+	ss << "Solution:" << std::endl;
+	ss << "Optimal objective value = " << objective->Value() << std::endl;
+	ss << x->name() << " = " << x->solution_value() << std::endl;
+	ss << y->name() << " = " << y->solution_value() << std::endl;
+	// [END print_solution]
+	return ss.str();
+}
+
 
 bool ShowConfigurationDialog( wxWindow *parent, wxString *tech, wxString *fin, bool *reset )
 {
