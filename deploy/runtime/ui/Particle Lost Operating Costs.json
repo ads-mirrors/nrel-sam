@@ -115,7 +115,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "Particle Lost"
+                    "String": "Particle Loss"
                 },
                 "Bold": {
                     "Type": 2.0,
