@@ -5155,6 +5155,21 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
+        "snow_array": {
+            "Version": 4.0,
+            "Type": 2.0,
+            "Label": "",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 0.0,
+            "DefaultValue": [
+                0.0
+            ],
+            "UIObject": "DataArray",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
         "subarray1_gcr_ref": {
             "Version": 4.0,
             "Type": 1.0,
@@ -6294,6 +6309,19 @@
             "UIObject": "Default",
             "sscVariableName": "",
             "sscVariableValue": ""
+        },
+        "use_snow_weather_file": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 0.0,
+            "DefaultValue": 0.0,
+            "UIObject": "RadioChoice",
+            "sscVariableName": "",
+            "sscVariableValue": ""
         }
     },
     "Equations": [
@@ -6487,7 +6515,7 @@
         "\t",
         "\tmsg_snow = '';",
         "\tif ( isnan(value('annual_snow')) == true && value('en_snow_model') == 1 ) {\r",
-        "\t\tif( value(\"use_snow_weather_file\") == 1) {",
+        "\t\tif( value('use_snow_weather_file') == 1) {",
         "\t\t\tmsg_snow = 'Weather file has no snow data. Simulation will fail.';\r",
         "\t\t}",
         "\t}",
@@ -6572,7 +6600,7 @@
         "on_change{'subarray3_nmodx'} = define() { input_enabling(); };",
         "on_change{'subarray4_nmodx'} = define() { input_enabling(); };",
         "on_change{'en_snow_model'} = define() { input_enabling(); };",
-        "\r",
+        "on_change{'use_snow_weather_file'} = define() { input_enabling(); };\r",
         "on_change{'edit_3d_scene'} = define() {",
         "\t",
         "\tminute_step = 60;",
