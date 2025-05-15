@@ -1,0 +1,125 @@
+// Community Power Accelerator macro using CPA example.sam
+
+// Now use template file
+/*************************************/
+/**           Runtime Tools         **/
+
+// Save the current dir for later use
+curDir = userlocaldatadir();
+//outln( curDir );
+
+// Determine screen size and set default pop-up positions
+
+scrn = scrnres();
+
+defaultX = scrn[0] - scrn[0]/2;
+defaultY = 60;
+
+// exit function (and removes any highlighting)
+function exitIf( exitCondition ){
+	if( exitCondition ){
+		transp();
+		exit;
+	}
+}
+
+function send_excel( xl, variable)
+{
+	xl_set( xl, value(variable), variable );
+}
+
+
+// if one is open close
+close_project();
+
+
+/*************************************/
+/**         Welcome the User        **/
+
+wS = [500,500]; 
+//sdt - added description of SAM currency discrepancies
+exitIf( !msgbox('Welcome to the community power accelerator example wizard!\n'+
+	            'Follow the prompts to to model an example of a community power accelerator project in Phoenix, AZ.\n\n' +
+			    'When you finish using the wizard, you can modify the inputs in the resulting .sam file for your own project.\n\n'+
+			    'The wizard sets the weather file for Phoenix, AZ, and then prompts you to enter the number of community power accelerator participants. It then automatically sets up a parametric simulation for a range of photovoltaic array and battery capacities.\n\n'+
+			    'The parametric results show tables and graphs of total installed cost, LCOE, NPV, total annual energy, and unmet critical load to help you choose the best system design for your community power accelerator application.\n\n'+
+			    'This wizard is an initial implementation intended as a proof-of-concept. If you have questions or suggestions for improving the wizard, please contact us at sam.support@nrel.gov', 
+			 [defaultX, defaultY, 500, 500]) );
+			 
+
+/*************************************/
+/**         Case management         **/
+/* Will have separate default files to load defaults */
+/* For now, load updated file from with load profile from James Elsworth and module and inverter selection for array size scaling as close to 1 to 1 as possible */
+/* copy to user folder and load */
+template_file = runtimedir() + "quickstart/CPA-example.sam";
+user_file = curDir + "/CPA example.sam";
+copy_file(template_file, user_file, true);
+exitIf (!open_project(user_file));
+
+caseName = case_name();
+exitIf(caseName == "");
+
+/*************************************/
+/**     Get Simulation Location     **/
+
+// Show solar resource page
+show_page( 'Location and Resource');
+
+// Highlight resource selection box in UI
+focusto('GroupBox2');
+geom = widgetpos('GroupBox2');
+transp( geom, 'yellow', 70 );
+
+exitIf( !msgbox('Weather data set for Phoenix, AZ.\n'+
+       'We have selected a pre-downloaded weather file for this example.\n\n'+
+       'You can use the tools on the Location and Resource page to download\n'+
+       'your own weather file after the wizard finishes.\n\n'+
+       'Click OK to continue.') );
+
+/*************************************/
+/**     Get Community Solar information    **/
+
+show_page('Community Solar');
+
+// Highlight upfront cost by capacity
+focusto('cs_cost_upfront_per_capacity');
+geom = widgetpos('cs_cost_upfront_per_capacity');
+transp( geom, 'yellow', 35 );
+
+
+upfrontcost = in( 'The up front cost scales with system size.\n\n'+
+                  'Type the upfront cost in $/kW of system size. click OK to continue.', 
+				'35', 'community power accelerator up front cost',
+			   [defaultX, defaultY] );
+
+exitIf(upfrontcost == '');
+
+cs_cost_upfront_per_capacity = to_real(upfrontcost);
+
+set('cs_cost_upfront_per_capacity', cs_cost_upfront_per_capacity );
+
+// clear highlight
+transp();
+
+
+/*************************************/
+/**            Set Costs           **/
+
+//show_page('Installation Costs');
+
+/* Default community solar costs */
+
+// Review time
+//millisleep(1000);
+//transp();
+
+
+/*************************************/
+/**            Set Finances         **/
+//show_page('Financial Parameters');
+
+// Default Commercial Financial parameters
+// Review time
+//millisleep(1000);
+//transp();
