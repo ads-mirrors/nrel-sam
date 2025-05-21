@@ -500,6 +500,19 @@ bool CaseWindow::RunSSCBaseCase(wxString& fn, bool silent, wxString* messages)
 }
 
 
+void CaseWindow::ExportCashflowExcel()
+{
+	// run base case automatically
+	if (!RunBaseCase())
+	{
+		wxMessageBox("Base case simulation did not succeed.  Please check your inputs before creating a report");
+		return;
+	}
+	UpdateResults();
+	m_baseCaseResults->Export(EXP_CASHFLOW, EXP_SEND_EXCEL);
+}
+
+
 void CaseWindow::UpdateResults()
 {
 	m_baseCaseResults->Setup( &m_case->BaseCase() );

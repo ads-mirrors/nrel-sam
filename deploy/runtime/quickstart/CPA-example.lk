@@ -121,3 +121,8 @@ transp();
 // Review time
 //millisleep(1000);
 //transp();
+
+// simulate
+simulate();
+// export cashflow to Excel
+export_cashflow_excel();
