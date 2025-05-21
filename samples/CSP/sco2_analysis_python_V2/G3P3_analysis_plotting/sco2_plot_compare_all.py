@@ -127,8 +127,8 @@ def plot_sco2_pareto(dict_list_w_kwarg, config_list, X_info, Y_info):
     _, new_kwarg_list = design_tools.plot_scatter_pts(
         local_dict_list_w_kwarg
         , 
-        X_info, Y_info, show_legend=True)
-
+        X_info, Y_info, show_legend=True, legend_loc="outside right")
+    plt.tight_layout()
 
     # Now plot pareto with correct colors and markers
     i = 0
@@ -142,18 +142,13 @@ def plot_sco2_pareto(dict_list_w_kwarg, config_list, X_info, Y_info):
 
             pareto_list_w_kwarg.append([pareto_dict, pareto_kwarg])
 
-        i += 1
-
-
-
-        
-
-            
+        i += 1   
 
     design_tools.plot_scatter_pts(
                 pareto_list_w_kwarg
                 , 
                 X_info, Y_info, show_legend=True)
+    plt.tight_layout()
     
 def plot_sco2_vars(dict_list_w_kwarg, sweep_label=''):
 
@@ -233,12 +228,32 @@ def plot_barcharts(best_dict_list_w_kwarg, config_list):
     design_tools.plot_costs_barchart(dict_index_duo_list, type='sco2', plot_title="Cycle Cost Comparison", fontsize=fontsize_global, figsize=figsize_global)
     design_tools.plot_costs_barchart(dict_index_duo_list, type='system', plot_title="System Cost Comparison", fontsize=fontsize_global, figsize=figsize_global)
 
-def plot_pareto_spec_config(list_of_dict_list_w_kwarg, final_sweep_labels, config_list):
+def plot_pareto_spec_config(list_of_dict_list_w_kwarg, final_sweep_labels, config_list, Y_label=[]):
     
     # Define X and Y Labels
     PC_ETA_label = ["eta_thermal_calc", "", "PC Efficiency"]
     COST_PER_kW_NET_label = ["cost_per_kWe_net_ish", "$/kWe", "Cost per kWe Net"]
     UA_TOTAL_label = ["recup_total_UA_calculated", "MW/K", "Total UA Calculated"]
+
+    if Y_label == "recup_over_cycle":
+        recup_var = "recup_total_cost_equipment"
+        cycle_var = "cycle_cost"
+        recup_over_cycle = "recup_over_cycle"
+
+        for result_dict_list_w_kwarg in list_of_dict_list_w_kwarg:
+            for result_dict, kwarg in result_dict_list_w_kwarg:
+                NVal = len(result_dict[recup_var])
+                result_dict[recup_over_cycle] = []
+                for i in range(NVal):
+                    recup = result_dict[recup_var][i]
+                    cycle = result_dict[cycle_var][i]
+                    r_frac = recup/cycle
+                    result_dict[recup_over_cycle].append(r_frac)
+
+        Y_label = [recup_over_cycle, "", "Recup Cost over Cycle"]
+
+    if len(Y_label) == 0:
+        Y_label = COST_PER_kW_NET_label
 
     for config_name in config_list:
 
@@ -286,12 +301,12 @@ def plot_pareto_spec_config(list_of_dict_list_w_kwarg, final_sweep_labels, confi
             i += 1
         
         design_tools.plot_scatter_pts(pareto_dict_w_kwarg_list,
-                                  PC_ETA_label, COST_PER_kW_NET_label, 
+                                  PC_ETA_label, Y_label, 
                                   show_legend=True, legend_loc='upper right',show_line=True,
                                   title=config_name, disk_load=True, is_norm=False, ax=ax1)   
 
         design_tools.plot_scatter_pts(pareto_dict_w_kwarg_list,
-                                  PC_ETA_label, COST_PER_kW_NET_label, 
+                                  PC_ETA_label, Y_label, 
                                   show_legend=True, legend_loc='upper right',show_line=True,
                                   title=config_name + " Normalized", disk_load=True, is_norm=True, ax=ax2) 
 
@@ -556,12 +571,20 @@ def test_compare():
                               filenames_recup50_w_label, filenames_recup150_w_label,
                               filenames_tes50_w_label, filenames_tes150_w_label,
                               filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label,
-                              filenames_helio_phxbuckhigh_w_label]
+                              ]
+
+    #filenames_list_w_label = [filenames_baseline_w_label, 
+    #                          filenames_heliocost_w_label,
+    #                          filenames_recup50_w_label, filenames_recup150_w_label,
+    #                          filenames_tes50_w_label, filenames_tes150_w_label,
+    #                          ]
 
     #filenames_list_w_label = [filenames_baseline_w_label, filenames_heliocost_w_label]
 
-    
+    filenames_list_w_label = [filenames_baseline_w_label]
 
+    #filenames_list_w_label = [filenames_baseline_w_label,
+    #                          filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label]
     #filenames_list_w_label = [filenames_baseline_w_label]
 
     #filenames_list_w_label = [filenames_TIT550_w_label]
@@ -578,8 +601,8 @@ def test_compare():
     #filenames_list_w_label = [filenames_baseline_w_label,
     #                          filenames_eta8085_w_label, filenames_eta8090_w_label]
 #
-    #filenames_list_w_label = [filenames_baseline_w_label, 
-    #                          filenames_TIT550_w_label, filenames_TIT625_w_label,]
+    filenames_list_w_label = [filenames_baseline_w_label, 
+                              filenames_TIT550_w_label, filenames_TIT625_w_label]
 
     #filenames_list_w_label = [filenames_baseline_w_label, 
     #                          filenames_coldapproach40_w_label, filenames_coldapproach60_w_label,
@@ -618,7 +641,9 @@ def test_compare():
                 "ui_direct_subtotal",
                 "UA_recup_tot_des", "LTR_UA_des_in", "HTR_UA_des_in",
                 "is_PR_fixed", "is_IP_fixed", "is_recomp_ok",
-                "is_turbine_split_ok", "is_bypass_ok"]
+                "is_turbine_split_ok", "is_bypass_ok",
+                "HTR_cost_equipment", "LTR_cost_equipment",
+                "recup_total_cost_equipment"]
 
     #key_list = sco2_varnames.get_core_var_list()
 
@@ -705,7 +730,11 @@ def test_compare():
 
     # Pareto by config
     if True:
-        plot_pareto_spec_config(list_of_dict_list_w_kwargs, final_sweep_labels, show_config_list)
+        Y_label = ["recup_total_cost_equipment", "M$", "Recup Cost"]
+        Y_label = "recup_over_cycle"
+        Y_label = ["cycle_cost", "M$", "Cycle Cost"]
+        Y_label = ["UA_recup_tot_des", "MW/K", "Recup Total Conductance"]
+        plot_pareto_spec_config(list_of_dict_list_w_kwargs, final_sweep_labels, show_config_list, Y_label=COST_PER_kW_info)
     
     # Sweep Comparison
     if True:

@@ -1629,9 +1629,9 @@ def plot_Ts_via_result_dict(result_dict, dict_index):
 
     #legacy_dict = add_plot_data_to_result_dict(legacy_dict)
 
-    #c_plot = cy_plt.C_sco2_cycle_TS_plot(legacy_dict)
+    c_plot = cy_plt.C_sco2_cycle_TS_plot(legacy_dict)
     #c_plot = cy_plt.C_sco2_cycle_PH_plot(legacy_dict)
-    c_plot = cy_plt.C_sco2_TS_PH_plot(legacy_dict)
+    #c_plot = cy_plt.C_sco2_TS_PH_plot(legacy_dict)
     c_plot.is_annotate = True
     c_plot.plot_new_figure()
     x = 0
@@ -1701,56 +1701,255 @@ def get_marker_list():
         marker_list.append(key)
     return marker_list
 
+def get_line_style_list():
+    line_list = [
+        '-',        # Solid line
+        '--',       # Dashed line
+        '-.',       # Dash-dot line
+        ':',        # Dotted line
+        (0, (1, 1)),  # Dotted (custom, fine dots)
+        (0, (5, 5)),  # Dashed (custom, longer dashes)
+        (0, (3, 5, 1, 5)),  # Dash-dot-dash (custom)
+        (0, (5, 10)),  # Sparse dashes
+        (0, (5, 1)),  # Dense dashes
+    ]
+    return line_list
+
 def plot_sweep_cost_comparison(list_of_best_dict_list_w_kwarg, sweep_label_list,
                                show_config_list, Y_info, label_list= [], disk_load=False,
-                               is_norm=False, figsize=(6.4,4.8), fontsize=10):
+                               is_norm=False, figsize=(6.4,4.8), fontsize=10,
+                               shorten_config_label=False, ax=None, showX=True,
+                               show_legend=True, plot_title=""):
+    with plt.rc_context({'font.size': fontsize}):
+        Y_info = copy.deepcopy(Y_info)
 
-    Y_info = copy.deepcopy(Y_info)
+        # Create a figure and axis
+        if ax == None:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            fig = ax.get_figure()
 
-    # Create a figure and axis
-    fig, ax = plt.subplots(figsize=figsize)
+        # Make normalized data (if necessary)
+        if is_norm:
+            for best_dict_list_w_kwarg in list_of_best_dict_list_w_kwarg:
+                yVals_abs = []
 
-    # Make normalized data (if necessary)
-    if is_norm:
+                # Create a mapping from 'config_name' to index
+                config_name_to_index = {d[0]["config_name"][0]: i for i, d in enumerate(best_dict_list_w_kwarg)}
+                for category in show_config_list:
+                    index = config_name_to_index.get(category)
+                    local_dict = best_dict_list_w_kwarg[index]
+                    yVals_abs.append(local_dict[0][Y_info[0]][0])
+
+                # Get Min Y val
+                y_min = np.min(yVals_abs)
+                y_key_norm = Y_info[0] + "_norm"
+
+                # Assign normalized y value
+                for category in show_config_list:
+                    index = config_name_to_index.get(category)
+                    local_dict = best_dict_list_w_kwarg[index][0]
+
+                    y_abs = local_dict[Y_info[0]][0]
+                    y_norm = y_abs / y_min
+
+                    local_dict[y_key_norm] = [y_norm]
+
+            # modify Y info
+            Y_info[0] = y_key_norm
+            Y_info[1] = ""
+            Y_info[2] = Y_info[2] + " Normalized"
+
+        
+        cmap = plt.get_cmap('jet')
+        N_colors = len(list_of_best_dict_list_w_kwarg)
+        colors = cmap(np.linspace(0, 0.95, N_colors))  
+
+        # Plot each sweep
+        i = 0
+        series_list = []
+        sweep_dict_list_list = []
         for best_dict_list_w_kwarg in list_of_best_dict_list_w_kwarg:
-            yVals_abs = []
+            yVals = []
+            dict_list = []
 
             # Create a mapping from 'config_name' to index
             config_name_to_index = {d[0]["config_name"][0]: i for i, d in enumerate(best_dict_list_w_kwarg)}
+
             for category in show_config_list:
                 index = config_name_to_index.get(category)
                 local_dict = best_dict_list_w_kwarg[index]
-                yVals_abs.append(local_dict[0][Y_info[0]][0])
+                yVals.append(local_dict[0][Y_info[0]][0])
+                dict_list.append(local_dict)
 
-            # Get Min Y val
-            y_min = np.min(yVals_abs)
-            y_key_norm = Y_info[0] + "_norm"
+            sweep_dict_list_list.append(dict_list)
 
-            # Assign normalized y value
-            for category in show_config_list:
-                index = config_name_to_index.get(category)
-                local_dict = best_dict_list_w_kwarg[index][0]
+            # Get Color
+            color = colors[i]
+            if 'c' in best_dict_list_w_kwarg[0][1]:
+                color = best_dict_list_w_kwarg[0][1]['c']
 
-                y_abs = local_dict[Y_info[0]][0]
-                y_norm = y_abs / y_min
+            # Plot
+            series = ax.plot(show_config_list, yVals, color=color, marker='o', label=sweep_label_list[i])
+            series_list.append(series[0])
+            i += 1
 
-                local_dict[y_key_norm] = [y_norm]
+        # Modify x-axis labels with word-wrapped strings
+        if shorten_config_label == True:
+            wrapped_labels = [shorten_config(label) for label in show_config_list]
+            wrapped_labels = [wrap_string(label, 15) for label in wrapped_labels]
+        else:
+            wrapped_labels = [wrap_string(label, 15) for label in show_config_list]
 
-        # modify Y info
-        Y_info[0] = y_key_norm
-        Y_info[1] = ""
-        Y_info[2] = Y_info[2] + " Normalized"
 
-    
+        ax.set_xticks(range(len(wrapped_labels)))
+
+        if showX:
+            ax.set_xticklabels(wrapped_labels, fontsize=fontsize, rotation=60, ha='right')
+        else:
+            ax.set_xticklabels([])  # Hides the x-axis labels
+
+        # Set the labels and title
+        Y_label = Y_info[2]
+        if Y_info[1] != "":
+            Y_label += " [" + Y_info[1] + "]"
+        ax.set_ylabel(Y_label, fontsize=fontsize)
+        ax.tick_params(axis='y', labelsize=fontsize)
+        #legend = ax.legend(loc='upper right')
+
+        if show_legend:
+            legend = ax.legend(loc="center left", bbox_to_anchor=(1.05, 0.5), borderaxespad=0.)
+
+            map_legend_to_ax = {}
+            for legend_text, scatter_series in zip(legend.get_texts(), series_list):
+                legend_text.set_picker(5)
+                map_legend_to_ax[legend_text.get_text()] = scatter_series
+        
+            def on_pick(event):
+                # On the pick event, find the original line corresponding to the legend
+                # proxy line, and toggle its visibility.
+                legend_text = event.artist
+                if(isinstance(legend_text, matplotlib.text.Text) == False):
+                    return
+
+                # Do nothing if the source of the event is not a legend line.
+                if legend_text.get_text() not in map_legend_to_ax:
+                    return
+
+                # Left click toggle
+                if event.mouseevent.button == 1:
+                    scatter_series = map_legend_to_ax[legend_text.get_text()]
+                    visible = not scatter_series.get_visible()
+                    scatter_series.set_visible(visible)
+                    # Change the alpha on the line in the legend, so we can see what lines
+                    # have been toggled.
+                    legend_text.set_alpha(1.0 if visible else 0.2)
+                    fig.canvas.draw()
+
+                # Right click toggle all
+                if event.mouseevent.button == 3:
+                    scatter_series = map_legend_to_ax[legend_text.get_text()]
+                    visible = not scatter_series.get_visible()
+
+                    # Check if this series is already highlighted
+                    only_visible = True
+                    for key in map_legend_to_ax:
+                        if(key != legend_text.get_text()):
+                            is_vis = map_legend_to_ax[key].get_visible()
+                            if is_vis:
+                                only_visible = False
+                                break
+
+                    # If already highlighted, make all series visible
+                    if only_visible:
+                        legend_text_list = legend.get_texts()
+                        for legend_text_single in legend_text_list:
+                            legend_text_single.set_alpha(1.0)
+                            map_legend_to_ax[legend_text_single.get_text()].set_visible(True)
+                        fig.canvas.draw()
+                        #for key in map_legend_to_ax:
+                        #    scatter = map_legend_to_ax[key]
+                        #    scatter.set_visible(True)
+                    else:
+                        legend_text_list = legend.get_texts()
+                        for legend_text_single in legend_text_list:
+                            legend_text_single.set_alpha(0.2)
+                            map_legend_to_ax[legend_text_single.get_text()].set_visible(False)
+
+                        #for key in map_legend_to_ax:
+                        #    map_legend_to_ax[key].set_visible(False)
+                        scatter_series.set_visible(True)
+                        legend_text.set_alpha(1.0)
+                        fig.canvas.draw()
+
+            fig.canvas.mpl_connect('pick_event', on_pick)
+
+        label_list_local = copy.deepcopy(label_list)
+        if(len(label_list) == 0):
+            label_list_local = ["cycle_config", "config_name", "T_htf_cold_des", "eta_thermal_calc", "recomp_frac", "bypass_frac", "UA_PHX", "q_dot_PHX",
+                                "recup_total_UA_calculated"]
+        if(Y_info[0] in label_list) == False:
+            label_list_local.append(Y_info[0])   
+
+        if disk_load:
+            if ("run_id" in label_list_local) == False:
+                label_list_local.append("run_id")
+
+        # Handle Click Business
+        annot = ax.annotate("",xy=(0,0), xytext=(-100,20), textcoords="offset points",
+                                bbox=dict(boxstyle="round", fc="w"),
+                                arrowprops=dict(arrowstyle="->"))
+        annot.set_visible(False)
+
+        
+        fig.canvas.mpl_connect("button_press_event", lambda event: hover_multiple_sweeps(event, sweep_dict_list_list, label_list_local, fig, annot, ax, disk_load))
+
+        #plt.xticks(fontsize=fontsize, rotation=45, ha='right')
+        ax.grid(True, which='major', axis='y', linestyle='--', linewidth=0.7, zorder=1)
+        ax.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.3, zorder=0)
+        ax.grid(True, which='major', axis='x', linestyle='--', linewidth=0.7, zorder=1)
+        #plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.2)
+        ax.minorticks_on() 
+        if plot_title != "":
+            ax.title(plot_title)
+            fig.canvas.manager.set_window_title("Sweep Comparison: " + Y_label)
+        #plt.tight_layout()
+        #plt.xlim(left=-2)
+
+        # Add padding to the right side of the plot
+        #plt.xlim(right=len(show_config_list) + 4)  # Add extra space on the right
+
+def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_info, Y2_info = [], label_list= [], disk_load=False,
+                                  figsize=(6.4,4.8), fontsize=10, ax=None, showX=True, legend_loc='best'):
+
+    # Handle Y Axes
+    Y_info = copy.deepcopy(Y_info)
+    Y_info_list = [Y_info]
+    if len(Y2_info) > 0:
+        Y_info_list.append(Y2_info)
+
+    # Create a figure and axis
+    if ax == None:
+        fig, ax1 = plt.subplots(figsize=figsize)
+    else:
+        ax1 = ax
+        fig = ax1.get_figure()
+
+    # Make Twin right axis
+    if(len(Y_info_list) > 1):
+        ax2 = ax1.twinx()
+
     cmap = plt.get_cmap('jet')
-    N_colors = len(list_of_best_dict_list_w_kwarg)
+    N_colors = len(Y_info_list)
     colors = cmap(np.linspace(0, 0.95, N_colors))  
 
     # Plot each sweep
     i = 0
     series_list = []
     sweep_dict_list_list = []
-    for best_dict_list_w_kwarg in list_of_best_dict_list_w_kwarg:
+    #marker_list = get_marker_list()
+    marker_list = ['s', 'o']
+    for Y_info_local in Y_info_list:
         yVals = []
         dict_list = []
 
@@ -1760,32 +1959,65 @@ def plot_sweep_cost_comparison(list_of_best_dict_list_w_kwarg, sweep_label_list,
         for category in show_config_list:
             index = config_name_to_index.get(category)
             local_dict = best_dict_list_w_kwarg[index]
-            yVals.append(local_dict[0][Y_info[0]][0])
+            yVals.append(local_dict[0][Y_info_local[0]][0])
             dict_list.append(local_dict)
 
         sweep_dict_list_list.append(dict_list)
 
         # Get Color
         color = colors[i]
-        if 'c' in best_dict_list_w_kwarg[0][1]:
-            color = best_dict_list_w_kwarg[0][1]['c']
 
         # Plot
-        series = ax.plot(show_config_list, yVals, color=color, marker='o', label=sweep_label_list[i])
+        if i == 0:
+            ax_local = ax1
+        else:
+            ax_local = ax2
+        series = ax_local.plot(show_config_list, yVals, color=color, marker=marker_list[i], label=Y_info_local[2])
         series_list.append(series[0])
         i += 1
 
     # Modify x-axis labels with word-wrapped strings
-    wrapped_labels = [wrap_string(label, 15) for label in show_config_list]
-    ax.set_xticks(range(len(wrapped_labels)))
-    ax.set_xticklabels(wrapped_labels, fontsize=fontsize, rotation=45, ha='right')
+    #wrapped_labels = [wrap_string(label, 15) for label in show_config_list]
+    wrapped_labels = [shorten_config(label) for label in show_config_list]
+    wrapped_labels = [wrap_string(label, 15) for label in wrapped_labels]
+    ax1.set_xticks(range(len(wrapped_labels)))
+    #ax1.set_xticklabels(wrapped_labels, fontsize=fontsize, rotation=45, ha='right')
+
+    if showX:
+        ax1.set_xticklabels(wrapped_labels, fontsize=fontsize, rotation=60, ha='right')
+    else:
+        ax1.set_xticklabels([])  # Hides the x-axis labels
 
     # Set the labels and title
     Y_label = Y_info[2]
     if Y_info[1] != "":
-        Y_label += " (" + Y_info[1] + ")"
-    ax.set_ylabel(Y_label)
-    legend = ax.legend(loc='upper right')
+        Y_label += " [" + Y_info[1] + "]"
+    ax1.set_ylabel(Y_label)
+    #legend = ax1.legend(loc='upper right')
+
+    if(len(Y_info_list) > 0):
+        Y2_label = Y2_info[2]
+        if Y2_info[1] != "":
+            Y2_label += " [" + Y2_info[1] + "]"
+        ax2.set_ylabel(Y2_label)
+
+    # Add legends for both axes
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines_total = lines1
+    labels_total = labels1
+
+    if(len(Y_info_list) > 0):
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        lines_total += lines2
+        labels_total += labels2
+
+    # Remove trailing \n in labels
+    for i_label in range(len(labels_total)):
+        label = labels_total[i_label]
+        if label[-1] == '\n':
+            labels_total[i_label] = label[:-1]
+
+    legend = ax1.legend(lines_total, labels_total, loc=legend_loc)
 
     map_legend_to_ax = {}
 
@@ -1793,63 +2025,6 @@ def plot_sweep_cost_comparison(list_of_best_dict_list_w_kwarg, sweep_label_list,
         legend_text.set_picker(5)
         map_legend_to_ax[legend_text.get_text()] = scatter_series
     
-    def on_pick(event):
-        # On the pick event, find the original line corresponding to the legend
-        # proxy line, and toggle its visibility.
-        legend_text = event.artist
-        if(isinstance(legend_text, matplotlib.text.Text) == False):
-            return
-
-        # Do nothing if the source of the event is not a legend line.
-        if legend_text.get_text() not in map_legend_to_ax:
-            return
-
-        # Left click toggle
-        if event.mouseevent.button == 1:
-            scatter_series = map_legend_to_ax[legend_text.get_text()]
-            visible = not scatter_series.get_visible()
-            scatter_series.set_visible(visible)
-            # Change the alpha on the line in the legend, so we can see what lines
-            # have been toggled.
-            legend_text.set_alpha(1.0 if visible else 0.2)
-            fig.canvas.draw()
-
-        # Right click toggle all
-        if event.mouseevent.button == 3:
-            scatter_series = map_legend_to_ax[legend_text.get_text()]
-            visible = not scatter_series.get_visible()
-
-            # Check if this series is already highlighted
-            only_visible = True
-            for key in map_legend_to_ax:
-                if(key != legend_text.get_text()):
-                    is_vis = map_legend_to_ax[key].get_visible()
-                    if is_vis:
-                        only_visible = False
-                        break
-
-            # If already highlighted, make all series visible
-            if only_visible:
-                legend_text_list = legend.get_texts()
-                for legend_text_single in legend_text_list:
-                    legend_text_single.set_alpha(1.0)
-                    map_legend_to_ax[legend_text_single.get_text()].set_visible(True)
-                fig.canvas.draw()
-                #for key in map_legend_to_ax:
-                #    scatter = map_legend_to_ax[key]
-                #    scatter.set_visible(True)
-            else:
-                legend_text_list = legend.get_texts()
-                for legend_text_single in legend_text_list:
-                    legend_text_single.set_alpha(0.2)
-                    map_legend_to_ax[legend_text_single.get_text()].set_visible(False)
-
-                #for key in map_legend_to_ax:
-                #    map_legend_to_ax[key].set_visible(False)
-                scatter_series.set_visible(True)
-                legend_text.set_alpha(1.0)
-                fig.canvas.draw()
-
     label_list_local = copy.deepcopy(label_list)
     if(len(label_list) == 0):
         label_list_local = ["cycle_config", "config_name", "T_htf_cold_des", "eta_thermal_calc", "recomp_frac", "bypass_frac", "UA_PHX", "q_dot_PHX",
@@ -1862,20 +2037,24 @@ def plot_sweep_cost_comparison(list_of_best_dict_list_w_kwarg, sweep_label_list,
             label_list_local.append("run_id")
 
     # Handle Click Business
-    annot = ax.annotate("",xy=(0,0), xytext=(-100,20), textcoords="offset points",
+    annot = ax1.annotate("",xy=(0,0), xytext=(-100,20), textcoords="offset points",
                              bbox=dict(boxstyle="round", fc="w"),
                              arrowprops=dict(arrowstyle="->"))
     annot.set_visible(False)
 
-    fig.canvas.mpl_connect('pick_event', on_pick)
-    fig.canvas.mpl_connect("button_press_event", lambda event: hover_multiple_sweeps(event, sweep_dict_list_list, label_list_local, fig, annot, ax, disk_load))
+    fig.canvas.mpl_connect("button_press_event", lambda event: hover_multiple_sweeps(event, sweep_dict_list_list, label_list_local, fig, annot, ax1, disk_load))
 
     #plt.xticks(fontsize=fontsize, rotation=45, ha='right')
-    plt.grid(True, which='major', axis='y', linestyle='--', linewidth=0.7, zorder=1)
-    plt.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.3, zorder=0)
+    #plt.grid(True, which='major', axis='y', linestyle='--', linewidth=0.7, zorder=1)
+    #plt.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.3, zorder=0)
+    ax1.minorticks_on()
+    ax1.grid(True, which='major', axis='y', linestyle='--', linewidth=0.7, zorder=1)
+    ax1.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.3, zorder=0)
+    ax1.grid(True, which='major', axis='x', linestyle='--', linewidth=0.7, zorder=1)
+    ax2.grid(False)
+
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.2)
     plt.minorticks_on() 
-    plt.title(Y_label)
     fig.canvas.manager.set_window_title("Sweep Comparison: " + Y_label)
     plt.tight_layout()
     #plt.xlim(left=-2)
@@ -2004,179 +2183,225 @@ def wrap_string(string, n):
     # Insert the newline character
     return string[:split_index] + '\n' + string[split_index + 1:]
 
-def plot_costs_barchart(dict_index_duo, type='sco2', show=False, plot_title="", figsize=(6.4,4.8), fontsize=6):
+def shorten_config(config_name):
+    config_dict = {
+        "Simple":"Simple",
+        "Simple Split Flow Bypass":"Simple BP Split Recup",
+        "Simple Split Flow Bypass w/o LTR":"Simple BP",
+        "Recompression":"Recomp",
+        "Recompression w/o LTR":"Recomp no LTR",
+        "Recompression w/o HTR":"Recomp no HTR",
+        "HTR BP":"Recomp BP",
+        "HTR BP w/o LTR":"Recomp BP no LTR",
+        "Partial":"Partial",
+        "Partial w/o HTR":"Partial no HTR",
+        "Partial w/o LTR":"Partial no LTR",
+        "Partial Intercooling w/o HTR":"Partial IC no HTR",
+        "Turbine Split Flow":"TSF"
+    }
+    return config_dict[config_name]
 
-    color_list = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', 
-                  '#c2c2f0', '#ffb3e6', '#c4e17f', '#76d7c4', 
-                  '#ff7f50', '#87ceeb', '#da70d6', '#ffa07a', 
-                  '#20b2aa', '#778899', '#b0c4de', '#ff6347', 
-                  '#40e0d0', '#ff69b4']
+def plot_costs_barchart(dict_index_duo, type='sco2', show=False, plot_title="", figsize=(6.4,4.8), fontsize=6,
+                        shorten_config_label=False):
 
-    fig = plt.figure(figsize=figsize)
-    N_cases = len(dict_index_duo)
-    total_cost_label = ""
-    fontsize = 10
-    if type == 'sco2':
-        total_cost_label = "cycle_cost"
-        total_cost_list = []
+    with plt.rc_context({'font.size': fontsize}):
+        color_list = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', 
+                    '#c2c2f0', '#ffb3e6', '#c4e17f', '#76d7c4', 
+                    '#ff7f50', '#87ceeb', '#da70d6', '#ffa07a', 
+                    '#20b2aa', '#778899', '#b0c4de', '#ff6347', 
+                    '#40e0d0', '#ff69b4']
+
+        fig = plt.figure(figsize=figsize)
+        N_cases = len(dict_index_duo)
+        total_cost_label = ""
+        if type == 'sco2':
+            total_cost_label = "cycle_cost"
+            total_cost_list = []
+            text_cutoff_val = 0.9
+            for duo in dict_index_duo:
+                result_dict = duo[0]
+                dict_index = duo[1]
+                total_cost = result_dict[total_cost_label][dict_index]
+                total_cost_list.append(total_cost)
+            y_label = 'sCO₂ Cycle Cost [M$]'
+            cost_labels = [["mc_cost_bare_erected", "M$", "Main Compressor"],
+                        ["rc_cost_bare_erected", "M$", "Recompressor"],
+                        ["pc_cost_bare_erected", "M$", "Precompressor"],
+                        ["LTR_cost_bare_erected", "M$", "LTR"],
+                        ["HTR_cost_bare_erected", "M$", "HTR"],
+                        ["PHX_cost_bare_erected", "M$", "Primary HX"],
+                        ["BPX_cost_bare_erected", "M$", "Bypass HX"],
+                        ["t_cost_bare_erected", "M$", "Turbine"],
+                        ["t2_cost_bare_erected", "M$", "Second Turbine"],
+                        ["mc_cooler_cost_bare_erected", "M$", "Main Air Cooler"],
+                        ["pc_cooler_cost_bare_erected", "M$", "PC Air Cooler"],
+                        ["piping_inventory_etc_cost", "M$", "Balance of Plant"]
+                        ]
+        elif type == 'system':
+            total_cost_label = 'ui_direct_subtotal'
+            total_cost_list = []
+            text_cutoff_val = 2
+            for duo in dict_index_duo:
+                result_dict = duo[0]
+                dict_index = duo[1]
+                total_cost = result_dict[total_cost_label][dict_index] / 1e6
+                total_cost_list.append(total_cost)
+
+            y_label = 'System Cost [M$]'
+            cost_labels = [["csp.pt.cost.site_improvements", "$", "Site Improvements"],
+                        ["csp.pt.cost.heliostats", "$", "Heliostats"],
+                        ["csp.pt.cost.tower", "$", "Tower"],
+                        ["csp.pt.cost.receiver", "$", "Receiver"],
+                        ["receiver_lift_cost", "$", "Receiver Lift"],
+                        ["csp.pt.cost.storage", "$", "TES"],
+                        ["csp.pt.cost.power_block", "$", "Power Block"],
+                        ["heater_cost", "$", "Heater"],
+                        ["csp.pt.cost.bop", "$", "BOP"],
+                        ["csp.pt.cost.fossil", "$", "Fossil Backup"]]
+
+        x_list = []
         for duo in dict_index_duo:
             result_dict = duo[0]
             dict_index = duo[1]
-            total_cost = result_dict[total_cost_label][dict_index]
-            total_cost_list.append(total_cost)
-        y_label = 'sCO2 Cycle Cost (M$)'
-        cost_labels = [["mc_cost_bare_erected", "M$", "Main Compressor"],
-                    ["rc_cost_bare_erected", "M$", "Recompressor"],
-                    ["pc_cost_bare_erected", "M$", "Precompressor"],
-                    ["LTR_cost_bare_erected", "M$", "LTR"],
-                    ["HTR_cost_bare_erected", "M$", "HTR"],
-                    ["PHX_cost_bare_erected", "M$", "Primary Heat Exchanger"],
-                    ["BPX_cost_bare_erected", "M$", "Bypass Heat Exchanger"],
-                    ["t_cost_bare_erected", "M$", "Turbine"],
-                    ["t2_cost_bare_erected", "M$", "Second Turbine"],
-                    ["mc_cooler_cost_bare_erected", "M$", "Main Air Cooler"],
-                    ["pc_cooler_cost_bare_erected", "M$", "Precompressor Air Cooler"],
-                    ["piping_inventory_etc_cost", "M$", "Piping etc"]
-                    ]
-    elif type == 'system':
-        total_cost_label = 'ui_direct_subtotal'
-        total_cost_list = []
-        for duo in dict_index_duo:
-            result_dict = duo[0]
-            dict_index = duo[1]
-            total_cost = result_dict[total_cost_label][dict_index] / 1e6
-            total_cost_list.append(total_cost)
 
-        y_label = 'System Cost (M$)'
-        cost_labels = [["csp.pt.cost.site_improvements", "$", "Site Improvements"],
-                       ["csp.pt.cost.heliostats", "$", "Heliostats"],
-                       ["csp.pt.cost.tower", "$", "Tower"],
-                       ["csp.pt.cost.receiver", "$", "Receiver"],
-                       ["receiver_lift_cost", "$", "Receiver Lift"],
-                       ["csp.pt.cost.storage", "$", "TES"],
-                       ["csp.pt.cost.power_block", "$", "Power Block"],
-                       ["heater_cost", "$", "Heater"],
-                       ["csp.pt.cost.bop", "$", "BOP"],
-                       ["csp.pt.cost.fossil", "$", "Fossil Backup"]]
+            config_name = result_dict['config_name'][dict_index]
+            eta = result_dict['eta_thermal_calc'][dict_index]
+            dT = result_dict['T_htf_hot_des'][dict_index] - result_dict['T_htf_cold_des'][dict_index]
 
-    x_list = []
-    for duo in dict_index_duo:
-        result_dict = duo[0]
-        dict_index = duo[1]
+            #x_label = config_name + '\nETA: ' +  f'{eta*100:.2f}' + '%\ndT: ' + f'{dT:.2f}' + '\u00B0C'
+            x_label = config_name
+            if(len(duo) > 2):
+                kwarg = duo[2]
+                if 'label' in kwarg:
+                    x_label = kwarg['label']
 
-        config_name = result_dict['config_name'][dict_index]
-        eta = result_dict['eta_thermal_calc'][dict_index]
-        dT = result_dict['T_htf_hot_des'][dict_index] - result_dict['T_htf_cold_des'][dict_index]
-
-        #x_label = config_name + '\nETA: ' +  f'{eta*100:.2f}' + '%\ndT: ' + f'{dT:.2f}' + '\u00B0C'
-        x_label = config_name
-        if(len(duo) > 2):
-            kwarg = duo[2]
-            if 'label' in kwarg:
-                x_label = kwarg['label']
-
-        x_label = wrap_string(x_label, 15)
-
-        x_list.append(x_label)
-    
-    bottom_var_list = [0] * N_cases
-    bottom_var_list_counter = [0] * N_cases
-    top_label_y_list = []
-    top_label_z_list = []
-    i = 0
-    for cost_label in cost_labels:
-        
-        y_list = []
-        unit = cost_label[1]
-        text_y_list = []
-        text_z_list = []
-        unit_label = unit
-
-        j = 0
-        for duo in dict_index_duo:
-            result_dict = duo[0]
-            dict_index = duo[1]
-            y = 0
-            if cost_label[0] in result_dict:
-                y = result_dict[cost_label[0]][dict_index]
-                
-                # Convert to M$ if applicable
-                if(unit == "$" and np.isnan(y) == False):
-                    y = y / 1e6
-                    unit_label = "M$"
-
-                if(y == '' or np.isnan(y)):
-                    y = 0
-
-            y_list.append(y)
-
-            text_y = bottom_var_list[j] + y / 2
-            if y > 0:
-                #text_z = cost_label[2] + ' ' + f'{y:.2f}'
-                text_z = f'{y:.2f}'
-                text_y_list.append(text_y)
-                text_z_list.append(text_z)
+            if shorten_config_label:
+                x_label = shorten_config(x_label)
             else:
-                text_y_list.append(text_y)
-                text_z_list.append('')
+                x_label = wrap_string(x_label, 15)
 
-            if cost_label == cost_labels[-1]:
-                total_cost_calc = bottom_var_list[j] + y
-                total_cost_reported = total_cost_list[j]
-                #top_label = ("Total cost calc: " + f'{total_cost_calc:.2f}' 
-                #            + "\n Total cost reported: " + f'{total_cost_reported:.2f}') 
-                top_label = ("Calc: " + f'{total_cost_calc:.2f}' 
-                            + "\n Verify: " + f'{total_cost_reported:.2f}') 
-                eta = result_dict['eta_thermal_calc'][dict_index]
-                dT = result_dict['T_htf_hot_des'][dict_index] - result_dict['T_htf_cold_des'][dict_index]
-                top_label = "Total: " + f'{total_cost_calc:.2f}' + '\nETA: ' +  f'{eta*100:.2f}' + '%\ndT: ' + f'{dT:.2f}' + '\u00B0C'
+            x_list.append(x_label)
+        
+        bottom_var_list = [0] * N_cases
+        bottom_var_list_counter = [0] * N_cases
+        top_label_y_list = []
+        top_label_z_list = []
+        i = 0
+        for cost_label in cost_labels:
+            
+            y_list = []
+            unit = cost_label[1]
+            text_y_list = []
+            text_z_list = []
+            unit_label = unit
 
-                top_label_z_list.append(top_label)            
+            j = 0
+            for duo in dict_index_duo:
+                result_dict = duo[0]
+                dict_index = duo[1]
+                y = 0
+                if cost_label[0] in result_dict:
+                    y = result_dict[cost_label[0]][dict_index]
+                    
+                    # Convert to M$ if applicable
+                    if(unit == "$" and np.isnan(y) == False):
+                        y = y / 1e6
+                        unit_label = "M$"
 
-            j += 1
+                    if(y == '' or np.isnan(y)):
+                        y = 0
 
-        # Check if category is empty
-        no_data = True if max(y_list) == 0 else False
+                y_list.append(y)
 
-        # Plot Bars
-        if(no_data == False):
-            plt.bar(x_list, y_list, bottom=bottom_var_list, color=color_list[i], label=cost_label[2], zorder=2)
+                text_y = bottom_var_list[j] + y / 2
+                if y > 0:
+                    #text_z = cost_label[2] + ' ' + f'{y:.2f}'
+                    text_z = f'{y:.2f}'
+                    text_y_list.append(text_y)
+                    text_z_list.append(text_z)
+                else:
+                    text_y_list.append(text_y)
+                    text_z_list.append('')
 
-        for count in range(len(y_list)):
-            bottom_var_list[count] += y_list[count]
+                if cost_label == cost_labels[-1]:
+                    total_cost_calc = bottom_var_list[j] + y
+                    total_cost_reported = total_cost_list[j]
+                    #top_label = ("Total cost calc: " + f'{total_cost_calc:.2f}' 
+                    #            + "\n Total cost reported: " + f'{total_cost_reported:.2f}') 
+                    top_label = ("Calc: " + f'{total_cost_calc:.2f}' 
+                                + "\n Verify: " + f'{total_cost_reported:.2f}') 
+                    eta = result_dict['eta_thermal_calc'][dict_index]
+                    dT = result_dict['T_htf_hot_des'][dict_index] - result_dict['T_htf_cold_des'][dict_index]
+                    top_label = "Total: " + f'{total_cost_calc:.2f}' + '\nETA: ' +  f'{eta*100:.2f}' + '%\ndT: ' + f'{dT:.2f}' + '\u00B0C'
 
-        # Add text labels to each bar
-        for x, y, text in zip(x_list, text_y_list, text_z_list):
-            plt.text(x, y, text, ha='center', va='center', color='black', fontsize=fontsize, zorder=2)
+                    top_label_z_list.append(top_label)            
 
-        i += 1
+                j += 1
 
-    # Add top labels
-    top_label_y_list = []
-    for count in range(len(bottom_var_list)):
-        top_label_y_list.append(1.1 * bottom_var_list[count])
-    for x, y, text in zip(x_list, top_label_y_list, top_label_z_list):
-        plt.text(x, y, text, ha='center', va='baseline', color='black', fontsize=fontsize)
+            # Check if category is empty
+            no_data = True if max(y_list) == 0 else False
 
-    max_bottom_var = max(bottom_var_list)
-    plt.ylim(top=1.25*max_bottom_var)
+            # Plot Bars
+            if(no_data == False):
+                plt.bar(x_list, y_list, bottom=bottom_var_list, color=color_list[i], label=cost_label[2], zorder=2)
 
-    plt.ylabel(y_label)
-    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.1)
-    plt.xticks(fontsize=fontsize, rotation=45, ha='right')
-    plt.grid(True, which='major', axis='y', linestyle='--', linewidth=0.5, zorder=1)
-    plt.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.5, zorder=0)
-    plt.minorticks_on()
-    plt.title(plot_title)
-    plt.tight_layout()
-    plt.xlim(left=-2)
+            for count in range(len(y_list)):
+                bottom_var_list[count] += y_list[count]
 
-    # Reverse the order of legend labels
-    handles, labels = plt.gca().get_legend_handles_labels()
-    plt.legend(handles[::-1], labels[::-1], loc='upper left', fontsize=8)
+            # Add text labels to each bar
+            for x, y, text in zip(x_list, text_y_list, text_z_list):
+                if text != '':
+                    z_val = float(text)
+                    if z_val > text_cutoff_val:
+                        plt.text(x, y, text, ha='center', va='center', color='black', fontsize=fontsize, zorder=2)
 
-    if show:
-        plt.show(block = True)
+            i += 1
+
+        # Add top labels
+        #top_label_y_list = []
+        #for count in range(len(bottom_var_list)):
+        #    top_label_y_list.append(1.1 * bottom_var_list[count])
+        #for x, y, text in zip(x_list, top_label_y_list, top_label_z_list):
+        #    plt.text(x, y, text, ha='center', va='baseline', color='black', fontsize=fontsize)
+
+        max_bottom_var = max(bottom_var_list)
+        #plt.ylim(top=1.25*max_bottom_var)
+
+        plt.ylabel(y_label)
+        plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.1)
+        plt.xticks(fontsize=fontsize, rotation=45, ha='right')
+        plt.grid(True, which='major', axis='y', zorder=1)
+        plt.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.8, zorder=0)
+        plt.minorticks_on()
+        plt.title(plot_title)
+        plt.tight_layout()
+        #plt.xlim(left=-3)
+
+        # Reverse the order of legend labels
+        handles, labels = plt.gca().get_legend_handles_labels()
+        #plt.legend(handles[::-1], labels[::-1], loc='upper left', fontsize=fontsize)
+        # Position the legend outside the plot on the right side
+        plt.legend(
+            handles[::-1], 
+            labels[::-1], 
+            loc='center left',           # Position at the center left of the bbox_to_anchor point
+            bbox_to_anchor=(1.0, 0.5),   # Place anchor point at x=1.0 (right edge of axes), y=0.5 (middle)
+            fontsize=fontsize
+        )
+
+        # Adjust the figure layout to make room for the legend
+        #plt.tight_layout(rect=[0, 0, 1, 1])  # Leave 15% of the figure width for the legend
+
+        # Set explicit figure margins
+        fig.subplots_adjust(
+            left=0.07,    # Left margin: 10% of figure width
+            right=0.81,  # Right margin: 15% of figure width (leave space for legend)
+            bottom=0.27, # Bottom margin: 15% of figure height
+            top=0.93      # Top margin: 10% of figure height
+        )
+
+        if show:
+            plt.show(block = True)
 
 def plot_parasitics_barchart(dict_index_duo, show=False):
     color_list = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', 
@@ -2406,7 +2631,7 @@ def get_single_case_disk(filename, run_id):
 def get_right_click_dict():
     right_click_dict = {'save':'Save case...',
                         'ts':'Show Ts plot...',
-                        'cost_sco2':'Show sco2 cost breakdown...',
+                        'cost_sco2':'Show sCO₂ cost breakdown...',
                         'cost_system':'Show system cost breakdown...'}
     return right_click_dict
 
@@ -2578,35 +2803,35 @@ def hover_multiple_sweeps(event, sweep_dict_list_list, label_list, fig, annot, a
 
 def get_color_list():
     return [
-    "#000000",  # [0] Black
-    "#FF7F0E",  # [1] Orange
-    "#2CA02C",  # [2] Green
-    "#D62728",  # [3] Red
-    "#BCBD22",  # [4] Olive
-    "#8C564B",  # [5] Brown
-    "#1F77B4",  # [6] Blue (replacing Aqua)
-    "#7F7F7F",  # [7] Gray
-    "#9467BD",  # [8] Purple
-    "#17BECF",  # [9] Teal
-    "#9E3D41",  # [10] Maroon
-    "#6D9F4B",  # [11] Forest Green
-    "#FFB94A",  # [12] Amber
-    "#7B4173",  # [13] Plum
-    "#5B9BD5",  # [14] Light Blue
-    "#800020",  # [15] Burgundy (swapped with Peach)
-    "#6A3D9A",  # [16] Dark Purple
-    "#E377C2",  # [17] Pink
-    "#C3B091",  # [18] Taupe
-    "#B8860B",  # [19] Dark Goldenrod
-    "#008B8B",  # [20] Dark Cyan
-    "#D85C8A",  # [21] Rose
-    "#2F4F4F",  # [22] Slate Gray
-    "#8B8B00",  # [23] Olive Drab
-    "#F1A7A0"   # [24] Peach (swapped with Burgundy)
+    "#000000",  # Black
+    "#FF7F0E",  # Orange
+    "#8C564B",  # Brown
+    "#5B9BD5",  # Light Blue
+    "#9467BD",  # Purple
+    "#2CA02C",  # Green
+    "#D62728",  # Red
+    "#7F7F7F",  # Gray
+    "#BCBD22",  # Olive
+    "#17BECF",  # Teal
+    "#9E3D41",  # Maroon
+    "#E377C2",  # Pink
+    "#FFB94A",  # Amber
+    "#7B4173",  # Plum
+    "#6D9F4B",  # Forest Green
+    "#800020",  # Burgundy (swapped with Peach)
+    "#6A3D9A",  # Dark Purple
+    "#1F77B4",  # Blue (replacing Aqua)
+    "#C3B091",  # Taupe
+    "#B8860B",  # Dark Goldenrod
+    "#008B8B",  # Dark Cyan
+    "#D85C8A",  # Rose
+    "#2F4F4F",  # Slate Gray
+    "#8B8B00",  # Olive Drab
+    "#F1A7A0"   # Peach (swapped with Burgundy)
     ]
 
 def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title="", figure_size=[], ax=0, show_legend=True, legend_loc="", show_Z_legend=True,
-                     label_list=[], vrange=[], show_line=False, disk_load=False, is_norm=False):
+                     label_list=[], vrange=[], show_line=False, disk_load=False, is_norm=False, shorten_legend=False):
 
     Y_info = copy.deepcopy(Y_info)
 
@@ -2765,10 +2990,10 @@ def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title=""
         Y_plot_label = Y_label
 
     if(X_unit != ""):
-        X_plot_label += " (" + X_unit + ")"
+        X_plot_label += " [" + X_unit + "]"
 
     if(Y_unit != ""):
-        Y_plot_label += " (" + Y_unit + ")"
+        Y_plot_label += " [" + Y_unit + "]"
 
     ax.set_xlabel(X_plot_label)
     ax.set_ylabel(Y_plot_label)
@@ -2781,7 +3006,7 @@ def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title=""
             Z_plot_label = Z_label
 
         if(Z_unit != ""):
-            Z_plot_label += " (" + Z_unit + ")"
+            Z_plot_label += " [" + Z_unit + "]"
 
         if(show_Z_legend == True):
             cb3 = fig.colorbar(ax.collections[0])
@@ -2794,7 +3019,22 @@ def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title=""
     if(show_legend):
         if(legend_loc == ""):
             legend_loc = "upper left"
-        legend = ax.legend(loc=legend_loc)
+        if legend_loc == "outside right":
+            legend = ax.legend(loc="center left", bbox_to_anchor=(1.05, 0.5), borderaxespad=0.)
+        else:
+            legend = ax.legend(loc=legend_loc)
+
+
+        if shorten_legend:
+            handles, labels = ax.get_legend_handles_labels()
+            labels = [shorten_config(label) for label in labels]
+
+            legend_loc = legend._loc
+            bbox_to_anchor = legend.get_bbox_to_anchor()._bbox
+
+            legend = ax.legend(handles, labels, loc=legend_loc, bbox_to_anchor=bbox_to_anchor)
+
+
         #lines = ax.get_lines()
         #test = legend.get_texts()
         map_legend_to_ax = {}
@@ -2895,6 +3135,10 @@ def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title=""
     ax.yaxis.grid(True)
     ax.set_axisbelow(True)
 
+    ax.minorticks_on()
+    ax.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.4, zorder=0)
+    ax.grid(True, which='minor', axis='x', linestyle=':', linewidth=0.4, zorder=0)
+
     #label_list = ["cycle_config", "config_name", "T_htf_cold_des", "eta_thermal_calc", "recup_total_UA_calculated", "LTR_UA_calculated", 
     #              "HTR_UA_calculated", "UA_BPX", "UA_PHX",
     #              "cycle_cost", "mc_cost_bare_erected", "rc_cost_bare_erected", "pc_cost_bare_erected", "t_cost_bare_erected", "t2_cost_bare_erected", "LTR_cost_bare_erected", "HTR_cost_bare_erected",
@@ -2929,6 +3173,104 @@ def plot_scatter_pts(dict_list_with_kwarg, X_info, Y_info, Z_info = [], title=""
     fig.canvas.mpl_connect("button_press_event", lambda event: hover_multiple_pts(event, dict_list, label_list_local, fig, annot, ax, ax.collections, disk_load))
 
     return ax, kwarg_list
+
+def plot_scatter_pts_dual_Y(result_dict, X_info, Y1_info, Y2_info, title="", figure_size=[], ax1=0, show_legend=True, legend_loc="", show_Z_legend=True,
+                     show_line=False, is_norm=False):
+
+    marker_list = get_marker_list()
+    
+    Y1_info = copy.deepcopy(Y1_info)
+    Y2_info = copy.deepcopy(Y2_info)
+    Y_info_list = [Y1_info, Y2_info]
+
+    # Make figure and axis if it doesn't exist already
+    scatter_list = []
+    plot_list = []
+    kwarg_list = []
+    if(ax1 == 0):
+        # Create a figure and axis
+        fig, ax1 = plt.subplots()
+        ax2 = ax1.twinx()
+    else:
+        ax2 = ax1.twinx()
+        fig = ax1.get_figure()
+
+    axes = [ax1, ax2]
+
+    i = 0
+    cmap = plt.get_cmap('jet')
+    N_colors = len(Y_info_list)
+    colors = cmap(np.linspace(0, 0.95, N_colors))  
+    for Y_info_local, ax_local in zip(Y_info_list, axes):
+
+        kwarg_dict = {}
+        kwarg_dict['marker'] = marker_list[i+1]
+        kwarg_dict['c'] = [colors[i]]
+
+        kwarg_list.append(kwarg_dict)
+
+        sca = ax_local.scatter(result_dict[X_info[0]], result_dict[Y_info_local[0]], label=Y_info_local[2], **kwarg_dict)
+        scatter_list.append(sca)
+
+        # Extract the color used for the scatter plot
+        scatter_color = sca.get_facecolor()[0]
+
+        if show_line:
+            line_plot = ax_local.plot(result_dict[X_info[0]], result_dict[Y_info_local[0]], color=scatter_color)
+            plot_list.append(line_plot[0])
+
+        i += 1
+
+    X_plot_label = X_info[2]
+    if(X_info[1] != ""):
+        X_plot_label += " [" + X_info[1] + "]"
+
+    Y1_plot_label = Y1_info[2]
+    if(Y1_info[1] != ""):
+        Y1_plot_label += " [" + Y1_info[1] + "]"
+
+    Y2_plot_label = Y2_info[2]
+    if(Y2_info[1] != ""):
+        Y2_plot_label += " [" + Y2_info[1] + "]"
+
+    ax1.set_xlabel(X_plot_label)
+    ax1.set_ylabel(Y1_plot_label)
+    ax2.set_ylabel(Y2_plot_label)
+
+    if(title != ""):
+        ax1.set_title(title)
+
+    # Handle Legend business
+    if(show_legend):
+        # Add legends for both axes
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+
+        lines_total = lines1 + lines2
+        labels_total = labels1 + labels2
+
+        # Remove trailing \n in labels
+        for i_label in range(len(labels_total)):
+            label = labels_total[i_label]
+            if label[-1] == '\n':
+                labels_total[i_label] = label[:-1]
+
+        if(legend_loc == ""):
+            legend_loc = "upper left"
+        if legend_loc == "outside right":
+            legend = ax1.legend(lines_total, labels_total, loc="center left", bbox_to_anchor=(1.05, 0.5), borderaxespad=0.)
+        else:
+            legend = ax1.legend(lines_total, labels_total, loc=legend_loc)
+
+    ax1.xaxis.grid(True)
+    ax1.yaxis.grid(True)
+    ax1.set_axisbelow(True)
+
+    ax1.minorticks_on()
+    ax1.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.4, zorder=0)
+    ax1.grid(True, which='minor', axis='x', linestyle=':', linewidth=0.4, zorder=0)
+    
+    return axes
 
 
 
@@ -4733,6 +5075,7 @@ def demo_plotting():
 # Main Script
 
 if __name__ == "__main__":
+    pass
     #example_plot_solve_dict()
 
     #file_in = "C:\\Users\\tbrown2\\OneDrive - NREL\\sCO2-CSP 10302.41.01.40\\Notes\\Optimization\\Alfani 2020\\Final Data\\alfani_2020_partial_sweep100_results20231010_100456.txt"
@@ -4747,7 +5090,7 @@ if __name__ == "__main__":
     #display_recomp()
     #display_Alfani_2020_BONUS()
     #display_Alfani_2020_backup()
-    display_Alfani_2020_Final()
+    #display_Alfani_2020_Final()
     #display_Alfani_2020_Final_2()
     #FindAnomalousDataPt()
     #display_bp_opening()

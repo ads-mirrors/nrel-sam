@@ -86,3 +86,32 @@ def get_sco2_design_vars_info_list():
                  ["is_turbine_split_ok", "", "Turbine Split Fraction"],
                  ["is_bypass_ok", "", "Bypass Fraction"]]
     return sco2_vars
+
+def get_baseline_table_info_list():
+    general_vars = [["cost_per_kWe_net_ish", "$/kWe", "System Cost per Net Power"],
+                    ["eta_thermal_calc", "", "PC Thermal Efficiency"],
+                    ["T_htf_cold_des", "C", "HTF Cold Temperature"],
+                    ['total_installed_cost', '$', "System Total Installed Cost"],
+                    ['cycle_cost', 'M$', "Cycle Cost"]
+                    ]
+    
+    sco2_cost_vars = [["mc_cost_bare_erected", "M$", "Main Compressor Cost"],
+                      ["rc_cost_bare_erected", "M$", "Recompressor Cost"],
+                      ["pc_cost_bare_erected", "M$", "Precompressor Cost"],
+                      ["LTR_cost_bare_erected", "M$", "LTR Cost"],
+                      ["HTR_cost_bare_erected", "M$", "HTR Cost"],
+                      ["PHX_cost_bare_erected", "M$", "Primary Heat Exchanger Cost"],
+                      ["BPX_cost_bare_erected", "M$", "Bypass Heat Exchanger Cost"],
+                      ["t_cost_bare_erected", "M$", "Turbine Cost"],
+                      ["t2_cost_bare_erected", "M$", "Second Turbine Cost"],
+                      ["mc_cooler_cost_bare_erected", "M$", "Main Air Cooler Cost"],
+                      ["pc_cooler_cost_bare_erected", "M$", "Precompressor Air Cooler Cost"]
+                      ]
+    
+    system_cost_vars = [["csp.pt.cost.heliostats", "$", "Heliostats Cost"],
+                        ["csp.pt.cost.tower", "$", "Tower Cost"],
+                        ["csp.pt.cost.receiver", "$", "Receiver Cost"],
+                        ["csp.pt.cost.storage", "$", "TES Cost"]
+                       ]
+    
+    return [*general_vars, *sco2_cost_vars, *system_cost_vars]
