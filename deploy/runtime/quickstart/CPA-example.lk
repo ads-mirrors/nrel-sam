@@ -49,14 +49,43 @@ exitIf( !msgbox('Welcome to the community power accelerator example wizard!\n'+
 
 /*************************************/
 /**         Case management         **/
-/* copy to user folder and load */
-template_file = runtimedir() + "quickstart/CPA-example.sam";
-user_file = curDir + "/CPA example.sam";
-copy_file(template_file, user_file, true);
-exitIf (!open_project(user_file));
+// Check if there is an active case
+//  - if there is, ask the user if they would like to use this case, or else create a new case
+if( active_case() != "" )
+	newCase = yesno("First, would you like to create a new case?\n\n(selecting 'no' will make changes to the currently active case)",
+		[defaultX, defaultY]);
+else
+	newCase = true;
 
+
+// If user chooses to use the current case, ensure the right models are selected
+if( newCase == false){
+	cnf =  configuration();
+	
+	if( !(strcmp(cnf[0], "PVWatts") == 0 && strcmp(cnf[1],"Community Solar") == 0) ){
+		exitIf(! msgbox("The currently active case does not use the appropriate physical and/or financial model for this wizard.\n\nPlease create a new case.",
+			"WARNING",
+			[defaultX, defaultY, 500, 500]));
+		newCase = true;
+	}
+} 
+
+// Create a new case if required
+if( newCase == true ) {
+	tmpName = in("Give your case a name", 
+				"CPA Wizard", 
+				"Create a new case",
+				[defaultX, defaultY]);
+	exitIf( tmpName == "" );
+
+	if( !create_case('PVWatts', 'Community Solar', tmpName) ){
+		msgbox( 'Something went wrong' );
+		exit;
+	}
+}
 caseName = case_name();
-exitIf(caseName == "");
+
+
 
 /*************************************/
 /**     Get Simulation Location     **/
