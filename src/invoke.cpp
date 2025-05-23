@@ -93,6 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "graph.h"
 #include "ptesdesignptdialog.h"
 #include "geotools.h"
+#include "nohrsc.h"
 
 
 
@@ -2718,6 +2719,35 @@ void fcall_wfdownloaddir( lk::invoke_t &cxt)
 	SamApp::Settings().Write("solar_download_path", wfdir);
 	cxt.result().assign(wfdir);
 }
+
+void fcall_nohrscquery(lk::invoke_t& cxt)
+{
+	LK_DOC("nohrscquery", "Creates the NOHRSC data download dialog box, lists all available resource files, downloads multiple solar resource files, and returns local file name for weather file", "(none) : string");
+	//Create the wind data object
+	NOHRSCDialog dlgNOHRSC(SamApp::Window(), "Advanced NOHRSC Download");
+	dlgNOHRSC.CenterOnParent();
+	int code = dlgNOHRSC.ShowModal(); //shows the dialog and makes it so you can't interact with other parts until window is closed
+
+	//Return an empty string if the window was dismissed
+	if (code == wxID_CANCEL)
+	{
+		cxt.result().assign(wxEmptyString);
+		return;
+	}
+
+	//Get selected filename
+	wxString foldername = dlgNOHRSC.GetWeatherFolder();
+	wxString filename = dlgNOHRSC.GetWeatherFile();
+	wxString addfolder = dlgNOHRSC.GetAddFolder();
+
+	cxt.result().empty_hash();
+
+	// meta data
+	cxt.result().hash_item("file").assign(filename);
+	cxt.result().hash_item("folder").assign(foldername);
+	cxt.result().hash_item("addfolder").assign(addfolder);
+}
+
 
 
 void fcall_nsrdbquery(lk::invoke_t &cxt)
@@ -6555,6 +6585,7 @@ lk::fcall_t* invoke_uicallback_funcs()
 		fcall_current_at_voltage_sandia,
 		fcall_windtoolkit,
 		fcall_nsrdbquery,
+		fcall_nohrscquery,
 		fcall_combinecasesquery,
         fcall_wavetoolkit,
         fcall_ptesdesignptquery,
