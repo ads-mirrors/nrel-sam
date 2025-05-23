@@ -55,8 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 enum {
-	ID_txtAddress, ID_txtFolder, ID_cboFilter, /*ID_cboWeatherFile,*/ ID_chlResources,
-	ID_btnSelectAll, ID_btnClearAll, ID_btnSelectFiltered, ID_btnShowSelected, ID_btnShowAll, ID_chk60, ID_chk30, ID_chk15, ID_chk10, ID_chk5, ID_chkTmy, ID_chkTgy, ID_chkTdy, ID_btnResources, ID_btnFolder, ID_search, ID_btnSaveToFile
+	ID_txtAddress, /*ID_txtFolder,*/ ID_cboFilter, /*ID_cboWeatherFile,*/ ID_chlResources,
+	ID_btnSelectAll, ID_btnClearAll, ID_btnSelectFiltered, ID_btnShowSelected, ID_btnShowAll, ID_chk60, ID_chk30, ID_chk15, ID_chk10, ID_chk5, ID_chkTmy, ID_chkTgy, ID_chkTdy, ID_btnResources, /*ID_btnFolder,*/ ID_search, ID_btnSaveToFile
 };
 
 BEGIN_EVENT_TABLE(NOHRSCDialog, wxDialog)
@@ -74,7 +74,7 @@ BEGIN_EVENT_TABLE(NOHRSCDialog, wxDialog)
 //EVT_CHECKBOX(ID_chkTgy, NOHRSCDialog::OnEvt)
 //EVT_CHECKBOX(ID_chkTdy, NOHRSCDialog::OnEvt)
 EVT_BUTTON(ID_btnResources, NOHRSCDialog::OnEvt)
-EVT_BUTTON(ID_btnFolder, NOHRSCDialog::OnEvt)
+//EVT_BUTTON(ID_btnFolder, NOHRSCDialog::OnEvt)
 EVT_TEXT(ID_search, NOHRSCDialog::OnEvt)
 EVT_BUTTON(wxID_OK, NOHRSCDialog::OnEvt)
 EVT_CHECKLISTBOX(ID_chlResources, NOHRSCDialog::OnEvt)
@@ -100,12 +100,12 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 
 	// This is stuff to deal with where to save the weather folder
 	// I will nuke this later
-	wxString dnpath;
-	SamApp::Settings().Read("NOHRSCDownloadFolder", &dnpath);
-	if (dnpath.Len() <= 0)
-		SamApp::Settings().Read("solar_download_path", &dnpath);
-	m_txtFolder = new wxTextCtrl(this, ID_txtFolder, dnpath);// , wxDefaultPosition, wxSize(500, 30));
-	m_txtFolder->SetValue(dnpath);
+	// wxString dnpath;
+	// SamApp::Settings().Read("NOHRSCDownloadFolder", &dnpath);
+	// if (dnpath.Len() <= 0)
+	// 	SamApp::Settings().Read("solar_download_path", &dnpath);
+	// m_txtFolder = new wxTextCtrl(this, ID_txtFolder, dnpath);// , wxDefaultPosition, wxSize(500, 30));
+	// m_txtFolder->SetValue(dnpath);
 
 
 	// I think we can perhaps prepopulate this with the user's lat lon from the weather file
@@ -117,7 +117,7 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 
 	// TODO: get rid of this eventually... we'll start by saving to a folder
 	// but move on to actually just putting the data into the ssc array with no intermediate save
-	m_btnFolder = new wxButton(this, ID_btnFolder, "...", wxDefaultPosition, wxSize(30, 30));
+	// m_btnFolder = new wxButton(this, ID_btnFolder, "...", wxDefaultPosition, wxSize(30, 30));
 	//m_btnSelectAll = new wxButton(this, ID_btnSelectAll, "Select all");
 	//m_btnClearAll = new wxButton(this, ID_btnClearAll, "Clear all");
 	//m_chk60 = new wxCheckBox(this, ID_chk60, "605 min");
@@ -163,12 +163,11 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	szLatLon->Add(new wxStaticText(this, wxID_ANY, "Latitude and Longitude:"), 0, wxALL, 2);
 	szLatLon->Add(m_txtLatLon, 5, wxALL | wxEXPAND, 1);
 
-	wxBoxSizer* szFolder = new wxBoxSizer(wxHORIZONTAL);
-	szFolder->Add(new wxStaticText(this, wxID_ANY, "3. Choose download folder:"), 0, wxALL, 2);
-	szFolder->Add(m_txtFolder, 5, wxALL | wxEXPAND, 2);
-	szFolder->Add(m_btnFolder, 0, wxALL, 2);
-	szFolder->Add(m_btnSaveToFile, 0, wxALL, 2);
-
+	// wxBoxSizer* szFolder = new wxBoxSizer(wxHORIZONTAL);
+	// szFolder->Add(new wxStaticText(this, wxID_ANY, "3. Choose download folder:"), 0, wxALL, 2);
+	// szFolder->Add(m_txtFolder, 5, wxALL | wxEXPAND, 2);
+	// szFolder->Add(m_btnFolder, 0, wxALL, 2);
+	// szFolder->Add(m_btnSaveToFile, 0, wxALL, 2);
 
 	wxBoxSizer* szFilter = new wxBoxSizer(wxHORIZONTAL);
 
@@ -186,8 +185,16 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	szmain->Add(szStationID, 0, wxEXPAND, 1);
 	szmain->Add(szLatLon, 0, wxEXPAND, 1);
 	szmain->Add(szgrid, 10, wxALL | wxEXPAND, 1);
-	szmain->Add(szFolder, 0, wxALL | wxEXPAND, 1);
-	szmain->Add(CreateButtonSizer(wxHELP | wxOK | wxCANCEL), 0, wxALL | wxEXPAND, 10);
+
+	// --- Custom button sizer with Save to file, Help, OK, Cancel ---
+	wxBoxSizer* szButtons = new wxBoxSizer(wxHORIZONTAL);
+	szButtons->Add(m_btnSaveToFile, 0, wxALL, 0);
+	szButtons->AddStretchSpacer(1);
+	szButtons->Add(new wxButton(this, wxID_OK, "Download Snow Depth Array"), 0, wxLEFT, 10); // Changed label here
+	szButtons->Add(new wxButton(this, wxID_HELP), 0, wxLEFT, 10);
+	szButtons->Add(new wxButton(this, wxID_CANCEL), 0, wxLEFT, 10);
+	szmain->Add(szButtons, 0, wxALL | wxEXPAND, 10);
+	// --------------------------------------------------------------
 
 	ResetAll();
 	SetSizer(szmain);
@@ -270,43 +277,11 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 			RefreshList(0);
 		}
 		break;
-	case ID_btnFolder:
-		{
-			wxDirDialog dlg(SamApp::Window(), "Choose Download Folder", m_txtFolder->GetValue(), wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
-			if (dlg.ShowModal() == wxID_OK)
-			{
-				m_txtFolder->SetValue(dlg.GetPath());
-				//SamApp::Settings().Write("solar_data_paths", dlg.GetPath());
-				wxArrayString paths;
-				wxString buf;
-				if (SamApp::Settings().Read("solar_data_paths", &buf))
-					paths = wxStringTokenize(buf, ";");
-				if (paths.Index(dlg.GetPath()) == wxNOT_FOUND)
-				{
-					paths.Add(dlg.GetPath());
-					SamApp::Settings().Write("solar_data_paths", wxJoin(paths, ';'));
-				}
-			}
-		}
-		break;
-
 	case wxID_OK:
-	//{ 
-	//	EndModal(wxID_OK); }
 	{
 		
 		wxArrayInt arychecked;
 		wxString file_list = "";
-		wxString default_dnload_path;
-		SamApp::Settings().Read("solar_download_path", &default_dnload_path);
-		m_weatherFolder = m_txtFolder->GetValue();
-		if (!wxDirExists(m_weatherFolder))
-		{
-			wxMessageBox("Choose a valid folder for weather file downloads.", "NSRDB Download Message", wxOK, this);
-			// reset to download folder
-			m_txtFolder->SetValue(default_dnload_path);
-			break;
-		}
 
 		wxTreeListItem selectedItem = m_chlResources->GetSelection();
 
@@ -347,7 +322,7 @@ void NOHRSCDialog::OnSaveToFile(wxCommandEvent& WXUNUSED(event))
 	wxFileDialog saveFileDialog(
 		this,
 		_("Save NOHRSC file"),
-		m_txtFolder->GetValue(),
+		"", // No default path
 		wxString::Format("%s_%s.csv", stationID, beginYear),
 		"CSV files (*.csv)|*.csv|All files (*.*)|*.*",
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT
@@ -356,20 +331,23 @@ void NOHRSCDialog::OnSaveToFile(wxCommandEvent& WXUNUSED(event))
 	if (saveFileDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	// Set the folder to the selected path's directory
-	wxFileName fn(saveFileDialog.GetPath());
-	m_weatherFolder = fn.GetPath();
-
 	// Download and save
 	if (!DownloadNOHRSC(beginYear, stationID))
 		return;
 
 	// WriteDatatoFile expects just the filename (without path or extension)
+	wxFileName fn(saveFileDialog.GetPath());
 	wxString fileName = fn.GetName();
-	if (!WriteDatatoFile(fileName))
+	wxString saveDir = fn.GetPath();
+
+	// Write file to the selected directory
+	if (!WriteDatatoFile(saveDir + "/" + fileName))
 		return;
 
 	wxMessageBox("File saved successfully:\n" + saveFileDialog.GetPath(), "NOHRSC Download", wxOK | wxICON_INFORMATION, this);
+
+	// Close the dialog after successful save
+	EndModal(wxID_OK);
 }
 
 void NOHRSCDialog::FilterItemsByYear(wxString str_filter) {
@@ -515,13 +493,12 @@ bool NOHRSCDialog::DownloadNOHRSC(wxString beginYear, wxString stationID) {
 	return true;
 }	
 
-bool NOHRSCDialog::WriteDatatoFile(wxString fileName) {
-	 //if there is data present, then write it
-	fileName += ".csv";
-	fileName = m_weatherFolder + "/" + fileName;
-	//file_list += fn + "\n";
-	if (!m_curl.WriteDataToFile(fileName)) {
-		wxMessageBox("Failed to write file.\n\n" + fileName, "NSRDB Download Message", wxOK, this);
+bool NOHRSCDialog::WriteDatatoFile(wxString filePath) {
+	// filePath should be the full path (including filename, no extension)
+	filePath += ".csv";
+	// if there is data present, then write it
+	if (!m_curl.WriteDataToFile(filePath)) {
+		wxMessageBox("Failed to write file.\n\n" + filePath, "NSRDB Download Message", wxOK, this);
 		return false;
 	}
 	return true;
