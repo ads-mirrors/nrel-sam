@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 enum {
 	ID_txtAddress, ID_txtFolder, ID_cboFilter, /*ID_cboWeatherFile,*/ ID_chlResources,
-	ID_btnSelectAll, ID_btnClearAll, ID_btnSelectFiltered, ID_btnShowSelected, ID_btnShowAll, ID_chk60, ID_chk30, ID_chk15, ID_chk10, ID_chk5, ID_chkTmy, ID_chkTgy, ID_chkTdy, ID_btnResources, ID_btnFolder, ID_search
+	ID_btnSelectAll, ID_btnClearAll, ID_btnSelectFiltered, ID_btnShowSelected, ID_btnShowAll, ID_chk60, ID_chk30, ID_chk15, ID_chk10, ID_chk5, ID_chkTmy, ID_chkTgy, ID_chkTdy, ID_btnResources, ID_btnFolder, ID_search, ID_btnSaveToFile
 };
 
 BEGIN_EVENT_TABLE(NOHRSCDialog, wxDialog)
@@ -85,6 +85,7 @@ EVT_TREELIST_SELECTION_CHANGED(ID_chlResources, NOHRSCDialog::OnTreeListSelChang
 // TODO: figure out if we can actually bind to these events, right now they do nothing
 EVT_DATAVIEW_ITEM_COLLAPSED(ID_chlResources, NOHRSCDialog::OnTreeListItemCollapsed)
 EVT_DATAVIEW_ITEM_COLLAPSING(wxEVT_DATAVIEW_ITEM_COLLAPSING, NOHRSCDialog::OnTreeListItemCollapsed)
+EVT_BUTTON(ID_btnSaveToFile, NOHRSCDialog::OnSaveToFile)
 END_EVENT_TABLE()
 
 NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
@@ -140,6 +141,8 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	m_chlResources->AppendColumn("Distance (km)", wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, wxCOL_SORTABLE | wxCOL_RESIZABLE);
 	m_chlResources->AppendColumn("Years available", wxCOL_WIDTH_AUTOSIZE);
 	m_chlResources->AppendColumn("Latitude, Longitude", wxCOL_WIDTH_AUTOSIZE);
+	m_btnSaveToFile = new wxButton(this, ID_btnSaveToFile, "Save to file");
+
 	//wxString msg = "Use this window to list all weather files available from the NOHRSC for a given location, and choose files to download and add to your solar resource library.\n";
 	//msg += "Type an address or latitude and longtitude, for example, \"15031 denver west parkway golden co\" or \"39.74,-105.17\", and click Find to list available files.\n";
 	//msg += "When the list appears, select the file or files you want to download, or use the filter and auto-select buttons to find and select files.\n";
@@ -164,6 +167,7 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	szFolder->Add(new wxStaticText(this, wxID_ANY, "3. Choose download folder:"), 0, wxALL, 2);
 	szFolder->Add(m_txtFolder, 5, wxALL | wxEXPAND, 2);
 	szFolder->Add(m_btnFolder, 0, wxALL, 2);
+	szFolder->Add(m_btnSaveToFile, 0, wxALL, 2);
 
 
 	wxBoxSizer* szFilter = new wxBoxSizer(wxHORIZONTAL);
@@ -327,7 +331,46 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 	}
 }
 
+void NOHRSCDialog::OnSaveToFile(wxCommandEvent& WXUNUSED(event))
+{
+	// Get selected station/year
+	wxTreeListItem selectedItem = m_chlResources->GetSelection();
+	if (!selectedItem.IsOk() || m_chlResources->GetItemParent(selectedItem) == m_chlResources->GetRootItem())
+	{
+		wxMessageBox("Please select a year to download.", "NOHRSC Download Message", wxOK, this);
+		return;
+	}
+	wxString stationID = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem));
+	wxString beginYear = m_chlResources->GetItemText(selectedItem);
 
+	// File dialog for user to select filename
+	wxFileDialog saveFileDialog(
+		this,
+		_("Save NOHRSC file"),
+		m_txtFolder->GetValue(),
+		wxString::Format("%s_%s.csv", stationID, beginYear),
+		"CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+	);
+
+	if (saveFileDialog.ShowModal() == wxID_CANCEL)
+		return;
+
+	// Set the folder to the selected path's directory
+	wxFileName fn(saveFileDialog.GetPath());
+	m_weatherFolder = fn.GetPath();
+
+	// Download and save
+	if (!DownloadNOHRSC(beginYear, stationID))
+		return;
+
+	// WriteDatatoFile expects just the filename (without path or extension)
+	wxString fileName = fn.GetName();
+	if (!WriteDatatoFile(fileName))
+		return;
+
+	wxMessageBox("File saved successfully:\n" + saveFileDialog.GetPath(), "NOHRSC Download", wxOK | wxICON_INFORMATION, this);
+}
 
 void NOHRSCDialog::FilterItemsByYear(wxString str_filter) {
 
@@ -458,7 +501,7 @@ bool NOHRSCDialog::DownloadNOHRSC(wxString beginYear, wxString stationID) {
 
 	wxString fileName = wxString::Format(wxT("%s_%s"), stationID, beginYear);
 
-	bool ok = m_curl.Get(url + "&utc=false");
+	bool ok = m_curl.Get(url + "&utc=false", "Download NOHRSC data", this);
 	if (!ok)
 	{
 		wxMessageBox("NOHRSC Data Query failed.\n\nThere may be a problem with your internet connection,\nor the NOHRSC web service may be down.", "NOHRSC Download Message", wxOK, this);
@@ -482,4 +525,26 @@ bool NOHRSCDialog::WriteDatatoFile(wxString fileName) {
 		return false;
 	}
 	return true;
+}
+
+
+// Source: https://docs.wxwidgets.org/3.2/classwx_file_dialog.html
+void NOHRSCDialog::OnSaveAs(wxCommandEvent& WXUNUSED(event))
+{
+	wxFileDialog
+		saveFileDialog(this, _("Save XYZ file"), "", "",
+			"XYZ files (*.xyz)|*.xyz", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+	if (saveFileDialog.ShowModal() == wxID_CANCEL)
+		return;     // the user changed idea...
+
+	// save the current contents in the file;
+	// this can be done with e.g. wxWidgets output streams:
+	wxFileOutputStream output_stream(saveFileDialog.GetPath());
+	if (!output_stream.IsOk())
+	{
+		wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
+		return;
+	}
+
 }

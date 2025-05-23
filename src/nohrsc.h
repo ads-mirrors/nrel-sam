@@ -237,6 +237,7 @@ public:
 		bool DownloadNOHRSC(wxString, wxString);
 		bool WriteDatatoFile(wxString);
 		void OnSaveAs(wxCommandEvent& WXUNUSED(event));
+		void OnSaveToFile(wxCommandEvent& event); // Add handler declaration
 
 		std::vector<StationRoot> m_links;
 		wxString m_weatherFile;
@@ -248,6 +249,7 @@ public:
 		//wxCheckBox* m_chk60, * m_chk30, * m_chk15, * m_chk10, * m_chk5, * m_chkTmy, * m_chkTgy, * m_chkTdy;
 		//wxButton* m_btnSelectAll, * m_btnClearAll, * m_btnSelectFiltered, * m_btnShowSelected, * m_btnShowAll, * m_btnResources, * m_btnFolder;
 		wxButton* m_btnResources, * m_btnFolder;
+		wxButton* m_btnSaveToFile; // Add member for the new button
 		wxTextCtrl* m_txtFolder;
 		wxTextCtrl* m_txtAddress;
 		wxTextCtrl* m_txtLatLon;
