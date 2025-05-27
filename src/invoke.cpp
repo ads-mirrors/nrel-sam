@@ -2736,16 +2736,16 @@ void fcall_nohrscquery(lk::invoke_t& cxt)
 	}
 
 	//Get selected filename
-	wxString foldername = dlgNOHRSC.GetWeatherFolder();
-	wxString filename = dlgNOHRSC.GetWeatherFile();
-	wxString addfolder = dlgNOHRSC.GetAddFolder();
+	wxString year = dlgNOHRSC.GetNOHRSCYear();
+	wxString url = dlgNOHRSC.GetNOHRSCURL();
+	wxString stationID = dlgNOHRSC.GetNOHRSCstationID();
 
 	cxt.result().empty_hash();
 
 	// meta data
-	cxt.result().hash_item("file").assign(filename);
-	cxt.result().hash_item("folder").assign(foldername);
-	cxt.result().hash_item("addfolder").assign(addfolder);
+	cxt.result().hash_item("year").assign(year);
+	cxt.result().hash_item("url").assign(url);
+	cxt.result().hash_item("stationID").assign(stationID);
 }
 
 

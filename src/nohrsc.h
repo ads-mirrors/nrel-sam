@@ -55,15 +55,26 @@ class NOHRSCDialog : public wxDialog
 
 public:
 	NOHRSCDialog(wxWindow* parent, const wxString& title);
-	wxString& GetWeatherFile() {
-		return m_weatherFile;
-	};
-	wxString& GetWeatherFolder() {
-		return m_weatherFolder;
-	};
-	wxString& GetAddFolder() {
-		return m_addFolder;
-	};
+	//wxString& GetWeatherFile() {
+	//	return m_weatherFile;
+	//};
+	//wxString& GetWeatherFolder() {
+	//	return m_weatherFolder;
+	//};
+	//wxString& GetAddFolder() {
+	//	return m_addFolder;
+	//};
+	wxString& GetNOHRSCYear() {
+		return m_year;
+	}
+
+	wxString& GetNOHRSCURL() {
+		return m_url;
+	}
+
+	wxString& GetNOHRSCstationID() {
+		return m_stationID;
+	}
 
 
 	struct StationYear
@@ -244,6 +255,13 @@ public:
 		wxString m_weatherFile;
 		wxString m_weatherFolder;
 		wxString m_addFolder;
+
+		wxString m_stationID;
+		wxString m_url;
+		wxString m_year;
+		wxString m_coords;
+
+
 		wxComboBox* m_cboWeatherFile;
 		//wxCheckListBox* m_chlResources;
 		wxTreeListCtrl* m_chlResources;

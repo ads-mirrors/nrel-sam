@@ -301,6 +301,8 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 		// convert beginyear to int
 		if (DownloadNOHRSC(beginYear, stationID)) {
 			if (OnSaveToArray(e)) {
+				m_year = beginYear;
+				m_stationID = stationID;
 				EndModal(wxID_OK);
 			}
 			else {
@@ -488,7 +490,9 @@ bool NOHRSCDialog::DownloadNOHRSC(wxString beginYear, wxString stationID) {
 	int endYear = std::stoi(beginYear.ToStdString()) + 1;
 
 	wxString url = wxString::Format(wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%s&bm=1&bd=1&bh=6&ey=%d&em=1&ed=1&eh=5&data=11&units=1&region=us"), stationID, beginYear, endYear);
+	wxString humanUrl = wxString::Format(wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%s&bm=1&bd=1&bh=6&ey=%d&em=1&ed=1&eh=5&data=0&units=1&region=us"), stationID, beginYear, endYear);
 
+	m_url = humanUrl;
 	//wxString fileName = wxString::Format(wxT("%s_%s"), stationID, beginYear);
 
 	bool ok = m_curl.Get(url + "&utc=false", "Download NOHRSC data", this);
