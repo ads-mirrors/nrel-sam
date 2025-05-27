@@ -236,8 +236,9 @@ public:
 		void FilterItemsByYear(wxString);
 		bool DownloadNOHRSC(wxString, wxString);
 		bool WriteDatatoFile(wxString);
-		void OnSaveAs(wxCommandEvent& WXUNUSED(event));
+		bool OnSaveAs(wxCommandEvent& WXUNUSED(event));
 		void OnSaveToFile(wxCommandEvent& event); // Add handler declaration
+		bool OnSaveToArray(wxCommandEvent& WXUNUSED(event));
 
 		std::vector<StationRoot> m_links;
 		wxString m_weatherFile;

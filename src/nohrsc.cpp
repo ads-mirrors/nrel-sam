@@ -299,8 +299,20 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 		wxString stationID = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem));
 		wxString beginYear = m_chlResources->GetItemText(selectedItem);
 		// convert beginyear to int
+		if (DownloadNOHRSC(beginYear, stationID)) {
+			if (OnSaveToArray(e)) {
+				EndModal(wxID_OK);
+			}
+			else {
+				wxMessageBox("Error saving data to snow array. Try again, or choose a different year. ", "NOHRSC Download Message", wxOK, this);
+			}
+		}
+		else {
+			wxMessageBox("Error downloading snow data from NOHRSC. The service may be offline. ", "NOHRSC Download Message", wxOK, this);
+		}
+
+		break;
 		
-		EndModal(wxID_OK);
 	}
 	break;
 	}
@@ -477,7 +489,7 @@ bool NOHRSCDialog::DownloadNOHRSC(wxString beginYear, wxString stationID) {
 
 	wxString url = wxString::Format(wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%s&bm=1&bd=1&bh=6&ey=%d&em=1&ed=1&eh=5&data=11&units=1&region=us"), stationID, beginYear, endYear);
 
-	wxString fileName = wxString::Format(wxT("%s_%s"), stationID, beginYear);
+	//wxString fileName = wxString::Format(wxT("%s_%s"), stationID, beginYear);
 
 	bool ok = m_curl.Get(url + "&utc=false", "Download NOHRSC data", this);
 	if (!ok)
@@ -506,14 +518,14 @@ bool NOHRSCDialog::WriteDatatoFile(wxString filePath) {
 
 
 // Source: https://docs.wxwidgets.org/3.2/classwx_file_dialog.html
-void NOHRSCDialog::OnSaveAs(wxCommandEvent& WXUNUSED(event))
+bool NOHRSCDialog::OnSaveAs(wxCommandEvent& WXUNUSED(event))
 {
 	wxFileDialog
 		saveFileDialog(this, _("Save XYZ file"), "", "",
 			"XYZ files (*.xyz)|*.xyz", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFileDialog.ShowModal() == wxID_CANCEL)
-		return;     // the user changed idea...
+		return false;     // the user changed idea...
 
 	// save the current contents in the file;
 	// this can be done with e.g. wxWidgets output streams:
@@ -521,7 +533,33 @@ void NOHRSCDialog::OnSaveAs(wxCommandEvent& WXUNUSED(event))
 	if (!output_stream.IsOk())
 	{
 		wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
-		return;
+		return false;
+	}
+	return true;
+}
+
+bool NOHRSCDialog::OnSaveToArray(wxCommandEvent& WXUNUSED(event)) {
+	Case* c = SamApp::Window()->GetCurrentCase();
+	VarValue* vv = c->Values(0).Get("snow_array");
+	
+
+	wxCSVData csvData;
+	bool readSuccess = csvData.ReadString(m_curl.GetDataAsString());
+	if (!readSuccess) {
+		return false;
 	}
 
+	std::vector<double> l;
+	l.reserve(8760);
+	for (size_t i = 0; i < 8760; i++) {
+		wxString val = csvData.Get( i + 1,3);
+		double dval;
+		val.ToDouble(&dval);
+		l.push_back(dval);
+	}
+	if (vv) {
+		vv->Set(l);
+	}
+	c->VariableChanged("snow_array",0);
+	return true;
 }
