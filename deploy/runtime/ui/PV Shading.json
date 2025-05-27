@@ -1355,6 +1355,43 @@
                 }
             }
         },
+        "Button": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "nohrsc_downloader"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 432.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 852.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 126.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": "Download Snow Data"
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
         "Label": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -1997,11 +2034,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 516.0
+                    "Integer": 573.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 849.0
+                    "Integer": 852.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -6527,7 +6564,9 @@
         "\t\r",
         "\t// If the snow loss model is enabled, allow editing of array\r",
         "\tenable(\"use_snow_weather_file\", value('en_snow_model') == 1);\r",
-        "\tenable(\"snow_array\", value('en_snow_model') == 1);",
+        "\t\r",
+        "\t\r",
+        "\tenable(\"snow_array\", value('en_snow_model') == 1 && value('use_snow_weather_file') ==0);",
         "\r",
         "\tmsg='';\r",
         "\tfor(i=1; i<=4; i++)",
