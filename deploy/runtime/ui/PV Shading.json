@@ -1355,6 +1355,65 @@
                 }
             }
         },
+        "TextEntry": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "nohrsc_coords"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 939.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 831.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 90.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Text": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
         "Button": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -1385,6 +1444,65 @@
                 "Caption": {
                     "Type": 5.0,
                     "String": "Download Snow Data"
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "TextEntry": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "nohrsc_station_id"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 732.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 858.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 90.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Text": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
                 },
                 "TabOrder": {
                     "Type": 3.0,
@@ -1426,6 +1544,65 @@
                 "URL": {
                     "Type": 5.0,
                     "String": "https://www.nohrsc.noaa.gov/interactive/html/map.html"
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "TextEntry": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "nohrsc_year"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 732.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 831.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 90.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Text": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
                 },
                 "TabOrder": {
                     "Type": 3.0,
@@ -5214,6 +5391,45 @@
             "Flags": 8.0,
             "DefaultValue": 1.0,
             "UIObject": "Numeric",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "nohrsc_coords": {
+            "Version": 4.0,
+            "Type": 4.0,
+            "Label": "Coordinates",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": "<invalid>",
+            "UIObject": "TextEntry",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "nohrsc_station_id": {
+            "Version": 4.0,
+            "Type": 4.0,
+            "Label": "Station ID:",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": "<invalid>",
+            "UIObject": "TextEntry",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "nohrsc_year": {
+            "Version": 4.0,
+            "Type": 4.0,
+            "Label": "Coord",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": "<invalid>",
+            "UIObject": "TextEntry",
             "sscVariableName": "",
             "sscVariableValue": ""
         },
