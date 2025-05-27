@@ -1364,11 +1364,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 432.0
+                    "Integer": 429.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 852.0
+                    "Integer": 855.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1385,6 +1385,47 @@
                 "Caption": {
                     "Type": 5.0,
                     "String": "Download Snow Data"
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "Hyperlink": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "nohrsc_url"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 432.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 831.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 228.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": "Visit the NOHRSC Interactive Website..."
+                },
+                "URL": {
+                    "Type": 5.0,
+                    "String": "https://www.nohrsc.noaa.gov/interactive/html/map.html"
                 },
                 "TabOrder": {
                     "Type": 3.0,
@@ -2034,11 +2075,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 573.0
+                    "Integer": 561.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 852.0
+                    "Integer": 855.0
                 },
                 "Width": {
                     "Type": 3.0,
