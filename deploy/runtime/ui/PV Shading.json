@@ -6788,6 +6788,7 @@
         "\r",
         "on_change{'nohrsc_downloader'} = define() {\r",
         "\tnohrscquery();\r",
+        "\tinput_enabling();\r",
         "};\r",
         ""
     ]
