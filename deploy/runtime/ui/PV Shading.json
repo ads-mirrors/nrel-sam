@@ -5415,7 +5415,7 @@
             "Group": "",
             "IndexLabels": "",
             "Flags": 8.0,
-            "DefaultValue": "<invalid>",
+            "DefaultValue": "",
             "UIObject": "TextEntry",
             "sscVariableName": "",
             "sscVariableValue": ""
@@ -5423,12 +5423,12 @@
         "nohrsc_year": {
             "Version": 4.0,
             "Type": 4.0,
-            "Label": "Coord",
+            "Label": "Year: ",
             "Units": "",
             "Group": "",
             "IndexLabels": "",
             "Flags": 8.0,
-            "DefaultValue": "<invalid>",
+            "DefaultValue": "",
             "UIObject": "TextEntry",
             "sscVariableName": "",
             "sscVariableValue": ""
