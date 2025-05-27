@@ -6748,6 +6748,13 @@
         "\t",
         "\treturn is_bifacial;",
         "",
-        "}"
+        "}\r",
+        "\r",
+        "\r",
+        "\r",
+        "on_change{'nohrsc_downloader'} = define() {\r",
+        "\tnohrscquery();\r",
+        "};\r",
+        ""
     ]
 }
