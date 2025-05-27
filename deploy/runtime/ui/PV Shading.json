@@ -6567,7 +6567,7 @@
         "\t\r",
         "\t\r",
         "\tenable(\"snow_array\", value('en_snow_model') == 1 && value('use_snow_weather_file') ==0);",
-        "\r",
+        "\tenable(\"nohrsc_downloader\", value('en_snow_model') == 1 && value('use_snow_weather_file') ==0);\r",
         "\tmsg='';\r",
         "\tfor(i=1; i<=4; i++)",
         "\t{",
