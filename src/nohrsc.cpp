@@ -298,11 +298,13 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 		}
 		wxString stationID = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem));
 		wxString beginYear = m_chlResources->GetItemText(selectedItem);
+		m_coords = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem), 3);
 		// convert beginyear to int
 		if (DownloadNOHRSC(beginYear, stationID)) {
 			if (OnSaveToArray(e)) {
 				m_year = beginYear;
 				m_stationID = stationID;
+				UpdateUIMetadata();
 				EndModal(wxID_OK);
 			}
 			else {
@@ -565,5 +567,24 @@ bool NOHRSCDialog::OnSaveToArray(wxCommandEvent& WXUNUSED(event)) {
 		vv->Set(l);
 	}
 	c->VariableChanged("snow_array",0);
+
+
 	return true;
+}
+
+void NOHRSCDialog::UpdateUIMetadata() {
+	Case* c = SamApp::Window()->GetCurrentCase();
+	VarValue* year = c->Values(0).Get("nohrsc_year");
+	VarValue* stID = c->Values(0).Get("nohrsc_station_id");
+	VarValue* coords = c->Values(0).Get("nohrsc_coords");
+	//VarValue* url = c->Values(0).Get("nohrsc_url");
+	year->Set(m_year);
+	stID->Set(m_stationID);
+	//url->Set(m_url);
+	coords->Set(m_coords);
+	c->VariableChanged("nohrsc_year",0);
+	//c->VariableChanged("nohrsc_url", 0);
+	c->VariableChanged("nohrsc_coords", 0);
+	c->VariableChanged("nohrsc_station_id", 0);
+
 }

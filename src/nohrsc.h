@@ -250,6 +250,7 @@ public:
 		bool OnSaveAs(wxCommandEvent& WXUNUSED(event));
 		void OnSaveToFile(wxCommandEvent& event); // Add handler declaration
 		bool OnSaveToArray(wxCommandEvent& WXUNUSED(event));
+		void UpdateUIMetadata();
 
 		std::vector<StationRoot> m_links;
 		wxString m_weatherFile;
