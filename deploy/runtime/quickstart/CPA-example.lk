@@ -51,6 +51,7 @@ exitIf( !msgbox('Welcome to the community power accelerator example wizard!\n'+
 /**         Case management         **/
 // Check if there is an active case
 //  - if there is, ask the user if they would like to use this case, or else create a new case
+/*
 if( active_case() != "" )
 	newCase = yesno("First, would you like to create a new case?\n\n(selecting 'no' will make changes to the currently active case)",
 		[defaultX, defaultY]);
@@ -84,8 +85,14 @@ if( newCase == true ) {
 	}
 }
 caseName = case_name();
+*/
+template_file = runtimedir() + "quickstart/CPA-example.sam";
+user_file = curDir + "/CPA example.sam";
+copy_file(template_file, user_file, true);
+exitIf (!open_project(user_file));
 
-
+caseName = case_name();
+exitIf(caseName == "");
 
 /*************************************/
 /**     Get Simulation Location     **/
