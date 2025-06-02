@@ -116,25 +116,54 @@ exitIf( !msgbox('Weather data set for Phoenix, AZ.\n'+
 
 show_page('Community Solar');
 
-// Highlight upfront cost by capacity
-focusto('cs_cost_upfront_per_capacity');
-geom = widgetpos('cs_cost_upfront_per_capacity');
+// Energy savings to subscriber
+focusto('subscriber1_bill_credit_rate');
+geom = widgetpos('subscriber1_bill_credit_rate');
 transp( geom, 'yellow', 35 );
-
-
-upfrontcost = in( 'The up front cost scales with system size.\n\n'+
-                  'Type the upfront cost in $/kW of system size. click OK to continue.', 
-				'35', 'community power accelerator up front cost',
+energysavings = in( 'Energy savings to subscribers.\n\n'+
+                  'Type energy savings in $/kWh for the subscriber. click OK to continue.', 
+				'0.1', 'community power accelerator energy savings to subscriber',
 			   [defaultX, defaultY] );
-
-exitIf(upfrontcost == '');
-
-cs_cost_upfront_per_capacity = to_real(upfrontcost);
-
-set('cs_cost_upfront_per_capacity', cs_cost_upfront_per_capacity );
-
-// clear highlight
+exitIf(energysavings == '');
+x=alloc(1);
+x[0] = to_real(energysavings);
+set('subscriber1_bill_credit_rate', x );
 transp();
+
+// Lease payment to owner
+focusto('subscriber1_payment_annual');
+geom = widgetpos('subscriber1_payment_annual');
+transp( geom, 'yellow', 35 );
+leasepayment = in( 'Lease payment to owner.\n\n'+
+                  'Type lease payment in $/yr to the owner. click OK to continue.', 
+				'50000', 'community power accelerator lease payment to owner',
+			   [defaultX, defaultY] );
+exitIf(leasepayment == '');
+x[0] = to_real(leasepayment);
+set('subscriber1_payment_annual', x );
+transp();
+
+// Community benefits payment and job training combined into cs_cost_recurring_fixed
+focusto('cs_cost_recurring_fixed');
+geom = widgetpos('cs_cost_recurring_fixed');
+transp( geom, 'yellow', 35 );
+communitybenefitspayments = in( 'Community benefits payment.\n\n'+
+                  'Type community benefits payment in $/yr. click OK to continue.', 
+				'5000', 'community power accelerator community benefits payment',
+			   [defaultX, defaultY] );
+exitIf(communitybenefitspayments == '');
+x[0] = to_real(communitybenefitspayments);
+
+jobtraining = in( 'Job training value.\n\n'+
+                  'Type job training value in $/yr. click OK to continue.', 
+				'25000', 'community power accelerator job training value',
+			   [defaultX, defaultY] );
+exitIf(jobtraining == '');
+x[0] += to_real(jobtraining);
+
+set('cs_cost_recurring_fixed', x );
+transp();
+
 
 
 /*************************************/
