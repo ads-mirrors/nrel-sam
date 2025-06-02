@@ -3772,7 +3772,7 @@
         "// display window for advanced download",
         "function nsrdb_all() ",
         "{",
-        "\thash = nohrscquery();",
+        "\thash = nsrdbquery();",
         "\t// meta data",
         "\tif ( hash != '' )",
         "\t{ ",
