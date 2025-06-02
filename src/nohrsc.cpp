@@ -268,13 +268,13 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 		{
 			ResetAll();
 			GetResources();
-			RefreshList(0);
+			RefreshList();
 		}
 		break;
 	case ID_search:
 		{
 			FilterItemsByYear(m_search->GetValue());
-			RefreshList(0);
+			RefreshList();
 		}
 		break;
 	case wxID_OK:
@@ -380,7 +380,7 @@ void NOHRSCDialog::FilterItemsByYear(wxString str_filter) {
 	}
 }
 
-void NOHRSCDialog::RefreshList(size_t first_item)
+void NOHRSCDialog::RefreshList()
 {
 	m_chlResources->Freeze();
 	m_chlResources->DeleteAllItems();
@@ -480,7 +480,7 @@ void NOHRSCDialog::GetResources()
 			locname = wxString::Format("lat_%.5lf_lon_%.5lf", lat, lon);
 		}
 	}
-
+	m_txtLatLon->SetValue(wxString::Format("%f,%f", lat, lon));
 	m_links = m_db->getNearbyStations(lat, lon);
 
 }

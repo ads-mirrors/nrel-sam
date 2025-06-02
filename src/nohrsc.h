@@ -241,7 +241,7 @@ public:
 		void OnTreeListItemCollapsed(wxDataViewEvent& event);
 		void OnTreeListSelChanging(wxTreeListEvent& event);
 		void GetResources();
-		void RefreshList(size_t);
+		void RefreshList();
 		void ResetAll();
 		size_t SelectItems(wxString, wxCheckBox*);
 		void FilterItemsByYear(wxString);
