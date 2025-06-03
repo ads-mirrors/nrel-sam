@@ -93,20 +93,9 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 {
 
 	// Load in the NOHRSC database
-	// TODO: Confirm with team that loading this on dialog load is ok
-	// Memory leak here
 	wxString const path = SamApp::GetAppPath();
 	m_db = std::make_unique<NOHRSCDatabase>(path + "/../snow/stations.csv");
 
-
-	// This is stuff to deal with where to save the weather folder
-	// I will nuke this later
-	// wxString dnpath;
-	// SamApp::Settings().Read("NOHRSCDownloadFolder", &dnpath);
-	// if (dnpath.Len() <= 0)
-	// 	SamApp::Settings().Read("solar_download_path", &dnpath);
-	// m_txtFolder = new wxTextCtrl(this, ID_txtFolder, dnpath);// , wxDefaultPosition, wxSize(500, 30));
-	// m_txtFolder->SetValue(dnpath);
 
 
 	// I think we can perhaps prepopulate this with the user's lat lon from the weather file
@@ -116,40 +105,15 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	m_txtLatLon = new wxTextCtrl(this, ID_txtAddress, "", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
 
 
-	// TODO: get rid of this eventually... we'll start by saving to a folder
-	// but move on to actually just putting the data into the ssc array with no intermediate save
-	// m_btnFolder = new wxButton(this, ID_btnFolder, "...", wxDefaultPosition, wxSize(30, 30));
-	//m_btnSelectAll = new wxButton(this, ID_btnSelectAll, "Select all");
-	//m_btnClearAll = new wxButton(this, ID_btnClearAll, "Clear all");
-	//m_chk60 = new wxCheckBox(this, ID_chk60, "605 min");
-	//m_chk30 = new wxCheckBox(this, ID_chk30, "30 min");
-	//m_chk15 = new wxCheckBox(this, ID_chk15, "15 min");
-	//m_chk10 = new wxCheckBox(this, ID_chk10, "10 min");
-	//m_chk5 = new wxCheckBox(this, ID_chk5, "5 min");
-	//m_chkTmy = new wxCheckBox(this, ID_chkTmy, "TMY");
-	//m_chkTgy = new wxCheckBox(this, ID_chkTgy, "TGY");
-	//m_chkTdy = new wxCheckBox(this, ID_chkTdy, "TDY");
-	//m_btnShowSelected = new wxButton(this, ID_btnShowSelected, "Show selected");
-	//m_btnShowAll = new wxButton(this, ID_btnShowAll, "Show all");
-	//m_btnSelectFiltered = new wxButton(this, ID_btnSelectFiltered, "Select filtered");
 	m_btnResources = new wxButton(this, ID_btnResources, "Find");
 	m_search = new wxSearchCtrl(this, ID_search, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB);
 	m_search->SetDescriptiveText("Filter by year");
-	////m_cboWeatherFile = new wxComboBox(this, ID_cboWeatherFile, ""); // populate with selected resources
-	//m_chlResources = new wxCheckListBox(this, ID_chlResources, wxDefaultPosition, wxSize(800, 200)); // populate with returned resources
 	m_chlResources = new wxTreeListCtrl(this, ID_chlResources, wxDefaultPosition, wxSize(800, 200)); // populate with returned resources
 	m_chlResources->AppendColumn("Station ID", wxCOL_WIDTH_AUTOSIZE);
 	m_chlResources->AppendColumn("Distance (km)", wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, wxCOL_SORTABLE | wxCOL_RESIZABLE);
 	m_chlResources->AppendColumn("Years available", wxCOL_WIDTH_AUTOSIZE);
 	m_chlResources->AppendColumn("Latitude, Longitude", wxCOL_WIDTH_AUTOSIZE);
 	m_btnSaveToFile = new wxButton(this, ID_btnSaveToFile, "Save to file");
-
-	//wxString msg = "Use this window to list all weather files available from the NOHRSC for a given location, and choose files to download and add to your solar resource library.\n";
-	//msg += "Type an address or latitude and longtitude, for example, \"15031 denver west parkway golden co\" or \"39.74,-105.17\", and click Find to list available files.\n";
-	//msg += "When the list appears, select the file or files you want to download, or use the filter and auto-select buttons to find and select files.\n";
-	//msg += "Choose the download folder where you want SAM to save files, or use the default SAM Downloaded Weather Files folder.\n";
-	//msg += " SAM automatically adds the folder to the list of folders it uses to populate your solar resource library.";
-	//msg += "Click OK to download the selected files and add them to your solar resource library.";
 
 	wxString msg = "Use this window to enter your location and retrieve a list of nearby stations with snow data. ";
 	msg += "The data will be downloaded and stored into the snow data array.";
@@ -163,12 +127,6 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	szLatLon->Add(15, 0, 0);
 	szLatLon->Add(new wxStaticText(this, wxID_ANY, "Latitude and Longitude:"), 0, wxALL, 2);
 	szLatLon->Add(m_txtLatLon, 5, wxALL | wxEXPAND, 1);
-
-	// wxBoxSizer* szFolder = new wxBoxSizer(wxHORIZONTAL);
-	// szFolder->Add(new wxStaticText(this, wxID_ANY, "3. Choose download folder:"), 0, wxALL, 2);
-	// szFolder->Add(m_txtFolder, 5, wxALL | wxEXPAND, 2);
-	// szFolder->Add(m_btnFolder, 0, wxALL, 2);
-	// szFolder->Add(m_btnSaveToFile, 0, wxALL, 2);
 
 	wxBoxSizer* szFilter = new wxBoxSizer(wxHORIZONTAL);
 
@@ -406,30 +364,7 @@ void NOHRSCDialog::ResetAll()
 {
 	m_txtLatLon->Clear();
 	m_chlResources->DeleteAllItems();
-	//m_chlResources->Disable();
 	m_links.clear();
-	//m_chk60->SetValue(false);
-	//m_chk30->SetValue(false);
-	//m_chk15->SetValue(false);
-	//m_chk10->SetValue(false);
-	//m_chk5->SetValue(false);
-	//m_chkTmy->SetValue(false);
-	//m_chkTgy->SetValue(false);
-	//m_chkTdy->SetValue(false);
-	//m_chk60->Disable();
-	//m_chk30->Disable();
-	//m_chk15->Disable();
-	//m_chk10->Disable();
-	//m_chk5->Disable();
-	//m_chkTmy->Disable();
-	//m_chkTgy->Disable();
-	//m_chkTdy->Disable();
-	//m_search->Disable();
-	//m_btnSelectFiltered->Disable();
-	//m_btnShowSelected->Disable();
-	//m_btnShowAll->Disable();
-	//m_btnSelectAll->Disable();
-	//m_btnClearAll->Disable();
 }
 
 
@@ -578,13 +513,10 @@ void NOHRSCDialog::UpdateUIMetadata() {
 	VarValue* year = c->Values(0).Get("nohrsc_year");
 	VarValue* stID = c->Values(0).Get("nohrsc_station_id");
 	VarValue* coords = c->Values(0).Get("nohrsc_coords");
-	//VarValue* url = c->Values(0).Get("nohrsc_url");
 	year->Set(m_year);
 	stID->Set(m_stationID);
-	//url->Set(m_url);
 	coords->Set(m_coords);
 	c->VariableChanged("nohrsc_year",0);
-	//c->VariableChanged("nohrsc_url", 0);
 	c->VariableChanged("nohrsc_coords", 0);
 	c->VariableChanged("nohrsc_station_id", 0);
 
