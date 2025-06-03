@@ -95,7 +95,8 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	// Load in the NOHRSC database
 	// TODO: Confirm with team that loading this on dialog load is ok
 	// Memory leak here
-	m_db = new NOHRSCDatabase(wxString("C:\\Users\\mberg\\snowPySAM\\data\\nohrsc\\subset_stations_new.csv"));
+	wxString const path = SamApp::GetAppPath();
+	m_db = new NOHRSCDatabase(path + "/../snow/stations.csv");
 
 
 	// This is stuff to deal with where to save the weather folder
