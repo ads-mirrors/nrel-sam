@@ -11505,9 +11505,6 @@
     "snl_vmpo": 54.7,
     "snl_voc_temp_1": -0.1770004693527213,
     "snl_voco": 64.2,
-    "snow_array": [
-        0.0
-    ],
     "solar_data_file_name": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
     "solar_data_file_name_load": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
     "solar_data_source": "NSRDB",
@@ -11924,7 +11921,6 @@
     "ui_total_module_area_acres": 129.95009810074974,
     "ui_total_module_area_ha": 52.588985400000009,
     "ui_use_acre_per_mw": 0.0,
-    "use_snow_weather_file": 0.0,
     "use_spatial_albedos": 0.0,
     "use_specific_weather_file": 0.0,
     "use_wf_albedo": 1.0,
