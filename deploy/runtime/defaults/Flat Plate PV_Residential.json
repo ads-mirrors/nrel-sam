@@ -47556,6 +47556,9 @@
     ],
     "mppt_hi_inverter": 480.0,
     "mppt_low_inverter": 325.0,
+    "nohrsc_coords": "",
+    "nohrsc_station_id": "",
+    "nohrsc_year": "",
     "nominal_discount_rate": 9.060000000000004,
     "normalize_to_utility_bill": 0.0,
     "num_enabled": 1.0,
@@ -47767,6 +47770,9 @@
     "snl_vmpo": 54.7,
     "snl_voc_temp_1": -0.1770004693527213,
     "snl_voco": 64.2,
+    "snow_array": [
+        0.0
+    ],
     "solar_data_file_name": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
     "solar_data_file_name_load": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
     "solar_data_source": "NSRDB",
@@ -67562,6 +67568,7 @@
         1.71415,
         1.87435
     ],
+    "use_snow_weather_file": 1.0,
     "use_spatial_albedos": 0.0,
     "use_specific_weather_file": 0.0,
     "use_wf_albedo": 1.0,
