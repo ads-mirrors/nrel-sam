@@ -275,7 +275,7 @@ public:
 		wxTextCtrl* m_txtLatLon;
 		wxSearchCtrl* m_search;
 		wxEasyCurl m_curl;
-		NOHRSCDatabase* m_db;
+		std::unique_ptr<NOHRSCDatabase> m_db;
 		DECLARE_EVENT_TABLE()
 	
 };

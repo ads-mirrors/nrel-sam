@@ -96,7 +96,7 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	// TODO: Confirm with team that loading this on dialog load is ok
 	// Memory leak here
 	wxString const path = SamApp::GetAppPath();
-	m_db = new NOHRSCDatabase(path + "/../snow/stations.csv");
+	m_db = std::make_unique<NOHRSCDatabase>(path + "/../snow/stations.csv");
 
 
 	// This is stuff to deal with where to save the weather folder
