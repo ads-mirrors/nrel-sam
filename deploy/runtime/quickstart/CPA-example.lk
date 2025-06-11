@@ -187,7 +187,71 @@ transp();
 //millisleep(1000);
 //transp();
 
+
+/*************************************/
+/**            Simulate             **/
+
 // simulate
 simulate();
+
+/*************************************/
+/**            Outputs              **/
+
 // export cashflow to Excel
 export_cashflow_excel();
+
+// create pdf report quickstart/CPA-example.samreport 
+	if( yesno("This report will be saved to:\n" + homedir()+"/CPA-Example_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
+		reportFile = homedir()+"/CPA-Example_Report.pdf";
+	} else {
+		reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
+	}
+	
+	ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-example.samreport'});
+	
+	// Open Report
+	browse(reportFile);
+
+// create HTML table showing Benefits
+case = case_name();
+
+/* cash flow line items from Community Solar outputs with 
+1.	Energy savings to subscriber  (Bill credits)
+2.	Lease payment to owner (subscription revenue)
+3.	Community benefits payments (upfront and recurring)
+4.	Job training (upfront and recurring)
+*/
+
+	fixedjobtraining = to_real(jobtraining);
+	fixedcommunitybenefitspayments = to_real(communitybenefitspayments);
+	fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
+
+	varbenefits = ['Energy savings to subscriber','Lease payments to owner','Community benefits payments','Job training'];
+	varcf = ['cf_subscriber1_bill_credit_amount','cf_community_solar_subscriber1_revenue','cf_community_solar_recurring_fixed','cf_community_solar_recurring_fixed'];
+	varmultiplier = [1.0,1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
+    str_html = '<table bgcolor=#dddddd width=100%>';
+    ap = round(to_real(get('analysis_period')));
+
+    str_html += '<tr><th>year</th>';
+    for (i=0;i<=ap;i++)
+    {
+		str_html +=  '<th>' + sprintf("%d",i) + '</th>';
+	}
+    str_html += '</tr>';
+
+    for (i=0;i<#varcf;i++)
+    {
+		str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + ' ($)</td>';
+		cfline = get(varcf[i]);
+		for (j=0; j<#cfline; j++)
+		{
+			str_html += '<td align="right">' + sprintf('%.0f',varmultiplier[i] * round(cfline[j])) + '</td>';
+		}
+		str_html += '</tr>';
+    }
+	str_html +=  '</table></body></html>';
+
+
+html_dialog ( str_html , 'Benefits for "' + case + '" Case' , [300,300,2600,600]);
+
+
