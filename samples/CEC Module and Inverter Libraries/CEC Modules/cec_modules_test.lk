@@ -18,18 +18,13 @@ Revised 2/23/22
 function set_inverter_params()
 {
 
-	//set('vdcmax_inverter',1500);
-	//set('inv_ds_mppt_hi',1500);
-	//set('inv_ds_vdcmax',1500);
-
 	pmp = get( 'cec_p_mp_ref' );
 	voc = get('cec_v_oc_ref');
 
 	paco = ceil(pmp / 0.96);
 	vmppt_max = ceil(voc * 1.1);
-	vmppt_min = floor(voc *0.25);
+	vmppt_min = max(floor(voc * 0.25),1); // Tesla SR24T3-2 results in vmppt_min = 0
 	vdco = round(( vmppt_max + vmppt_min ) / 2);
-
 
 	set('inv_ds_paco',paco);
 	set('inv_ds_vdcmax',vmppt_max);
@@ -39,8 +34,8 @@ function set_inverter_params()
 	set('inv_ds_mppt_low',vmppt_min);
 
 	set('vdcmax_inverter',vmppt_max);
-	set('mppt_hi_inverter', vmppt_max);
-	set('mppt_low_inverter', vmppt_min);
+	set('mppt_hi_inverter',vmppt_max);
+	set('mppt_low_inverter',vmppt_min);
 }
 
 function run()
