@@ -1599,6 +1599,15 @@ SAM_EXPORT double SAM_Geothermal_Outputs_lp_flash_pressure_nget(SAM_table ptr, S
 	return result;
 }
 
+SAM_EXPORT double SAM_Geothermal_Outputs_max_brine_effectiveness_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "max_brine_effectiveness", &result))
+		make_access_error("SAM_Geothermal", "max_brine_effectiveness");
+	});
+	return result;
+}
+
 SAM_EXPORT double* SAM_Geothermal_Outputs_monthly_energy_aget(SAM_table ptr, int* length, SAM_error *err){
 	double* result = nullptr;
 	translateExceptions(err, [&]{
