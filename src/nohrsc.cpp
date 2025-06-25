@@ -493,11 +493,31 @@ bool NOHRSCDialog::OnSaveToArray(wxCommandEvent& WXUNUSED(event)) {
 
 	std::vector<double> l;
 	l.reserve(8760);
+	// Loop to obtain the first value not in an assimilation period
+	// This is only relevant if the first value of the series is an assimilated value
+	// which is very unlikely. 
+	// if it is, we just feed backward the first non assimilated value into all the assimilated values
+
+	wxString nonAssim;
+	double dNonAssim;
 	for (size_t i = 0; i < 8760; i++) {
-		wxString val = csvData.Get( i + 1,3);
-		double dval;
-		val.ToDouble(&dval);
-		l.push_back(dval);
+		wxString isAssim = csvData.Get(i + 1, 8);
+		if (isAssim != "Assim") {
+			nonAssim = csvData.Get(i + 1, 3);
+			nonAssim.ToDouble(&dNonAssim);
+			break;
+		}
+	}
+
+	// main loop to actuall
+	for (size_t i = 0; i < 8760; i++) {
+		wxString isAssim = csvData.Get(i + 1, 8);
+		if (isAssim != "Assim") {
+			// Update the most recent non assim value with the current non assim value
+			nonAssim = csvData.Get(i + 1, 3);
+			nonAssim.ToDouble(&dNonAssim);
+		}
+		l.push_back(dNonAssim);
 	}
 	if (vv) {
 		vv->Set(l);
