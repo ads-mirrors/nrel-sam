@@ -7045,6 +7045,7 @@
         "\r",
         "on_change{'nohrsc_downloader'} = define() {\r",
         "\thash = nohrscquery();\r",
+        "\tif ( hash == '' ) return;\r",
         "\tproperty( 'nohrsc_url', 'caption', \r",
         "\t'View the NOHRSC website for this station' );\r",
         "\tproperty( 'nohrsc_url', 'url', hash{'stationURL'} );\r",
