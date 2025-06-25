@@ -2746,6 +2746,7 @@ void fcall_nohrscquery(lk::invoke_t& cxt)
 	cxt.result().hash_item("year").assign(year);
 	cxt.result().hash_item("url").assign(url);
 	cxt.result().hash_item("stationID").assign(stationID);
+	cxt.result().hash_item("stationURL").assign(dlgNOHRSC.GetNOHRSCURL());
 }
 
 
