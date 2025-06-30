@@ -121,7 +121,7 @@ configopt( 'Community Solar', { 'long_name'='Community Solar', 'short_name'='Com
 configopt( 'None', { 'long_name'='No Financial Model', 'short_name'='No financial', 'description'='Run the performance model with no financial model' } );
 
 enum { LOAD_SIMPLE, LOAD_BELPE, NO_LOAD };
-enum { DEGRADATION_AC_SINGLE_YEAR, DEGRADATION_DC_LIFETIME, DEGRADATION_AC_LIFETIME, DEGRADATION_PVSAM, DEGRADATION_PVSAM_LIFETIME};
+enum { DEGRADATION_AC_SINGLE_YEAR, DEGRADATION_DC_LIFETIME, DEGRADATION_AC_LIFETIME, DEGRADATION_PVSAM };
 
 function setup_elec_load_page( mode ) //i is 1 for technologies that HAVE the building load calculator (for now just PV, CSP, Biopower, and Generic Solar- MUST HAVE SOLAR RESOURCE DATA), 2 for techs without ANY load pages (SWH), and 0 for technologies that don't
 {
@@ -311,12 +311,7 @@ function setup_lifetime_page( degradation_mode )
 		addpage( [ [ 'Degradation DC Lifetime', 'Degradation AC DC Lifetime Daily', 'Degradation Lifetime Variables'], ],
                  { 'sidebar'='DC Degradation','help'='degradation_dc' } );
 	}
-    elseif ( degradation_mode == DEGRADATION_PVSAM_LIFETIME)
-	{
-		addpage( [ [ 'Degradation DC Lifetime', 'Degradation AC DC Lifetime Daily' ], ],
-                 { 'sidebar'='DC Degradation','help'='degradation_dc' } );
-	}   
-	// annual AC degradation over one year, 'degradation' requires 'system_use_lifetime = 0'
+     // annual AC degradation over one year, 'degradation' requires 'system_use_lifetime = 0'
      // everything else.
      else // DEGRADATION_AC_SINGLE_YEAR
      {
@@ -2523,7 +2518,7 @@ function setup_pv_battery_pages(is_btm)
 setconfig( 'PV Battery', 'Residential' );
 setmodules( ['belpe', 'pvsamv1', 'grid', 'utilityrate5', 'cashloan']);
 setup_pv_battery_pages(BTM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 	[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2532,7 +2527,7 @@ setup_residential_pages( LOAD_BELPE ); //includes building load calculator
 setconfig( 'PV Battery', 'Commercial' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'cashloan']);
 setup_pv_battery_pages(BTM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 	[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2541,13 +2536,13 @@ setup_commercial_pages( LOAD_SIMPLE ); //belpe not valid for commercial
 setconfig( 'PV Battery', 'Third Party' );
 setmodules( ['belpe', 'pvsamv1', 'grid', 'utilityrate5', 'thirdpartyownership']);
 setup_pv_battery_pages(BTM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 setup_thirdparty_pages( LOAD_BELPE ); //includes building load calculator by default in this function
 
 setconfig( 'PV Battery', 'Host Developer' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'host_developer']);
 setup_pv_battery_pages(BTM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 		[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2556,7 +2551,7 @@ setup_host_developer_pages( LOAD_SIMPLE ); //includes building load calculator b
 setconfig( 'PV Battery', 'Single Owner' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'singleowner']);
 setup_pv_battery_pages(FOM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 		[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery', 'Operating Costs Land Lease' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2566,7 +2561,7 @@ setup_electricity_purchases();
 setconfig( 'PV Battery', 'Merchant Plant' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'merchantplant']);
 setup_pv_battery_pages(FOM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 		[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery', 'Operating Costs Land Lease' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2576,7 +2571,7 @@ setup_electricity_purchases();
 setconfig( 'PV Battery', 'Leveraged Partnership Flip' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'levpartflip']);
 setup_pv_battery_pages(FOM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 		[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery', 'Operating Costs Land Lease' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2586,7 +2581,7 @@ setup_electricity_purchases();
 setconfig( 'PV Battery', 'All Equity Partnership Flip' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'equpartflip']);
 setup_pv_battery_pages(FOM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 		[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery', 'Operating Costs Land Lease' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
@@ -2596,7 +2591,7 @@ setup_electricity_purchases();
 setconfig( 'PV Battery', 'Sale Leaseback' );
 setmodules( ['pvsamv1', 'grid', 'utilityrate5', 'saleleaseback']);
 setup_pv_battery_pages(FOM);
-setup_lifetime_page( DEGRADATION_PVSAM_LIFETIME );
+setup_lifetime_page( DEGRADATION_PVSAM );
 addpage( [[ 'PV Battery Capital Costs' ],
 		[ 'PV Battery Capital Cost Curves', 'PV Capex Table', 'PV Capex Table AC', 'PV Capex Table Land', 'PV Capex Table Battery']], { 'sidebar'='Installation Costs', 'help'='cc_pv','exclusive_var'='pv_capex_cost_choice' } );
 addpage( [[ 'Operating Costs PV Battery', 'Operating Costs Land Lease' ]], {'sidebar' = 'Operating Costs', 'help'='oc_pv-battery'} );
