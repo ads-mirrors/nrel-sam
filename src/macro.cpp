@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "macro.h"
+#include "invoke.h"
 
 class macro_vm : public lk::vm
 {
@@ -164,6 +165,7 @@ bool MacroEngine::Run( const wxString &script, lk::vardata_t *args )
 	env.register_funcs( wxLKMiscFunctions() );
 	env.register_funcs( wxLKFileFunctions() );
 	env.register_funcs( invoke_general_funcs() );
+	env.register_funcs( invoke_resultscallback_funcs());
 	env.register_funcs( invoke_ssc_funcs() );
 	env.register_funcs( sam_functions() );
 	env.register_func( fcall_out, this );
