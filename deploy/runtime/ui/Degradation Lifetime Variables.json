@@ -1,7 +1,7 @@
 {
     "Name": "Degradation Lifetime Variables",
-    "Width": 787.0,
-    "Height": 135.0,
+    "Width": 788.0,
+    "Height": 126.0,
     "FormObjects": {
         "Label": {
             "Visible": 1.0,
@@ -20,7 +20,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 90.0
+                    "Integer": 342.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -37,7 +37,7 @@
                 "TextColour": {
                     "Type": 4.0,
                     "Color": {
-                        "Red": 255.0,
+                        "Red": 0.0,
                         "Green": 0.0,
                         "Blue": 0.0,
                         "Alpha": 255.0
@@ -53,7 +53,7 @@
                 },
                 "WordWrap": {
                     "Type": 2.0,
-                    "Boolean": 0.0
+                    "Boolean": 1.0
                 },
                 "AlignRight": {
                     "Type": 2.0,
@@ -61,7 +61,7 @@
                 },
                 "AlignTop": {
                     "Type": 2.0,
-                    "Boolean": 0.0
+                    "Boolean": 1.0
                 }
             }
         },
@@ -86,7 +86,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 130.0
+                    "Integer": 118.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -111,7 +111,7 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 21.0
+                    "Integer": 18.0
                 },
                 "Y": {
                     "Type": 3.0,
@@ -119,11 +119,11 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 760.0
+                    "Integer": 763.0
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 74.0
+                    "Integer": 56.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -228,8 +228,7 @@
         "\tif ( technology() == 'PV Battery' ) { \r",
         "\t\tenable('save_full_lifetime_variables', 0); \r",
         "\t\tproperty('batt_warning',\r",
-        "\t\t'Caption',\"This option must be enabled for PV Battery simulations\");\r",
-        "\t\t\r",
+        "\t\t'Caption',\"This option must be enabled for PV Battery configurations.\");\r",
         "\t}\r",
         "};"
     ]
