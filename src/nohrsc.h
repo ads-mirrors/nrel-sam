@@ -39,6 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wex/csv.h>
 #include <wx/wfstream.h>
 #include <numeric>
+#include <memory>
 class wxComboBox;
 class wxCheckListBox;
 class wxButton;
