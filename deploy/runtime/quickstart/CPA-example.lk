@@ -241,11 +241,11 @@ case = case_name();
 
     for (i=0;i<#varcf;i++)
     {
-		str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + ' ($)</td>';
+		str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + '</td>';
 		cfline = get(varcf[i]);
 		for (j=0; j<#cfline; j++)
 		{
-			str_html += '<td align="right">' + sprintf('%.0f',varmultiplier[i] * round(cfline[j])) + '</td>';
+			str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * cfline[j])) + '</td>';
 		}
 		str_html += '</tr>';
     }
