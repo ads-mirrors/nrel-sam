@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wx/statline.h>
 #include <wx/tokenzr.h>
 #include <wx/dir.h>
+#include <wx/gdicmn.h>
 
 #include <wex/exttree.h>
 #include <wex/exttext.h>
@@ -65,6 +66,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "macro.h"
 
 #include "../resource/graph.cpng"
+#include "../resource/notes.cpng"
+
 
 class CollapsePaneCtrl : public wxPanel
 {
@@ -663,7 +666,8 @@ void CaseWindow::OnTree(wxDataViewEvent &evt)
 	wxString title = m_navigationMenu->GetItemText(m_currentSelection);
 	m_navigationMenu->SetFocus();
 	SwitchToInputPage(title);
-
+	wxVariant x = wxDataViewIconText("text", wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
+	m_navigationMenu->SetItemData(m_currentSelection,(wxClientData*) & x);
 }
 
 void CaseWindow::OnTreeCollapsing(wxDataViewEvent& evt)
