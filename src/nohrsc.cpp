@@ -95,7 +95,7 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	// Load in the NOHRSC database
 	wxString const path = SamApp::GetAppPath();
 
-	m_db = std::unique_ptr<NOHRSCDatabase>(new NOHRSCDatabase(path + "/../snow/snow.csv"));
+	m_db = std::unique_ptr<NOHRSCDatabase>(new NOHRSCDatabase(path + "/../snow/stations.csv"));
 
 
 	// I think we can perhaps prepopulate this with the user's lat lon from the weather file
