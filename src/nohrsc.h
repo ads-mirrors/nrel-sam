@@ -111,11 +111,12 @@ public:
 		wxString distance;
 		wxString lat;
 		wxString lon;
+		wxString utc;
 		//bool is_selected;
 		bool is_visible;
 		std::vector<StationYear> stationYears;
-		StationRoot(wxString& stationID, int baseYear, int yearCount, float fDistance, wxString& lat, wxString& lon)
-			: stationID(stationID), baseYear(baseYear), yearCount(yearCount), lat(lat), lon(lon)
+		StationRoot(wxString& stationID, int baseYear, int yearCount, float fDistance, wxString& lat, wxString& lon, wxString& utc)
+			: stationID(stationID), baseYear(baseYear), yearCount(yearCount), lat(lat), lon(lon), utc(utc)
 		{
 			distance = wxString::Format(wxT("%.2f"), fDistance);
 			display = stationID;
@@ -142,6 +143,10 @@ public:
 
 		wxString getLatLon() const {
 			return wxString::Format(wxT("%s, %s"), lat, lon);
+		}
+
+		wxString getUTC() const {
+			return utc;
 		}
 		// for sorting
 		bool operator < (const StationRoot& li) const
@@ -207,9 +212,10 @@ public:
 					wxString yearCount = m_csvData.Get(idx + 1, 4);
 					wxString stLon = m_csvData.Get(idx+1, 1);
 					wxString stLat = m_csvData.Get(idx+1, 2);
+					wxString utc = m_csvData.Get(idx + 1, 5);
 					float fDistance = distances[idx];
 					// Create StationRoot object and add to vector
-					stations.emplace_back(stationID, wxAtoi(baseYear), wxAtoi(yearCount), fDistance, stLat, stLon);
+					stations.emplace_back(stationID, wxAtoi(baseYear), wxAtoi(yearCount), fDistance, stLat, stLon, utc);
 				}
 				return stations;
 			}
@@ -246,7 +252,7 @@ public:
 		void ResetAll();
 		size_t SelectItems(wxString, wxCheckBox*);
 		void FilterItemsByYear(wxString);
-		bool DownloadNOHRSC(wxString, wxString);
+		bool DownloadNOHRSC(wxString, wxString, wxString);
 		bool WriteDatatoFile(wxString);
 		bool OnSaveAs(wxCommandEvent& WXUNUSED(event));
 		void OnSaveToFile(wxCommandEvent& event); // Add handler declaration

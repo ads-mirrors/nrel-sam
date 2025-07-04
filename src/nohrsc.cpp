@@ -94,8 +94,8 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 
 	// Load in the NOHRSC database
 	wxString const path = SamApp::GetAppPath();
-	//m_db = std::make_unique<NOHRSCDatabase>(path + "/../snow/stations.csv");
-	m_db = std::unique_ptr<NOHRSCDatabase>(new NOHRSCDatabase(path + "/../snow/stations.csv"));
+
+	m_db = std::unique_ptr<NOHRSCDatabase>(new NOHRSCDatabase(path + "/../snow/snow.csv"));
 
 
 	// I think we can perhaps prepopulate this with the user's lat lon from the weather file
@@ -113,6 +113,7 @@ NOHRSCDialog::NOHRSCDialog(wxWindow* parent, const wxString& title)
 	m_chlResources->AppendColumn("Distance (km)", wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, wxCOL_SORTABLE | wxCOL_RESIZABLE);
 	m_chlResources->AppendColumn("Years available", wxCOL_WIDTH_AUTOSIZE);
 	m_chlResources->AppendColumn("Latitude, Longitude", wxCOL_WIDTH_AUTOSIZE);
+	m_chlResources->AppendColumn("UTC Offset");
 	m_btnSaveToFile = new wxButton(this, ID_btnSaveToFile, "Save to file");
 
 	wxString msg = "Use this window to enter your location and retrieve a list of nearby stations with snow data. ";
@@ -258,8 +259,9 @@ void NOHRSCDialog::OnEvt(wxCommandEvent& e)
 		wxString stationID = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem));
 		wxString beginYear = m_chlResources->GetItemText(selectedItem);
 		m_coords = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem), 3);
+		wxString tz_utc = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem), 4);
 		// convert beginyear to int
-		if (DownloadNOHRSC(beginYear, stationID)) {
+		if (DownloadNOHRSC(beginYear, stationID, tz_utc)) {
 			if (OnSaveToArray(e)) {
 				m_year = beginYear;
 				m_stationID = stationID;
@@ -292,7 +294,7 @@ void NOHRSCDialog::OnSaveToFile(wxCommandEvent& WXUNUSED(event))
 	}
 	wxString stationID = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem));
 	wxString beginYear = m_chlResources->GetItemText(selectedItem);
-
+	wxString tz_utc = m_chlResources->GetItemText(m_chlResources->GetItemParent(selectedItem), 4);
 	// File dialog for user to select filename
 	wxFileDialog saveFileDialog(
 		this,
@@ -307,7 +309,7 @@ void NOHRSCDialog::OnSaveToFile(wxCommandEvent& WXUNUSED(event))
 		return;
 
 	// Download and save
-	if (!DownloadNOHRSC(beginYear, stationID))
+	if (!DownloadNOHRSC(beginYear, stationID, tz_utc))
 		return;
 
 	// WriteDatatoFile expects just the filename (without path or extension)
@@ -350,6 +352,7 @@ void NOHRSCDialog::RefreshList()
 			m_chlResources->SetItemText(ndx, 1, station.distance);
 			m_chlResources->SetItemText(ndx, 2, station.yearRange());
 			m_chlResources->SetItemText(ndx, 3, station.getLatLon());
+			m_chlResources->SetItemText(ndx, 4, station.getUTC());
 			for (const auto & year : station.stationYears) {
 				if (year.is_visible) {
 					m_chlResources->AppendItem(ndx, year.display);
@@ -422,14 +425,50 @@ void NOHRSCDialog::GetResources()
 }
 
 
-bool NOHRSCDialog::DownloadNOHRSC(wxString beginYear, wxString stationID) {
+bool NOHRSCDialog::DownloadNOHRSC(wxString beginYear, wxString stationID, wxString tzutc) {
 	wxEasyCurl curl;
 	m_curl = curl;
-	int endYear = std::stoi(beginYear.ToStdString()) + 1;
 
-	wxString url = wxString::Format(wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%s&bm=1&bd=1&bh=6&ey=%d&em=1&ed=1&eh=5&data=11&units=1&region=us"), stationID, beginYear, endYear);
-	wxString humanUrl = wxString::Format(wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%s&bm=1&bd=1&bh=6&ey=%d&em=1&ed=1&eh=5&data=0&units=1&region=us"), stationID, beginYear, endYear);
+	// If tzutc is negative, that means we actually need to start late in the prior year
+	int i_tzutc = std::stoi(tzutc.ToStdString());
+	int i_beginYear = std::stoi(beginYear.ToStdString());
+	int i_endYear = i_beginYear + 1;
+	int i_beginHour;
+	int i_endHour;
+	int i_beginEndMonth = 1;
+	if (i_tzutc > 0) {
+		i_beginYear -= 1;
+		i_endYear -= 1;
+		i_beginHour = 24 - i_tzutc;
+		i_beginEndMonth = 12;
+	}
+	else {
+		i_beginHour = -1*i_tzutc;
+	}
+	i_endHour = i_beginHour - 1;
 
+
+	wxString url = wxString::Format(
+		wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%d&bm=%d&bd=1&bh=%d&ey=%d&em=%d&ed=1&eh=%d&data=11&units=1&region=us"),
+		stationID,
+		i_beginYear,
+		i_beginEndMonth,
+		i_beginHour,
+		i_endYear,
+		i_beginEndMonth, 
+		i_endHour
+	);
+
+	wxString humanUrl = wxString::Format(
+		wxT("https://www.nohrsc.noaa.gov/interactive/html/graph.html?station=%s&w=600&h=400&o=a&uc=0&by=%d&bm=%d&bd=1&bh=%d&ey=%d&em=%d&ed=1&eh=%d&data=0&units=1&region=us"),
+		stationID,
+		i_beginYear,
+		i_beginEndMonth,
+		i_beginHour,
+		i_endYear,
+		i_beginEndMonth,
+		i_endHour
+	);
 	m_url = humanUrl;
 	//wxString fileName = wxString::Format(wxT("%s_%s"), stationID, beginYear);
 
