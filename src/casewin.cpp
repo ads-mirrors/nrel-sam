@@ -663,11 +663,18 @@ void CaseWindow::OnTree(wxDataViewEvent &evt)
 	else {
 		m_currentSelection = evt.GetItem();
 	}
+
+	if (HasPageNote(GetCurrentContext())) {
+		m_navigationMenu->SetItemIcon(m_currentSelection, wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
+		//m_navigationMenu->im // TODO set images and override onImagesChanged method to show notes icon
+		m_navigationMenu->Refresh();
+	}
 	wxString title = m_navigationMenu->GetItemText(m_currentSelection);
 	m_navigationMenu->SetFocus();
 	SwitchToInputPage(title);
-	wxVariant x = wxDataViewIconText("text", wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
-	m_navigationMenu->SetItemData(m_currentSelection,(wxClientData*) & x);
+
+//	wxVariant x = wxDataViewIconText("text", wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
+//	m_navigationMenu->SetItemData(m_currentSelection,(wxClientData*) & x);
 }
 
 void CaseWindow::OnTreeCollapsing(wxDataViewEvent& evt)
@@ -1080,7 +1087,7 @@ bool CaseWindow::SwitchToInputPage( const wxString &name )
 	wxBusyCursor wait;
 //	m_inputPagePanel->Freeze();
 
-	//DetachCurrentInputPage();
+//	DetachCurrentInputPage();
 
 	m_currentGroup = 0;
 	for( size_t i=0;i<m_pageGroups.size();i++ )
@@ -1104,6 +1111,7 @@ bool CaseWindow::SwitchToInputPage( const wxString &name )
 //	if ( m_inputPageList->GetStringSelection() != name )
 	int p = m_inputPageList->Find(name);
 	m_inputPageList->Select( p );
+	m_inputPageList->Refresh();
 
 	return true;
 }
