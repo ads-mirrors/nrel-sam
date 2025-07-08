@@ -669,10 +669,12 @@ void CaseWindow::OnTree(wxDataViewEvent &evt)
 		//m_navigationMenu->im // TODO set images and override onImagesChanged method to show notes icon
 		m_navigationMenu->Refresh();
 	}
+	
 	wxString title = m_navigationMenu->GetItemText(m_currentSelection);
 	m_navigationMenu->SetFocus();
 	SwitchToInputPage(title);
 
+	m_left_panel->Layout(); // Issue 1552
 //	wxVariant x = wxDataViewIconText("text", wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
 //	m_navigationMenu->SetItemData(m_currentSelection,(wxClientData*) & x);
 }
@@ -1112,6 +1114,7 @@ bool CaseWindow::SwitchToInputPage( const wxString &name )
 	int p = m_inputPageList->Find(name);
 	m_inputPageList->Select( p );
 	m_inputPageList->Refresh();
+	m_left_panel->Layout();// try to force onPaint call for the input page list
 
 	return true;
 }
