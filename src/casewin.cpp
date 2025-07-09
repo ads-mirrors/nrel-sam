@@ -640,6 +640,8 @@ bool CaseWindow::GenerateReport( wxString pdffile, wxString templfile, VarValue 
 
 void CaseWindow::OnTree(wxDataViewEvent &evt)
 {
+	UpdateNotesIcon(); // when leaving a page and notes erased
+
 	m_pageFlipper->SetSelection(0);
 	wxDataViewItem dvi = evt.GetItem();
 	if (!dvi.IsOk())
@@ -664,12 +666,22 @@ void CaseWindow::OnTree(wxDataViewEvent &evt)
 		m_currentSelection = evt.GetItem();
 	}
 
+	/*
 	if (HasPageNote(GetCurrentContext())) {
 		m_navigationMenu->SetItemIcon(m_currentSelection, wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
 		//m_navigationMenu->im // TODO set images and override onImagesChanged method to show notes icon
 		m_navigationMenu->Refresh();
 	}
-	
+	// update all navigation items note icon
+	m_navigationMenu->get
+	auto bmb = wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes));
+	for (size_t i = 0; i < m_pageGroups.size(); i++)
+		if (HasPageNote(m_pageGroups[i]->HelpContext)
+			m_currentGroup = m_pageGroups[i];
+
+	*/
+
+
 	wxString title = m_navigationMenu->GetItemText(m_currentSelection);
 	m_navigationMenu->SetFocus();
 	SwitchToInputPage(title);
@@ -1484,7 +1496,7 @@ void CaseWindow::UpdateConfiguration()
     if (cfg->TechnologyFullName.Contains("Generic")) return; //if generic get out of the loop
     
 	wxDataViewItem dvi = m_navigationMenu->GetNthChild(wxDataViewItem(0), 0);
-	if (m_navigationMenu->IsContainer(dvi)) {
+	if (dvi.IsOk() && m_navigationMenu->IsContainer(dvi)) {
 		dvi = m_navigationMenu->GetNthChild(dvi, 0);
 	}
 
@@ -1493,8 +1505,54 @@ void CaseWindow::UpdateConfiguration()
 		m_currentSelection = (dvi);
 	}
 
+	// update input page note icons -- TODO item
+	//m_navigationMenu->GetChildCount(wxDataViewItem(0));
+	/*
+	#include <wx/dataview.h>
+
+// Assume 'myDVC' is your wxDataViewCtrl instance
+// and it has an associated wxDataViewModel
+
+void IterateDataViewItems(wxDataViewCtrl* myDVC)
+{
+    wxDataViewModel* model = myDVC->GetModel();
+    if (!model)
+        return;
+
+    // Get the invisible root item (or the top-level items depending on your model)
+    wxDataViewItem root = model->GetParent(wxDataViewItem(nullptr)); // This might need adjustment depending on your model structure
+
+    // Start iteration (depth-first traversal shown)
+    IterateChildren(myDVC, model, root);
+}
+
+void IterateChildren(wxDataViewCtrl* myDVC, wxDataViewModel* model, const wxDataViewItem& parent)
+{
+    wxDataViewItemArray children;
+    model->GetChildren(parent, children);
+
+    for (const wxDataViewItem& child : children)
+    {
+        // Do something with the child item
+        // For example, print its value in the first column
+        wxVariant value;
+        model->GetValue(value, child, 0); // Assuming column 0
+        wxLogMessage("Item value: %s", value.GetString());
+
+        // Recursively iterate over its children if it's a container
+        if (model->IsContainer(child))
+        {
+            IterateChildren(myDVC, model, child);
+        }
+    }
+}
+
+	
+	*/
+
+
 	// check for orphaned notes and if any found add to first page per Github issue 796
-	CheckAndUpdateNotes(inputPageHelpContext);
+//	CheckAndUpdateNotes(inputPageHelpContext);
 
 	m_szsims->Clear(true);
 	if (m_case->GetTechnology().Contains("wave") || m_case->GetTechnology().Contains("tidal")) {
@@ -1592,16 +1650,62 @@ void CaseWindow::UpdatePageNote()
 	// update ID
 	m_lastPageNoteId = GetCurrentContext();
 
+
 	// update text on page note
 	wxString text = m_case->RetrieveNote( m_lastPageNoteId );
 	m_pageNote->SetText(text);
-	m_pageNote->Show( SamApp::Window()->GetCurrentCaseWindow() == this && !text.IsEmpty() );
+
+	bool bShowNote = SamApp::Window()->GetCurrentCaseWindow() == this && !text.IsEmpty();
+
+	m_pageNote->Show( bShowNote );
+
+	UpdateNotesIcon();
+}
+
+void CaseWindow::UpdateNotesIcon()
+{
+//	auto dvi = m_navigationMenu->GetCurrentItem();
+	auto dvi = m_currentSelection;
+	bool bShowNote = false;
+
+	if (dvi.IsOk()) {
+
+		for (auto pg : m_pageGroups) {
+			if (pg->SideBarLabel == m_navigationMenu->GetItemText(dvi))
+				bShowNote = HasPageNote(pg->HelpContext);
+		}
+
+		wxString itemText = m_navigationMenu->GetItemText(dvi);
+		if (itemText == "Inputs" || itemText == "Results" || itemText == "Parametrics" || itemText == "Stochastic" || itemText == "P50 / P90" || itemText == "Macros" || itemText == "Uncertainty") {
+			m_pageNote->SetTitle("Notes for " + itemText);
+		}
+		else {
+			m_pageNote->SetTitle("Notes for " + m_lastPageNoteId);
+		}
+		if (bShowNote) {
+			auto bmb = wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes));
+			m_navigationMenu->SetItemIcon(dvi, bmb);
+		}
+		else {
+			m_navigationMenu->SetItemIcon(dvi, wxNullBitmap);
+		}
+		m_navigationMenu->Refresh();
+	}
 }
 
 void CaseWindow::ShowPageNote()
 {
 	m_pageNote->Show();
 	m_pageNote->GetTextCtrl()->SetFocus();
+
+//	UpdateNotesIcon(true);
+// set notes icon on the current item
+	auto dvi = m_navigationMenu->GetCurrentItem();
+	if (dvi.IsOk()) {
+		m_navigationMenu->SetItemIcon(dvi, wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
+		m_navigationMenu->Refresh();
+	}
+//	UpdatePageNote();
 }
 
 void CaseWindow::SetPageNote( const wxString &note )
