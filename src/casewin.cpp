@@ -150,16 +150,11 @@ BEGIN_EVENT_TABLE( CaseWindow, wxSplitterWindow )
 	EVT_LISTBOX( ID_INPUTPAGELIST, CaseWindow::OnCommand )
     EVT_DATAVIEW_SELECTION_CHANGED(ID_TechTree, CaseWindow::OnTree)
 	EVT_DATAVIEW_ITEM_COLLAPSING(ID_TechTree, CaseWindow::OnTreeCollapsing)
-
-//    EVT_DATAVIEW_ITEM_START_EDITING(ID_TechTree, CaseWindow::OnTreeActivated)
-//    EVT_DATAVIEW_ITEM_ACTIVATED(ID_TechTree, CaseWindow::OnTreeActivated)
-    //EVT_LISTBOX( ID_TechTree, CaseWindow::OnCommand)
 	EVT_BUTTON( ID_EXCL_BUTTON, CaseWindow::OnCommand )
     EVT_LISTBOX( ID_EXCL_RADIO, CaseWindow::OnCommand)
 	EVT_CHECKBOX( ID_COLLAPSE, CaseWindow::OnCommand )
 	EVT_MENU_RANGE( ID_EXCL_OPTION, ID_EXCL_OPTION_MAX, CaseWindow::OnCommand )
 	EVT_LISTBOX( ID_EXCL_TABLIST, CaseWindow::OnCommand )
-
 	EVT_NOTEBOOK_PAGE_CHANGED( ID_PAGES, CaseWindow::OnSubNotebookPageChanged )
 	EVT_NOTEBOOK_PAGE_CHANGED( ID_BASECASE_PAGES, CaseWindow::OnSubNotebookPageChanged )
 END_EVENT_TABLE()
@@ -180,7 +175,7 @@ CaseWindow::CaseWindow( wxWindow *parent, Case *c )
 	wxFont lafont(*wxNORMAL_FONT);
 	lafont.SetWeight(wxFONTWEIGHT_BOLD);
 
-	m_pageNote = 0;
+	m_pageNote = new PageNote(this); // create page note before m_pageFlipper adds pages
 	m_currentGroup = 0;
 
 	// navigation menu objects
@@ -300,8 +295,6 @@ CaseWindow::CaseWindow( wxWindow *parent, Case *c )
 	SetMinimumPaneSize( 50 );
 	SplitVertically( m_left_panel, m_pageFlipper, (int)(210*xScale) );
 	
-	m_pageNote = new PageNote( this );
- 
 	// load page note window geometry
 	int nw_xrel, nw_yrel, nw_w, nw_h;
 	double sf = wxGetScreenHDScale();
@@ -1505,52 +1498,6 @@ void CaseWindow::UpdateConfiguration()
 		m_currentSelection = (dvi);
 	}
 
-	// update input page note icons -- TODO item
-	//m_navigationMenu->GetChildCount(wxDataViewItem(0));
-	/*
-	#include <wx/dataview.h>
-
-// Assume 'myDVC' is your wxDataViewCtrl instance
-// and it has an associated wxDataViewModel
-
-void IterateDataViewItems(wxDataViewCtrl* myDVC)
-{
-    wxDataViewModel* model = myDVC->GetModel();
-    if (!model)
-        return;
-
-    // Get the invisible root item (or the top-level items depending on your model)
-    wxDataViewItem root = model->GetParent(wxDataViewItem(nullptr)); // This might need adjustment depending on your model structure
-
-    // Start iteration (depth-first traversal shown)
-    IterateChildren(myDVC, model, root);
-}
-
-void IterateChildren(wxDataViewCtrl* myDVC, wxDataViewModel* model, const wxDataViewItem& parent)
-{
-    wxDataViewItemArray children;
-    model->GetChildren(parent, children);
-
-    for (const wxDataViewItem& child : children)
-    {
-        // Do something with the child item
-        // For example, print its value in the first column
-        wxVariant value;
-        model->GetValue(value, child, 0); // Assuming column 0
-        wxLogMessage("Item value: %s", value.GetString());
-
-        // Recursively iterate over its children if it's a container
-        if (model->IsContainer(child))
-        {
-            IterateChildren(myDVC, model, child);
-        }
-    }
-}
-
-	
-	*/
-
-
 	// check for orphaned notes and if any found add to first page per Github issue 796
 //	CheckAndUpdateNotes(inputPageHelpContext);
 
@@ -1650,8 +1597,7 @@ void CaseWindow::UpdatePageNote()
 	// update ID
 	m_lastPageNoteId = GetCurrentContext();
 
-
-	// update text on page note
+		// update text on page note
 	wxString text = m_case->RetrieveNote( m_lastPageNoteId );
 	m_pageNote->SetText(text);
 
@@ -1664,48 +1610,47 @@ void CaseWindow::UpdatePageNote()
 
 void CaseWindow::UpdateNotesIcon()
 {
-//	auto dvi = m_navigationMenu->GetCurrentItem();
-	auto dvi = m_currentSelection;
-	bool bShowNote = false;
+	wxDataViewModel* model = m_navigationMenu->GetModel();
+	if (!model)
+		return;
 
-	if (dvi.IsOk()) {
+	// Get the invisible root item
+	wxDataViewItem root = model->GetParent(wxDataViewItem(nullptr)); 
 
+	// Start iteration (depth-first traversal shown)
+	UpdateNotesIconChildren(model, root);
+}
+
+void CaseWindow::UpdateNotesIconChildren(wxDataViewModel* model, const wxDataViewItem& parent)
+{
+	wxDataViewItemArray children;
+	model->GetChildren(parent, children);
+	for (const wxDataViewItem& child : children) {
+		// Check if the child item has a note
+		bool bShowNote = false;
 		for (auto pg : m_pageGroups) {
-			if (pg->SideBarLabel == m_navigationMenu->GetItemText(dvi))
+			if (pg->SideBarLabel == m_navigationMenu->GetItemText(child))
 				bShowNote = HasPageNote(pg->HelpContext);
 		}
 
-		wxString itemText = m_navigationMenu->GetItemText(dvi);
-		if (itemText == "Inputs" || itemText == "Results" || itemText == "Parametrics" || itemText == "Stochastic" || itemText == "P50 / P90" || itemText == "Macros" || itemText == "Uncertainty") {
-			m_pageNote->SetTitle("Notes for " + itemText);
-		}
-		else {
-			m_pageNote->SetTitle("Notes for " + m_lastPageNoteId);
-		}
 		if (bShowNote) {
-			auto bmb = wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes));
-			m_navigationMenu->SetItemIcon(dvi, bmb);
+			m_navigationMenu->SetItemIcon(child, wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
 		}
 		else {
-			m_navigationMenu->SetItemIcon(dvi, wxNullBitmap);
+			m_navigationMenu->SetItemIcon(child, wxNullBitmap);
 		}
-		m_navigationMenu->Refresh();
+		// Recursively check its children if it's a container
+		if (model->IsContainer(child)) {
+			UpdateNotesIconChildren(model, child);
+		}
 	}
 }
+
 
 void CaseWindow::ShowPageNote()
 {
 	m_pageNote->Show();
 	m_pageNote->GetTextCtrl()->SetFocus();
-
-//	UpdateNotesIcon(true);
-// set notes icon on the current item
-	auto dvi = m_navigationMenu->GetCurrentItem();
-	if (dvi.IsOk()) {
-		m_navigationMenu->SetItemIcon(dvi, wxBitmapBundle::FromBitmap(wxBITMAP_PNG_FROM_DATA(notes)));
-		m_navigationMenu->Refresh();
-	}
-//	UpdatePageNote();
 }
 
 void CaseWindow::SetPageNote( const wxString &note )
@@ -1719,7 +1664,7 @@ bool CaseWindow::HasPageNote(const wxString &id)
 	return !id.IsEmpty() && !m_case->RetrieveNote(id).IsEmpty();
 }
 
-void CaseWindow::OnSubNotebookPageChanged( wxNotebookEvent & )
+void CaseWindow::OnSubNotebookPageChanged( wxNotebookEvent &evt )
 {
 	// common event handler for notebook page events to update the page note
 	UpdatePageNote();
