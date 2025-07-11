@@ -63,6 +63,7 @@ extern const char *sam_api_key;
 extern const char* geocode_api_key;
 extern const char* google_api_key;
 extern const char* bing_api_key;
+extern const char* azure_api_key;
 
 class wxSimplebook;
 class wxPanel;

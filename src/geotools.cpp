@@ -265,23 +265,22 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
     if (!success)
         return false;
 
-
-
     if (tz != 0) 
     {
         success = false;
 
         curl = wxEasyCurl();
 
-
-
-        url = SamApp::WebApi("bing_maps_timezone_api");
-        url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
-        url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
+        // replace bing api with azure maps api
+        //url = SamApp::WebApi("bing_maps_timezone_api");
+        //url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
+        //url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
+        url = SamApp::WebApi("azure_maps_timezone_api");
+        url.Replace("<LATLON>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
+        url.Replace("<AZUREAPIKEY>", wxString(azure_api_key));
 
         curl.AddHttpHeader("Content-Type: application/json");
         curl.AddHttpHeader("Accept: application/json");
-
 
         if (showprogress) 
         {
@@ -298,26 +297,22 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         reader.Parse(str.c_str());
 
         if (!reader.HasParseError()) {
-            if (reader.HasMember(L"resourceSets")) {
-                if (reader[L"resourceSets"].IsArray()) {
-                    if (reader[L"resourceSets"][0].HasMember(L"resources")) {
-                        if (reader[L"resourceSets"][0][L"resources"].IsArray()) {
-                            if (reader[L"resourceSets"][0][L"resources"][0].HasMember(L"timeZone")) {
-                                if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"].HasMember(L"utcOffset")) {
-                                    if (reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].IsString()) {
-                                        wxString stz = reader[L"resourceSets"][0][L"resources"][0][L"timeZone"][L"utcOffset"].GetString();
-                                        wxArrayString as = wxSplit(stz, ':');
-                                        if (as.Count() != 2) return false;
-                                        if (!as[0].ToDouble(tz)) return false;
-                                        double offset = 0;
-                                        if (as[1] == "30") offset = 0.5;
-                                        if (*tz < 0)
-                                            *tz = *tz - offset;
-                                        else
-                                            *tz = *tz + offset;
-                                        success = true;
-                                    }
-                                }
+            if (reader.HasMember(L"TimeZones")) {
+                if (reader[L"TimeZones"].IsArray()) {
+                    if (reader[L"TimeZones"][0].HasMember(L"ReferenceTime")) {
+                        if (reader[L"TimeZones"][0][L"ReferenceTime"].HasMember(L"StandardOffset")) {
+                            if (reader[L"TimeZones"][0][L"ReferenceTime"][L"StandardOffset"].IsString()) {
+                                wxString stz = reader[L"TimeZones"][0][L"ReferenceTime"][L"StandardOffset"].GetString();
+                                wxArrayString as = wxSplit(stz, ':');
+                                if (as.Count() != 2) return false;
+                                if (!as[0].ToDouble(tz)) return false;
+                                double offset = 0;
+                                if (as[1] == "30") offset = 0.5;
+                                if (*tz < 0)
+                                    *tz = *tz - offset;
+                                else
+                                    *tz = *tz + offset;
+                                success = true;
                             }
                         }
                     }
@@ -326,10 +321,13 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
             // check status code
             success = false;//overrides success of retrieving data
 
-            if (reader.HasMember(L"statusDescription")) {
-                if (reader[L"statusDescription"].IsString()) {
-                    wxString str = reader[L"statusDescription"].GetString();
-                    success = str.Lower() == "ok";
+            // TO DO improve error handling
+            if (reader.HasMember(L"error")) {
+                if (reader[L"error"].HasMember(L"code")) {
+                    if (reader[L"error"][L"code"].IsString()) {
+                        wxString str = reader[L"error"][L"code"].GetString();
+                        success = str.Lower() != "";
+                    }
                 }
             }
         }
@@ -357,6 +355,7 @@ wxBitmap GeoTools::StaticMap(double lat, double lon, int zoom, MapProvider servi
         url.Replace("<POINT>", wxString::Format("%.14lf,%.14lf", lat, lon));
         url.Replace("<ZOOMLEVEL>", zoomStr);
         url.Replace("<BINGAPIKEY>", wxString(bing_api_key));
+        url.Replace("<AZUREAPIKEY>", wxString(azure_api_key));
     }
 
     wxEasyCurl curl;

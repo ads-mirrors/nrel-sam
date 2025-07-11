@@ -379,6 +379,7 @@ extern void RegisterReportObjectTypes();
 	wxEasyCurl::SetUrlEscape("<SAMAPIKEY>", wxString(sam_api_key));
 	wxEasyCurl::SetUrlEscape("<GEOCODEAPIKEY>", wxString(geocode_api_key));
 	wxEasyCurl::SetUrlEscape("<BINGAPIKEY>", wxString(bing_api_key));
+	wxEasyCurl::SetUrlEscape("<AZUREAPIKEY>", wxString(bing_api_key));
 	wxEasyCurl::SetUrlEscape("<GOOGLEAPIKEY>", wxString(google_api_key));
 
 	wxEasyCurl::SetUrlEscape("<USEREMAIL>", wxString(user_email));

@@ -54,6 +54,12 @@ const char *google_api_key = "";
 // Get a Bing Maps developer key at https://www.bingmapsportal.com/
 const char *bing_api_key = "";
 
+// Azure Map APIs:
+// Used for static map underlay in 3D shade calculator (Google map can be used as an option instead)
+// Used for time zone API for geocoding
+// Get a an Azure Maps key at https://azure.microsoft.com/
+const char *azure_api_key = "";
+
 // Private NREL Developer geocoding API for NREL versions of SAM
 const char *geocode_api_key = "";
 
