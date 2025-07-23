@@ -159,7 +159,7 @@ if ( blended_buy.status != 'ok' ) {
 	exit;
 }
 
-blended_sell = blended_sell_rate(get('savings_year1'), get('ac_annual'));
+blended_sell = blended_sell_rate(get('savings_year1'), get('annual_energy'));
 if ( blended_sell.status != 'ok' ) {
 	outln('Blended sell rate calculation failed: ' + blended_sell.status);
 	exit;
@@ -216,8 +216,8 @@ f_csv = dir + '/' + replace(case_name(),'/','-') + '-solar-for-all-calculator-re
 
 ok = write_text_file(f_csv, str_csv);
 if (!ok) {
-	outln('Failed to write results to CSV file: ' + fcsv + '\n. Exiting script');
-	exit;
+	outln('Failed to write results to CSV file: ' + f_csv + '\n  The file may be open in another program.');
+	outln();
 }
 else {
 	browse( f_csv );
