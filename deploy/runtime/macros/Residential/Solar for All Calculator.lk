@@ -1,0 +1,150 @@
+/*@
+<p>This is the Solar for All (SfA) macro.</p>
+@*/
+
+// functions /////
+
+function blended_buy_rate( bill_wo_system, usage_wo_system ) {
+	T = { 'value' = null, 'status' = '' };
+	if ( usage_wo_system == 0 ) {
+		T.value = null;
+		T.status = 'divide by zero (usage)';
+	}
+	else {
+		T.value = bill_wo_system / usage_wo_system;
+		T.status = 'ok';
+	}
+	return T;
+}
+
+function blended_sell_rate( bill_savings, power_generated ) {
+	T = { 'value' = null, 'status' = '' };
+	if ( power_generated == 0 ) {
+		T.value = null;
+		T.status = 'divide by zero (generation)';
+	}
+	else {
+		T.value = bill_savings / power_generated;
+		T.status = 'ok';
+	}
+	return T;
+}
+
+function bill_savings_percentage( bill_wo_system, bill_w_system ) {
+	T = { 'value' = null, 'status' = '' };
+	if ( bill_w_system == 0 ) {
+		T.value = null;
+		T.status = 'divide by zero (bill with system)';
+	}
+	else {
+		T.value = (( bill_wo_system - bill_w_system ) / bill_wo_system ) * 100;
+		T.status = 'ok';
+	}
+	return T;
+}
+
+// main /////
+
+// check for valid configuration only PVWatts/Residential is supported
+config = configuration();
+
+tech = config[0];
+
+if ( tech != 'PVWatts' ) {
+	msgbox('Note!\n' +
+	       'This macro was designed for PVWatts configurations. It should work for other performance models,\n'+
+	       'but please contact sam.support@nrel.gov if you encounter problems with the macro.');
+}
+
+// run simulation
+outln('Running simulations...');
+sim_msg = '';
+ok = simulate(sim_msg, true);
+if (!ok) {
+	msgbox('Simulation failed!\n' + sim_msg);
+	outln('Simulation failed!');
+	outln('Simulation message: ' + sim_msg);
+	outln('Exiting script.');
+	exit;
+}
+outln('Done.');
+outln();
+
+// get outputs
+
+
+// calculate rates
+
+blended_buy = blended_buy_rate(get('utility_bill_wo_sys_year1'), get('year1_electric_load'));
+if ( blended_buy.status != 'ok' ) {
+	outln('Blended buy rate calculation failed: ' + blended_buy.status);
+	exit;
+}
+
+blended_sell = blended_sell_rate(get('savings_year1'), get('ac_annual'));
+if ( blended_sell.status != 'ok' ) {
+	outln('Blended sell rate calculation failed: ' + blended_sell.status);
+	exit;
+}
+
+savings_percent = bill_savings_percentage(get('utility_bill_wo_sys_year1'), get('utility_bill_w_sys_year1'));
+if ( savings_percent.status != 'ok' ) {
+	outln('Savings calculation failed: ' + savings_percent.status);
+	exit;
+}
+
+// console output
+
+str_blended_buy = sprintf('Blended buy rate = $%.3f/kWh load (year 1)', blended_buy.value);
+str_blended_sell = sprintf('Blended sell rate = $%.3f/kWh generated (year 1)', blended_sell.value);
+str_savings_percent = sprintf('Bill savings = %.3f%% (year 1)', savings_percent.value);
+outln(str_blended_buy);
+outln(str_blended_sell);
+outln(str_savings_percent);
+outln();
+
+// html output
+
+str_html = 
+'<html><body>' + 
+'<h3><font size = "4">Solar for All Blended Rates</font></h3>' + 
+'<table bgcolor=#dddddd width=100%>' + 
+'<tr><th>Rate</th><th>Value</th></tr>' + 
+'<tr bgcolor=#ffffff><td>Blended buy rate</td><td align="center">' + sprintf('$%.3f/kWh load (year 1)',blended_buy.value) + '</td></tr>' +             
+'<tr><td>Blended sell rate</b></td><td align="center">' + sprintf('$%.3f/kWh generated (year 1)',blended_sell.value) + '</td></tr>' +             
+'<tr bgcolor=#ffffff><td>Bill savings</td><td align="center">' + sprintf('$%.1f%% (year 1)',savings_percent.value) + '</td></tr>' +             
+'</table>' +
+'</body></html>';
+
+html_dialog( str_html, 'Solar for All Calculator Results', [200,200,600,200] );
+
+// csv output
+
+str_csv = 
+'variable,value,units\n' +
+'blended buy rate' + ',' + to_string(blended_buy.value) + ',' + '$/kWh of load in year 1' + '\n' +
+'blended sell rate' +',' + to_string(blended_sell.value) + ',' + '$/kWh of generation in year 1' + '\n' +
+'bill savings' + ',' + to_string(savings_percent.value) + ',' + '% of annual bill in year 1';
+
+// if running from .sam file that has not been saved, choose folder to save .csv
+if ( project_file() == '' ) {
+	dir = choose_dir(homedir(),'Choose folder to save CSV results');
+}
+else {
+	dir = cwd();
+}
+
+f_csv = dir + '/' + replace(case_name(),'/','-') + '-solar-for-all-calculator-results.csv';
+
+ok = write_text_file(f_csv, str_csv);
+if (!ok) {
+	outln('Failed to write results to CSV file: ' + fcsv + '\n. Exiting script');
+	exit;
+}
+else {
+	browse( f_csv );
+}
+
+// finish
+
+outln('Macro done.');
