@@ -1,5 +1,83 @@
 /*@
-<p>This is the Solar for All (SfA) macro.</p>
+    <p>The Solar for All calculator is a script that you can use to estimates the reduction in electricity bills for residents when a photovoltaic (PV) system is installed on a residential or multi-family building. The macro calculates retail blended electricity rates and a bill savings percentage. Although this macro is designed for PVWatts/Residential configurations, it should work for any configuration with the Residential or Commercial financial model.</p>
+    <p>For more detailed information and instructions, see [<em><strong>link to webpage</strong></em>].</p>
+    <h5 id="overall-steps">Overall Steps</h5>
+    <ol>
+      <li>
+        <p>Create a PVWatts/Residential case with inputs for the system design, costs, and financial parameters.</p>
+      </li>
+      <li>
+        <p>Run the macro.</p>
+      </li>
+      <li>
+        <p>Analyze the results.</p>
+      </li>
+      <li>
+        <p>Modify the inputs and repeat Steps 2 and 3 until you are satisfied with the results.</p>
+      </li>
+    </ol>
+    <h5 id="required-information">Required Information</h5>
+    <ul>
+      <li>
+        <p>Location of the PV system as a street address or latitude/longitude pair</p>
+      </li>
+      <li>
+        <p>Size of the PV system</p>
+      </li>
+      <li>
+        <p>Orientation (tilt and azimuth angles) of PV modules (panels)</p>
+      </li>
+      <li>
+        <p>Retail electricity rate structure from the electricity service provider*</p>
+      </li>
+      <li>
+        <p>Time series (hourly or subhourly) electricity usage data or monthly total usage data*</p>
+      </li>
+    </ul>
+    <p>*SAM provides tools for downloading electricity rate and synthetic time series usage data if you don't have access to the data.</p>
+    <h5 id="optional-information">Optional Information</h5>
+    <p>If you are running SAM simulations to calculate metrics like the net present value (NPV) or payback period, you will need to provide the following information in addition to the required information listed above. The following optional information is not used by the Solar for All macro.</p>
+    <ul>
+      <li>
+        <p>Project installation and operating costs.</p>
+      </li>
+      <li>
+        <p>Financial parameters (taxes, debt, incentives)</p>
+      </li>
+    </ul>
+    <h5 id="instructions-1">Instructions</h5>
+    <p>These are the basic steps to use the Solar for All macro. For more detailed instructions and a demonstration video, see [<em><strong>link to webpage</strong></em>].</p>
+    <ol>
+      <li>
+        <p>On the Location and Resource input page, download a default TMY file by typing a street address or location name in the box under "Download Weather Files" and click <strong>Download and add to library</strong>.</p>
+      </li>
+      <li>
+        <p>On the System Design page, enter values for <strong>System nameplate capacity</strong>, <strong>Tilt</strong>, and <strong>Azimuth</strong>. If you are modeling a ground-mounted PV array or a roof-mounted array that allows air to flow beneath the modules System Design, choose "Fixed open rack" for <strong>Array type</strong>.</p>
+      </li>
+      <li>
+        <p>On the Electricity Rates page, click <strong>Search for rates</strong> and download the appropriate rate structure.</p>
+      </li>
+      <li>
+        <p>On the Electric Load page either a) import time series usage data or b) download synthetic data and scale monthly totals to match your monthly usage data.</p>
+        <ol type="a">
+          <li>
+            <p>To upload time series usage data, click <strong>Edit array</strong>, then click <strong>Import</strong> to import time series usage data from a CSV or text file</p>
+          </li>
+          <li>
+            <p>To download synthetic usage data, click <strong>Download Electric Load Data</strong>, then check <strong>Scale electric load profile to monthly usage</strong> to activate the Edit Values button and click <strong>Edit values</strong> and type monthly usage data.</p>
+          </li>
+        </ol>
+      </li>
+      <li>
+        <p>On the File menu, click <strong>Save</strong> to save your data to a .sam file.</p>
+      </li>
+      <li>
+        <p>Click <strong>Run</strong> at the top of this window to run the macro. When the macro finishes, it will display open a new window displaying blended rate and bill savings percentage results and export the results to a CSV files with the name "[case name]-solar-for-all-calculator-results.csv" in the same folder as your .sam file.</p>
+      </li>
+      <li>
+        <p>Review the blended rate and savings percentage values calculated by the macro, revise inputs, and rerun the macro until you are satisfied with the results.</p>
+      </li>
+    </ol>
 @*/
 
 // functions /////
@@ -107,7 +185,7 @@ outln();
 
 str_html = 
 '<html><body>' + 
-'<h3><font size = "4">Solar for All Blended Rates</font></h3>' + 
+'<h5><font size = "4">Solar for All Blended Rates</font></h5>' + 
 '<table bgcolor=#dddddd width=100%>' + 
 '<tr><th>Rate</th><th>Value</th></tr>' + 
 '<tr bgcolor=#ffffff><td>Blended buy rate</td><td align="center">' + sprintf('$%.3f/kWh load (year 1)',blended_buy.value) + '</td></tr>' +             
