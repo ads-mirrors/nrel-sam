@@ -1,37 +1,46 @@
 /*@
-    <p>The Solar for All calculator is a script that you can use to estimates the reduction in electricity bills for residents when a photovoltaic (PV) system is installed on a residential or multi-family building. The macro calculates retail blended electricity rates and a bill savings percentage. Although this macro is designed for PVWatts/Residential configurations, it should work for any configuration with the Residential or Commercial financial model.</p>
+    <p>The Solar for All Calculator macro calculates the <strong>Annual Baseline Utility Costs</strong> and <strong>Solar Generation Compensation Rate</strong> as described in the <em>U.S. Environmental Protection Agency Solar for All Household Savings Best Practices</em> handbook. You can use these values to calculate the Household Savings Percent Savings Provided.</p>
     <p>For more detailed information and instructions, see [<em><strong>link to webpage</strong></em>].</p>
+    <p>
+      <em>THIS IS A DRAFT VERSION FOR DEMONSTRATION PURPOSES ONLY</em>
+    </p>
     <h5 id="overall-steps">Overall Steps</h5>
     <ol>
       <li>
-        <p>Create a PVWatts/Residential case with inputs for the system design, costs, and financial parameters.</p>
+        Specify inputs on the following input pages. Inputs on other pages can be ignored.
+		<ul>
+		<li>Location and Resource</li>
+		<li>System Design</li>
+		<li>Electricity Rates</li>
+		<li>ELectric Load</li>
+		</ul>
       </li>
       <li>
-        <p>Run the macro.</p>
+        Run the macro.
       </li>
       <li>
-        <p>Analyze the results.</p>
+        Analyze the results.
       </li>
       <li>
-        <p>Modify the inputs and repeat Steps 2 and 3 until you are satisfied with the results.</p>
+        Modify the inputs and repeat Steps 2 and 3 until you are satisfied with the results.
       </li>
     </ol>
     <h5 id="required-information">Required Information</h5>
     <ul>
       <li>
-        <p>Location of the PV system as a street address or latitude/longitude pair</p>
+        Location of the PV system as a street address or latitude/longitude pair
       </li>
       <li>
-        <p>Size of the PV system</p>
+        Size of the PV system
       </li>
       <li>
-        <p>Orientation (tilt and azimuth angles) of PV modules (panels)</p>
+        Orientation (tilt and azimuth angles) of PV modules (panels)
       </li>
       <li>
-        <p>Retail electricity rate structure from the electricity service provider*</p>
+        Retail electricity rate structure from the electricity service provider*
       </li>
       <li>
-        <p>Time series (hourly or subhourly) electricity usage data or monthly total usage data*</p>
+        Time series (hourly or subhourly) electricity usage data or monthly total usage data*
       </li>
     </ul>
     <p>*SAM provides tools for downloading electricity rate and synthetic time series usage data if you don't have access to the data.</p>
@@ -39,103 +48,67 @@
     <p>If you are running SAM simulations to calculate metrics like the net present value (NPV) or payback period, you will need to provide the following information in addition to the required information listed above. The following optional information is not used by the Solar for All macro.</p>
     <ul>
       <li>
-        <p>Project installation and operating costs.</p>
+        Project installation and operating costs.
       </li>
       <li>
-        <p>Financial parameters (taxes, debt, incentives)</p>
+        Financial parameters (taxes, debt, incentives)
       </li>
     </ul>
-    <h5 id="instructions-1">Instructions</h5>
+    <h5 id="instructions">Instructions</h5>
     <p>These are the basic steps to use the Solar for All macro. For more detailed instructions and a demonstration video, see [<em><strong>link to webpage</strong></em>].</p>
     <ol>
       <li>
-        <p>On the Location and Resource input page, download a default TMY file by typing a street address or location name in the box under "Download Weather Files" and click <strong>Download and add to library</strong>.</p>
+        On the Location and Resource input page, download a default TMY file by typing a street address or location name in the box under "Download Weather Files" and click <strong>Download and add to library</strong>.
       </li>
       <li>
-        <p>On the System Design page, enter values for <strong>System nameplate capacity</strong>, <strong>Tilt</strong>, and <strong>Azimuth</strong>. If you are modeling a ground-mounted PV array or a roof-mounted array that allows air to flow beneath the modules System Design, choose "Fixed open rack" for <strong>Array type</strong>.</p>
+        On the System Design page, enter values for <strong>System nameplate capacity</strong>, <strong>Tilt</strong>, and <strong>Azimuth</strong>. If you are modeling a ground-mounted PV array or a roof-mounted array that allows air to flow beneath the modules System Design, choose "Fixed open rack" for <strong>Array type</strong>.
       </li>
       <li>
-        <p>On the Electricity Rates page, click <strong>Search for rates</strong> and download the appropriate rate structure.</p>
+        On the Electricity Rates page, click <strong>Search for rates</strong> and download the appropriate rate structure.
       </li>
       <li>
-        <p>On the Electric Load page either a) import time series usage data or b) download synthetic data and scale monthly totals to match your monthly usage data.</p>
-        <ol type="a">
+        On the Electric Load page either a) import time series usage data or b) download synthetic data and scale monthly totals to match your monthly usage data.
+        <ul>
           <li>
-            <p>To upload time series usage data, click <strong>Edit array</strong>, then click <strong>Import</strong> to import time series usage data from a CSV or text file</p>
+            To upload time series usage data from a file, click <strong>Edit array</strong>, then click <strong>Import</strong> to import time series usage data from a CSV or text file.
           </li>
           <li>
-            <p>To download synthetic usage data, click <strong>Download Electric Load Data</strong>, then check <strong>Scale electric load profile to monthly usage</strong> to activate the Edit Values button and click <strong>Edit values</strong> and type monthly usage data.</p>
+            To download synthetic usage data from the OpenEI "Commercial and Residential Hourly Load Profiles for all TMY3 Locations in the United States" dataset, click <strong>Download Electric Load Data</strong>, then check <strong>Scale electric load profile to monthly usage</strong> to activate the Edit Values button and click <strong>Edit values</strong> and type monthly usage data.
           </li>
-        </ol>
+        </ul>
       </li>
       <li>
-        <p>On the File menu, click <strong>Save</strong> to save your data to a .sam file.</p>
+        On the File menu, click <strong>Save</strong> to save your data to a .sam file.
       </li>
       <li>
-        <p>Click <strong>Run</strong> at the top of this window to run the macro. When the macro finishes, it will display open a new window displaying blended rate and bill savings percentage results and export the results to a CSV files with the name "[case name]-solar-for-all-calculator-results.csv" in the same folder as your .sam file.</p>
+        Click <strong>Run</strong> at the top of this window to run the macro. When the macro finishes, it will display open a new window displaying blended rate and bill savings percentage results and export the results to a CSV files with the name "[case name]-solar-for-all-calculator-results.csv" in the same folder as your .sam file.
       </li>
       <li>
-        <p>Review the blended rate and savings percentage values calculated by the macro, revise inputs, and rerun the macro until you are satisfied with the results.</p>
+        Review the blended rate and savings percentage values calculated by the macro, revise inputs, and rerun the macro until you are satisfied with the results.
       </li>
     </ol>
 @*/
 
-// functions /////
-
-function blended_buy_rate( bill_wo_system, usage_wo_system ) {
-	T = { 'value' = null, 'status' = '' };
-	if ( usage_wo_system == 0 ) {
-		T.value = null;
-		T.status = 'divide by zero (usage)';
-	}
-	else {
-		T.value = bill_wo_system / usage_wo_system;
-		T.status = 'ok';
-	}
-	return T;
-}
-
-function blended_sell_rate( bill_savings, power_generated ) {
-	T = { 'value' = null, 'status' = '' };
-	if ( power_generated == 0 ) {
-		T.value = null;
-		T.status = 'divide by zero (generation)';
-	}
-	else {
-		T.value = bill_savings / power_generated;
-		T.status = 'ok';
-	}
-	return T;
-}
-
-function bill_savings_percentage( bill_wo_system, bill_w_system ) {
-	T = { 'value' = null, 'status' = '' };
-	if ( bill_w_system == 0 ) {
-		T.value = null;
-		T.status = 'divide by zero (bill with system)';
-	}
-	else {
-		T.value = (( bill_wo_system - bill_w_system ) / bill_wo_system ) * 100;
-		T.status = 'ok';
-	}
-	return T;
-}
-
-// main /////
-
 // check for valid configuration only PVWatts/Residential is supported
 config = configuration();
 
-tech = config[0];
+fin = config[1];
 
-if ( tech != 'PVWatts' ) {
+ok = false;
+if ( fin == 'Commercial' || fin == 'Residential' ) {
+	ok = true;
+}
+	
+if (!ok) {
 	msgbox('Note!\n' +
-	       'This macro was designed for PVWatts configurations. It should work for other performance models,\n'+
-	       'but please contact sam.support@nrel.gov if you encounter problems with the macro.');
+	       'This macro requires a case with the Residential or Commercial financial model.\n' +
+	       'The financial model for this case is: ' + fin + '\n' + 
+	       'Exiting macro.');
+	exit;
 }
 
 // run simulation
-outln('Running simulations...');
+out('Running simulation...');
 sim_msg = '';
 ok = simulate(sim_msg, true);
 if (!ok) {
@@ -145,64 +118,86 @@ if (!ok) {
 	outln('Exiting script.');
 	exit;
 }
-outln('Done.');
+outln('done.');
 outln();
 
-// get outputs
+// Annual Baseline Utility Cost ABUC
+//  = bill without system (year 1)
+ABUC = get('utility_bill_wo_sys_year1'); // $/yr
 
+// ABUC rate
+abuc_rate = ABUC / get('year1_electric_load'); // $/kWh year 1
 
-// calculate rates
-
-blended_buy = blended_buy_rate(get('utility_bill_wo_sys_year1'), get('year1_electric_load'));
-if ( blended_buy.status != 'ok' ) {
-	outln('Blended buy rate calculation failed: ' + blended_buy.status);
+// Solar Generation Compensation Rate SGCR
+A = get('savings_year1'); // $
+B = get('annual_energy'); // kWh year 1
+if ( B == 0 ) {
+	outln('Annual energy is zero. Cannot calculate SGCR due to divide by zero error. Exiting script.');
 	exit;
 }
+SGCR = A/B; // $/kWh generation year 1
 
-blended_sell = blended_sell_rate(get('savings_year1'), get('annual_energy'));
-if ( blended_sell.status != 'ok' ) {
-	outln('Blended sell rate calculation failed: ' + blended_sell.status);
-	exit;
+// Bill savings
+A = get('utility_bill_wo_sys_year1'); // $
+B = get('utility_bill_w_sys_year1'); // $
+if ( A == 0 ) {
+	outln('Utility bill with system for year 1 is zero. Cannot calculate savings due to divide by zero error.');
 }
-
-savings_percent = bill_savings_percentage(get('utility_bill_wo_sys_year1'), get('utility_bill_w_sys_year1'));
-if ( savings_percent.status != 'ok' ) {
-	outln('Savings calculation failed: ' + savings_percent.status);
-	exit;
+else
+{
+	bill_savings = ( A - B ) / A * 100; // %
 }
 
 // console output
 
-str_blended_buy = sprintf('Blended buy rate = $%.3f/kWh load (year 1)', blended_buy.value);
-str_blended_sell = sprintf('Blended sell rate = $%.3f/kWh generated (year 1)', blended_sell.value);
-str_savings_percent = sprintf('Bill savings = %.3f%% (year 1)', savings_percent.value);
-outln(str_blended_buy);
-outln(str_blended_sell);
-outln(str_savings_percent);
+label_abuc = 'Annual Baseline Utility Cost (ABUC)';
+label_load_year1 = 'Household consumption';
+label_abuc_rate = 'ABUC rate';
+label_sgcr = 'Solar Generation Compensation Rate (SGCR)';
+label_savings_year1 = 'Electricity bill savings amount';
+label_gen_year1 = 'Electricity generation';
+
+str_abuc = sprintf('$%.0f (year 1)', ABUC);
+str_load_year1 = sprintf('%.0f kWh consumed (year 1)', get('year1_electric_load'));
+str_abuc_rate = sprintf('$%.3f/kWh consumed (year 1)', abuc_rate);
+str_sgcr = sprintf('$%.3f/kWh generated (year 1)', SGCR);
+str_savings_year1 = sprintf('%.0f kWh consumed (year 1)', A);
+str_gen_year1 = sprintf('%.0f kWh generated (year 1)', B);
+
+outln(label_abuc + ' = ' + str_abuc);
+outln(label_load_year1 + ' = ' + str_load_year1);
+outln(label_abuc_rate + ' = ' + str_abuc_rate);
+outln(label_sgcr + ' = ' + str_sgcr);
+outln(label_savings_year1 + ' = ' + str_savings_year1);
+outln(label_gen_year1 + ' = ' + str_gen_year1);
 outln();
 
 // html output
 
 str_html = 
 '<html><body>' + 
-'<h5><font size = "4">Solar for All Blended Rates</font></h5>' + 
+'<h5><font size = "4">Solar for All Metrics</font></h5>' + 
 '<table bgcolor=#dddddd width=100%>' + 
 '<tr><th>Rate</th><th>Value</th></tr>' + 
-'<tr bgcolor=#ffffff><td>Blended buy rate</td><td align="center">' + sprintf('$%.3f/kWh load (year 1)',blended_buy.value) + '</td></tr>' +             
-'<tr><td>Blended sell rate</b></td><td align="center">' + sprintf('$%.3f/kWh generated (year 1)',blended_sell.value) + '</td></tr>' +             
-'<tr bgcolor=#ffffff><td>Bill savings</td><td align="center">' + sprintf('$%.1f%% (year 1)',savings_percent.value) + '</td></tr>' +             
+'<tr bgcolor=#ffffff><td>' + label_abuc + '</td><td align="center">' + str_abuc + '</td></tr>' +             
+'<tr><td>'+ label_abuc_rate + '</b></td><td align="center">' + str_abuc_rate + '</td></tr>' +             
+'<tr bgcolor=#ffffff><td>'+ label_sgcr + '</b></td><td align="center">' + str_sgcr + '</td></tr>' +             
+'<tr><td>' + label_bill_savings + '</td><td align="center">' + str_bill_savings + '</td></tr>' +             
 '</table>' +
 '</body></html>';
 
-html_dialog( str_html, 'Solar for All Calculator Results', [200,200,600,200] );
+html_dialog( str_html, 'Solar for All Calculator Results', [200,200,600,225] );
 
 // csv output
 
 str_csv = 
 'variable,value,units\n' +
-'blended buy rate' + ',' + to_string(blended_buy.value) + ',' + '$/kWh of load in year 1' + '\n' +
-'blended sell rate' +',' + to_string(blended_sell.value) + ',' + '$/kWh of generation in year 1' + '\n' +
-'bill savings' + ',' + to_string(savings_percent.value) + ',' + '% of annual bill in year 1';
+label_abuc + ',' + to_string(ABUC) + ',' + '$/kWh of electricity consumed in year 1' + '\n' +
+label_abuc_rate + ',' + to_string(abuc_rate) + ',' + '$/kWh of electricity consumed in year 1' + '\n' +
+label_sgcr +',' + to_string(SGCR) + ',' + '$/kWh of electricity generated in year 1' + '\n' +
+label_bill_savings + ',' + to_string(bill_savings) + ',' + '% of annual bill in year 1';
+
+outln(str_csv);
 
 // if running from .sam file that has not been saved, choose folder to save .csv
 if ( project_file() == '' ) {
