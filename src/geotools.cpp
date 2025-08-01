@@ -68,7 +68,7 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
     bool is_numeric = true;
 
     std::locale loc{ "" };
-    char decimal_symbol = std::use_facet< std::numpunct<char> >(loc).decimal_point();
+    wchar_t decimal_symbol = std::use_facet< std::numpunct<wchar_t> >(loc).decimal_point();
 
     /*
     for (int i = 0; i < str.Length(); i++) {
@@ -164,7 +164,7 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
 {
 
     std::locale loc{ "" };
-    char decimal_symbol = std::use_facet< std::numpunct<char> >(loc).decimal_point();
+    wchar_t decimal_symbol = std::use_facet< std::numpunct<wchar_t> >(loc).decimal_point();
 
     wxString str = coord.Lower();
     str.Replace("north", "n");
@@ -172,7 +172,7 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
     str.Replace("east", "e");
     str.Replace("west", "w");
 
-    char c_prev = ' ';
+    wchar_t c_prev = ' ';
     int n = 0;
     std::string num = "";
     int sign = 1;
@@ -397,6 +397,8 @@ bool GeoTools::TimeZoneBing(const double* lat, const double* lon, double* tz, bo
         }
     }
 
+    return success;
+
 }
 
 // Geocode using NREL Developer API (MapQuest) for NREL builds of SAM
@@ -486,8 +488,8 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
     }
 
-	// if geocode was successful, get timezone
-    if (success) {
+	// if geocode was successful and tz , get timezone
+    if (success && tz!=0) {
         success = GeoTools::TimeZoneBing(lat, lon, tz, showprogress);
     }
 
