@@ -66,7 +66,7 @@ public:
 	static bool coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& lon);
 
     enum MapProvider {
-        GOOGLE_MAPS, BING_MAPS
+        GOOGLE_MAPS, AZURE_MAPS
     };
 
     // Return a map for a given lat/lon and zoom level as a bitmap image
