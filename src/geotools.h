@@ -39,10 +39,6 @@ class GeoTools
 {
 public:
 
-	// Use Bing Maps API to return time zone from lat/lon
-	// Required when using NREL Developer API for geocoding that only returns lat/lon
-    static bool GeoTools::TimeZoneBing(const double* lat, const double* lon, double* tz, bool showprogress);
-
     // Use Google Geocoding API to return lat/lon from address
     // Requires a Google Cloud Project account with billing enabled
     // This is an alternative to GeocodeDeveloper for non-NREL builds of SAM

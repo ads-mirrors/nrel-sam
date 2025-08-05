@@ -55,20 +55,18 @@ static wxString MyGet(const wxString& url)
 
 bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& lon) {
 
-    wxString str = coord.Lower();
+    wxString err, str;
+    int n, i, x;
+
+    bool is_numeric = true;
+    std::locale loc{ "" };
+    wchar_t decimal_symbol = std::use_facet< std::numpunct<wchar_t> >(loc).decimal_point();
+
+    str = coord.Lower();
     str.Replace("north", "n");
     str.Replace("south", "s");
     str.Replace("east", "e");
     str.Replace("west", "w");
-
-    wxString err = "";
-
-    int x = -1;
-    int n = 0;
-    bool is_numeric = true;
-
-    std::locale loc{ "" };
-    wchar_t decimal_symbol = std::use_facet< std::numpunct<wchar_t> >(loc).decimal_point();
 
     /*
     for (int i = 0; i < str.Length(); i++) {
@@ -77,7 +75,9 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
             n++;
 		}
 	}*/
-    int i = 0;
+    i = 0;
+    n = 0;
+    x = -1;
     for (wxString::const_iterator it = str.begin(); it != str.end(); ++it) {
         wxUniChar c = *it;
         if (wxIsalpha(c) && c!=decimal_symbol) {
@@ -90,7 +90,8 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
         i++;
     }
 
-	if (x == -1) {
+    err = "";
+	if (x == -1) { // cpg TO DO how would x ever be -1?
         if (is_numeric) {
             wxStringTokenizer tk(str, ',');
             //wxArrayString arr = wxSplit(str, ',');
@@ -331,98 +332,106 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
 }
 
 // Geocode using NREL Developer API (MapQuest) for NREL builds of SAM
+// submit address and no lat/lon to get lat/lon and optional time zone
+// submit no address and lat/lon to get time zone
 bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
     wxBusyCursor _curs;
 
     bool success = false;
 
-    wxString plusaddr = address;
-    plusaddr.Replace(", ", "+");
-    plusaddr.Replace(",", "+");
-    plusaddr.Replace("   ", " ");
-    plusaddr.Replace("  ", " ");
-    plusaddr.Replace(" ", "+");
+    if (!address.IsEmpty()) {
 
-	wxString url = ""; 
-	wxString webapi_string = SamApp::WebApi("nrel_geocode_api");
+        wxString plusaddr, url, webapi_string, str;
+        plusaddr = url = webapi_string, str = "";
+        wxEasyCurl curl;
+        wxBusyCursor curs;
+        rapidjson::GenericDocument < rapidjson::UTF16<> > reader; // change from UTF8 to UTF16 encoding to address unicode characters per SAM issue 1848
+        rapidjson::ParseResult ok;
 
-    if (webapi_string == "debug-mock-api")
-        url = address;
-    else {
-        url = SamApp::WebApi("nrel_geocode_api") + "&location=" + plusaddr;
-        url.Replace("<GEOCODEAPIKEY>", wxString(geocode_api_key));
-    }
+        plusaddr = address;
+        plusaddr.Replace(", ", "+");
+        plusaddr.Replace(",", "+");
+        plusaddr.Replace("   ", " ");
+        plusaddr.Replace("  ", " ");
+        plusaddr.Replace(" ", "+");
 
-    wxEasyCurl curl;
-    wxBusyCursor curs;
-    
-    // SAM issue 1968 
-    curl.AddHttpHeader("Content-Type: application/json");
-    curl.AddHttpHeader("Accept: application/json");
+       webapi_string = SamApp::WebApi("nrel_geocode_api");
 
-    if (showprogress) {
-        if (!curl.Get(url, "Geocoding address '" + address + "'..."))
-            return false;
-    }
-    else {
-        if (!curl.Get(url))
-            return false;
-    }
- 
-    // change from UTF8 to UTF16 encoding to address unicode characters per SAM issue 1848
-    rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
-    wxString str = curl.GetDataAsString();
+        if (webapi_string == "debug-mock-api")
+            url = address;
+        else {
+            url = SamApp::WebApi("nrel_geocode_api") + "&location=" + plusaddr;
+            url.Replace("<GEOCODEAPIKEY>", wxString(geocode_api_key));
+        }
 
-    rapidjson::ParseResult ok = reader.Parse(str.c_str());
+        // SAM issue 1968 
+        curl.AddHttpHeader("Content-Type: application/json");
+        curl.AddHttpHeader("Accept: application/json");
 
-    if (!reader.HasParseError()) {
-        if (reader.HasMember(L"results")) {
-            if (reader[L"results"].IsArray()) {
-                if (reader[L"results"][0].HasMember(L"locations")) {
-                    if (reader[L"results"][0][L"locations"].IsArray()) {
-                        if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
-                            if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
-                                if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
-                                    *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
-                                    if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
-                                        if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
-                                            *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
-                                            success = true; // only if lat and lon are numbers
+        if (showprogress) {
+            if (!curl.Get(url, "Geocoding address '" + address + "'..."))
+                return false;
+        }
+        else {
+            if (!curl.Get(url))
+                return false;
+        }
+
+        str = curl.GetDataAsString();
+        ok = reader.Parse(str.c_str());
+        if (!reader.HasParseError()) {
+            if (reader.HasMember(L"results")) {
+                if (reader[L"results"].IsArray()) {
+                    if (reader[L"results"][0].HasMember(L"locations")) {
+                        if (reader[L"results"][0][L"locations"].IsArray()) {
+                            if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
+                                if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
+                                    if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
+                                        *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
+                                        if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
+                                            if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
+                                                *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
+                                                success = true; // only if lat and lon are numbers
+                                            }
                                         }
-                                    }
 
+                                    }
                                 }
                             }
-                         }
+                        }
+                    }
+                }
+            }
+            // check status code
+            success = false;//overrides success of retrieving data
+
+            // cpg to do check this
+            if (reader.HasMember(L"info")) {
+                if (reader[L"info"].HasMember(L"statuscode")) {
+                    if (reader[L"info"][L"statuscode"].IsInt()) {
+                        success = reader[L"info"][L"statuscode"].GetInt() == 0;
                     }
                 }
             }
         }
-        // check status code
-        success = false;//overrides success of retrieving data
-
-        // cpg to do check this
-        if (reader.HasMember(L"info")) {
-            if (reader[L"info"].HasMember(L"statuscode")) {
-                if (reader[L"info"][L"statuscode"].IsInt()) {
-                    success = reader[L"info"][L"statuscode"].GetInt() == 0;
-                }
-            }
+        else {
+            wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
         }
-    }
-    else {
-        wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
-    }
 
-    if (!success)
-        return false;
+        if (!success)
+            return false;
+    }
 
     // time zone is optional
-    if (tz != 0) 
+    // lat/lon may have been geocoded above or passed in as arguments
+    if (tz != 0) // tz=0 if not passed as parameter
     {
         success = false;
 
-        curl = wxEasyCurl();
+        wxString url, str;
+        url = str = "";
+        wxEasyCurl curl = wxEasyCurl();
+        rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
 
         // azure maps time zone api
         url = SamApp::WebApi("azure_maps_timezone_api");
@@ -440,9 +449,7 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         }
 
         str = curl.GetDataAsString();
-
         reader.Parse(str.c_str());
-
         if (reader.HasMember(L"error")) {
             if (reader[L"error"].HasMember(L"code")) {
                 if (reader[L"error"][L"code"].IsString()) {

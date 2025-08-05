@@ -3827,32 +3827,52 @@ static bool copy_mat(lk::invoke_t &cxt, wxString sched_name, matrix_t<double> &m
 
 void fcall_geocode(lk::invoke_t& cxt)
 {
-	LK_DOC("geocode",
+  	LK_DOC("geocode",
 		"Given a street address or location name, returns latitude, longitude. Returns optional time zone if get_tz is true. Not designed to take latitude and longitude as input. Uses the MapQuest Geocoding API via a private NREL wrapper. Returned table fields are 'lat', 'lon', 'tz', 'ok'.",
 		"(string:location, [boolean:get_tz]):table");
 
+	double lat, lon, tz;
+	lat = lon = tz = std::numeric_limits<double>::quiet_NaN();
+	bool ok, is_address;
+	ok = is_address = false;
 	wxString err = "";
+
+	cxt.result().empty_hash();
 
 	// if input string contains any non-numeric characters other than n/s/e/w, assume it is an address for geocoding
 	lk_string str = cxt.arg(0).as_string();
-	wxString address = wxString::FromUTF8(str);
+ 	wxString address;
+		
+	address = wxString::FromUTF8(str);
+	
+	if (address.IsEmpty()) { // string contains invalid UTF-8 characters
+		cxt.result().hash_item("lat").assign(lat);
+		cxt.result().hash_item("lon").assign(lon);
+		cxt.result().hash_item("tz").assign(tz);
+		cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
+		err = wxString::Format("Location name \"%s\" contains invalid characters.", str);
+	}
+	else { // string is valid
+		address = address.Lower();
+		address.Replace("north", "n");
+		address.Replace("south", "s");
+		address.Replace("east", "e");
+		address.Replace("west", "w");
 
-	address = address.Lower();
-	address.Replace("north", "n");
-	address.Replace("south", "s");
-	address.Replace("east", "e");
-	address.Replace("west", "w");
-
-	bool is_address = false;
-
-	for (wxString::const_iterator it = address.begin(); it != address.end(); ++it) {
-		wxUniChar c = *it;
-		if (!wxIsdigit(c) && wxIsalpha(c)) {
-			if (c != 'n' && c != 's' && c != 'e' && c != 'w') {
-				is_address = true;
+		// determine whether address is lat/lon pair
+		wxUniChar c;
+		bool d, a;
+		for (wxString::const_iterator it = address.begin(); it != address.end(); ++it) {
+			c = *it;
+			d = wxIsdigit(c);
+			a = wxIsalpha(c);
+			if (!d && a) {
+				if (c != 'n' && c != 's' && c != 'e' && c != 'w') {
+					is_address = true;
+				}
 			}
-		}
 
+		}
 	}
 
 	bool get_tz = false;
@@ -3860,13 +3880,7 @@ void fcall_geocode(lk::invoke_t& cxt)
 		get_tz = cxt.arg(1).as_boolean();
 	}
 
-	double lat = std::numeric_limits<double>::quiet_NaN();
-	double lon = std::numeric_limits<double>::quiet_NaN();
-	double tz = std::numeric_limits<double>::quiet_NaN();
-	bool ok = false;
-
 	// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
-	cxt.result().empty_hash();
 	if (is_address) {
 		if (get_tz) {
 			ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
@@ -3879,18 +3893,24 @@ void fcall_geocode(lk::invoke_t& cxt)
 			err = wxString::Format("Call to geocoding API failed for address: %s", address);
 		}
 	}
-	else { // assume input string is lat/lon pair and try to parse
+	else if (!address.IsEmpty()) { // if address is assume input string is lat/lon pair and try to parse
 		wxString coordinates = cxt.arg(0).as_string();
 		wxString lat_str, lon_str;
 		ok = GeoTools::coordinates_to_lat_lon(coordinates, lat_str, lon_str);
 		if (ok) {
-			double lat_d = 0, lat_m = 0, lat_s = 0; // degree, minute, seconds
-			double lon_d = 0, lon_m = 0, lon_s = 0; 
+			// cpg TO DO this works, but unneccessarily parses coordinates when they are already in lat/lon DD format like 45.5,-122
+			// degree, minute, seconds
+			double lat_d, lat_m, lat_s;
+			lat_d = lat_m = lat_s = std::numeric_limits<double>::quiet_NaN();
+			double lon_d, lon_m, lon_s; 
+			lon_d = lon_m = lon_s = std::numeric_limits<double>::quiet_NaN();
 			ok = GeoTools::coordinate_to_dms(lat_str, &lat_d, &lat_m, &lat_s) && GeoTools::coordinate_to_dms(lon_str, &lon_d, &lon_m, &lon_s);
 			if (ok) {
 				ok = GeoTools::dms_to_dd(lat_d, lat_m, lat_s, &lat) && GeoTools::dms_to_dd(lon_d, lon_m, lon_s, &lon);
-				if (ok) {
-					ok = GeoTools::TimeZoneBing(&lat, &lon, &tz, true);
+				if (ok && get_tz) {
+					// cpg TO DO passing "" as first argument is when we only need tz, consider separate GeoTools::GetTimeZone() function?
+					//ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
+					ok = GeoTools::GeocodeDeveloper("", &lat, &lon, &tz);
 					if (!ok) {
 						err = wxString::Format("Timezone not found for: (%g, %g)", lat, lon);
 					}
