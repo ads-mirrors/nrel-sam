@@ -74,7 +74,9 @@ set('subscriber1_bill_credit_rate', x );
 
 exitIf(leasepayment == '');
 x[0] = to_real(leasepayment);
-set('subscriber1_payment_annual', x );
+// 7/2/2025-lease payment is cost to project and changed to fixed_om 
+//set('subscriber1_payment_annual', x );
+set('om_fixed', x );
 
 exitIf(communitybenefitspayments == '');
 x[0] = to_real(communitybenefitspayments);
@@ -108,12 +110,17 @@ fixedcommunitybenefitspayments = to_real(communitybenefitspayments);
 fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 
 varbenefits = ['Energy savings to subscriber','Lease payments to owner','Community benefits payments','Job training'];
-varcf = ["cf_subscriber1_bill_credit_amount","cf_community_solar_subscriber1_revenue","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
+// 7/2/2025 meeting Lease payment to owner is cf_om_fixed
+//varcf = ["cf_subscriber1_bill_credit_amount","cf_community_solar_subscriber1_revenue","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
+varcf = ["cf_subscriber1_bill_credit_amount","cf_om_fixed_expense","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
 varmultiplier = [1.0,1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
 str_html = '<table bgcolor=#dddddd width=100%>';
 ap = round(to_real(get('analysis_period')));
 
-str_html += '<tr><th>year</th>';
+//str_html += '<tr><th>year</th>';
+str_html += '<tr><th>Benefit</th>';
+// Total added based on 7/2/2025 meeting
+str_html += '<th>Total</th>';
 for (i=0;i<=ap;i++)
 {
 	str_html +=  '<th>' + sprintf("%d",i) + '</th>';
@@ -124,6 +131,9 @@ for (i=0;i<#varcf;i++)
 {
 	str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + '</td>';
 	cfline = get(varcf[i]);
+	// add sum per 7/2/2025 meeting
+	str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * sum(cfline))) + '</td>';
+	
 	for (j=0; j<#cfline; j++)
 	{
 		str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * cfline[j])) + '</td>';

@@ -611,19 +611,11 @@ extern "C"
 	 * Outputs Getters
 	 */
 
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_atb_drilling_cost_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_atb_exploration_cost_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_atb_plant_cost_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_baseline_cost_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_conf_drilling_cost_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_conf_total_cost_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_engineering_cost_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_expl_drilling_cost_nget(SAM_table ptr, SAM_error *err);
 
@@ -663,13 +655,7 @@ extern "C"
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_stim_cost_per_well_nget(SAM_table ptr, SAM_error *err);
 
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_stim_total_cost_nget(SAM_table ptr, SAM_error *err);
-
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_drilling_cost_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_drilling_permitting_nget(SAM_table ptr, SAM_error *err);
-
-	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_expl_permitting_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_Outputs_total_gathering_cost_nget(SAM_table ptr, SAM_error *err);
 
