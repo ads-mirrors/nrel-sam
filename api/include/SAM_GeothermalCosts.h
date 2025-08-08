@@ -144,6 +144,14 @@ extern "C"
 	SAM_EXPORT void SAM_GeothermalCosts_GeoHourly_geotherm_cost_conf_num_wells_nset(SAM_table ptr, double number, SAM_error *err);
 
 	/**
+	 * Set geotherm.cost.expl_lump_sum: Exploration cost lump sum
+	 * options: None
+	 * constraints: None
+	 * required if: calc_drill_costs=1
+	 */
+	SAM_EXPORT void SAM_GeothermalCosts_GeoHourly_geotherm_cost_expl_lump_sum_nset(SAM_table ptr, double number, SAM_error *err);
+
+	/**
 	 * Set geotherm.cost.expl_multiplier: Exploration cost multiplier
 	 * options: None
 	 * constraints: None
@@ -519,6 +527,8 @@ extern "C"
 	SAM_EXPORT double SAM_GeothermalCosts_GeoHourly_geotherm_cost_conf_non_drill_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_GeoHourly_geotherm_cost_conf_num_wells_nget(SAM_table ptr, SAM_error *err);
+
+	SAM_EXPORT double SAM_GeothermalCosts_GeoHourly_geotherm_cost_expl_lump_sum_nget(SAM_table ptr, SAM_error *err);
 
 	SAM_EXPORT double SAM_GeothermalCosts_GeoHourly_geotherm_cost_expl_multiplier_nget(SAM_table ptr, SAM_error *err);
 

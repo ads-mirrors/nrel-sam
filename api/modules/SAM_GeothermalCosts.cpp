@@ -98,6 +98,12 @@ SAM_EXPORT void SAM_GeothermalCosts_GeoHourly_geotherm_cost_conf_num_wells_nset(
 	});
 }
 
+SAM_EXPORT void SAM_GeothermalCosts_GeoHourly_geotherm_cost_expl_lump_sum_nset(SAM_table ptr, double number, SAM_error *err){
+	translateExceptions(err, [&]{
+		ssc_data_set_number(ptr, "geotherm.cost.expl_lump_sum", number);
+	});
+}
+
 SAM_EXPORT void SAM_GeothermalCosts_GeoHourly_geotherm_cost_expl_multiplier_nset(SAM_table ptr, double number, SAM_error *err){
 	translateExceptions(err, [&]{
 		ssc_data_set_number(ptr, "geotherm.cost.expl_multiplier", number);
@@ -478,6 +484,15 @@ SAM_EXPORT double SAM_GeothermalCosts_GeoHourly_geotherm_cost_conf_num_wells_nge
 	translateExceptions(err, [&]{
 	if (!ssc_data_get_number(ptr, "geotherm.cost.conf_num_wells", &result))
 		make_access_error("SAM_GeothermalCosts", "geotherm.cost.conf_num_wells");
+	});
+	return result;
+}
+
+SAM_EXPORT double SAM_GeothermalCosts_GeoHourly_geotherm_cost_expl_lump_sum_nget(SAM_table ptr, SAM_error *err){
+	double result;
+	translateExceptions(err, [&]{
+	if (!ssc_data_get_number(ptr, "geotherm.cost.expl_lump_sum", &result))
+		make_access_error("SAM_GeothermalCosts", "geotherm.cost.expl_lump_sum");
 	});
 	return result;
 }
