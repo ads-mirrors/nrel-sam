@@ -2255,11 +2255,16 @@ void SamReportScriptObject::Render( wxPageOutputDevice &dv )
 		env.register_funcs( lk::stdlib_math() );
 		env.register_funcs( lk::stdlib_wxui() );
 
-		wxStopWatch sw;
-		lk::eval e( tree, &env );
-		if ( !e.run() )
-			for (size_t i=0;i<e.error_count();i++)
-				errors += e.get_error(i) + "\n";
+		try {
+			wxStopWatch sw;
+			lk::eval e(tree, &env);
+			if (!e.run())
+				for (size_t i = 0; i < e.error_count(); i++)
+					errors += e.get_error(i) + "\n";
+		}
+		catch (std::exception e) {
+			wxMessageBox(e.what());
+		}
 	}
 			
 	int i=0;
