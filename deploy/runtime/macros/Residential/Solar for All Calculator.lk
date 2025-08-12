@@ -3,6 +3,17 @@
 <p>For detailed instructions and how-to videos, see [<em><strong>link to Box folder</strong></em>].</p>
 <p><em>THIS IS A DRAFT VERSION FOR DEMONSTRATION PURPOSES ONLY</em></p>
 
+<p>
+<table style="width: 100%; background-color: #f2f2f2; border: 30px 30px 30px 30px;">
+<tr><td style="padding: 15px;">
+If you are new to SAM, use the check boxes at right to help guide you through the macro:
+<ul>
+<li><strong>Create page notes</strong> creates permanent instructions on each input page that has inputs required to run the macro.</li>
+<li><strong>Highight inputs</strong> walks you through the input pages showing you where the inputs are.</li>
+</tr></td>
+</table>
+</p>
+
 <h5 id="overall-steps">Overall Steps</h5>
 
 <ol>
@@ -64,66 +75,84 @@
 //@ name=generate_pagenotes;type=checkbox;label=Create page notes;value=0*/
 //@ name=highlight_inputs;type=checkbox;label=Highlight inputs;value=0*/
 
-function highlight( widget_name ) {
+function highlight( widget_name, message ) {
 		g = widgetpos(widget_name);
 		transp(g, highlight_color, highlight_transparency);
-		g[1] = g[1] + 30;
-		msgbox('Click OK to continue.',g);
+		g[1] = g[1] + g[3]+5;
+		g[2] = 400;
+		msgbox( message + '\nClick OK or press Enter to continue.',g);
 }
 
 function highlight_inputs() {
-
-	generate_pagenotes();
 
 	highlight_color = 'yellow';
 	highlight_transparency = 70;
 	transp();
 
+	go = yesno( 'Highlight Inputs Instructions.\nIf you click Yes below, SAM will switch to each input page required to run the macro, highlight each minimum required input on the page, and show brief explanation of the input. It then runs and displays results based on the current inputs so you can see how the macro works.\n\nAfter the macro finishes, you can clear the Highlight Inputs check box and go back to those pages to enter the data for your project and rerun the macro.\n\nContinue?', [100,100,400,200]);
+	if (!go) {
+		outln('Exiting script');
+		exit;
+	}
+
 	ok = show_page('Location and Resource');
 	if (ok) {
-		highlight('in_location');
-		highlight('btn_download');
+		highlight('in_location', 'Type the project street address or city and state.');
+		highlight('btn_download', 'Click Download and Add to Library to download the weather file.');
 	}
 	else {
 		msgbox('Input page error!\nThis case does not have a Location and Resource page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
 	}
 	ok = show_page('System Design');
 	if (ok) {
-		highlight('system_capacity');
-		highlight('tilt');
-		highlight('azimuth');
-		highlight('array_type');
+		highlight('system_capacity', 'Type the system size in DC kilowatts.');
+		highlight('tilt', 'Type the array tilt angle from horizontal (20 is a typical value).');
+		highlight('azimuth', 'Type the array azimuth angle in degrees east of north. (180 is south-facing).');
+		highlight('array_type', 'For a ground- or roof-mounted array that allows air to flow beneath the array, choose Fixed Open Rack.');
 	}
 	else {
 		msgbox('Input page error!\nThis case does not have a System Design page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
 	}
 	ok = show_page('Electricity Rates');
 	if (ok) {
-		highlight('btnQueryOpenEI');
+		highlight('btnQueryOpenEI', 'Click Search for Rates to download electricity rate data for the project location. If data is not available, enter the rates for fixed, energy, and demand charges data by hand.');
+		highlight('ur_metering_option', 'Choose the correct option for compensation of excess generation. See Help for a detailed description of each option.');
+		highlight('ur_monthly_fixed_charge', 'Verify the fixed monthly charge value.');
+		// energy charge table requires special treatment
+		g = widgetpos('ur_ec_tou_mat');
+		g[2] = g[2]*0.66; // highlight width
+		g[3] = g[3]*0.33; // highlight height
+		transp(g, 'yellow', 70);
+		g[0] = g[0] + g[2]+5; // popup horizontal position (position to right of highlight)
+		g[1] = g[1] - g[3]*0.9; // popup vertical position (position above highlight to minimize risk of hiding popup)
+		g[2] = 400; // popup width
+		msgbox( 'Verify the rates for energy charges.\nIf your rate structure also includes demand charges, scroll to the bottom of the page and expand the Demand Charges panel to verify those values.' + '\n\nClick OK or press Enter to continue.',g);
 	}
 	else {
 		msgbox('Input page error!\nThis case does not have an Electricity Rates page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
 	}
 	ok = show_page('Electric Load');
 	if (ok) {
-		highlight('load_user_data');
-		highlight('normalize_to_utility_bill');
-		highlight('utility_bill_data');
+		highlight('load_user_data', 'Click Edit Array to import hourly load data.');
+		highlight('normalize_to_utility_bill', 'Check Scale Electric Load Profile to Monthly Usage if you have monthly total consumption data.');
+		highlight('utility_bill_data', 'Click Edit Values to enter the total consumption in kWh for each month.');
 	}
 	else {
 		msgbox('Input page error!\nThis case does not have an Electricity Rates page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
 	}
 	transp(); // clear highight
+	show_page('Macros');
 }
 
 function generate_pagenotes() {
+
 	ok = show_page('Location and Resource');
 	if (ok) {
 		pagenote('## Solar for All Macro Instructions ##\n\n' + 
 		'Location and Resource Page\n\n' + 
-		'1. Type the project street address or city and state in the box under Download Weather Files.\n' + 
-		'2. Click Download and Add to Library.\n' + 
-		'3. When the download finishes, review the data under Weather Data Information to verify the data.\n' +
+		'1. Type the project street address or city and state in the box under Download Weather Files.\n\n' + 
+		'2. Click Download and Add to Library.\n\n' + 
+		'3. When the download finishes, review the data under Weather Data Information to verify the data.\n\n' +
 		'4. Go to the System Design page.');
 
 	}
@@ -134,10 +163,10 @@ function generate_pagenotes() {
 	if (ok) {
 		pagenote('## Solar for All Macro Instructions ##\n\n' + 
 		'System Design Page\n\n' + 
-		'1. For System Nameplate Capacity, type the system size in DC kilowatts.\n' + 
-		'2. For Tilt, type the photovoltaic array tilt angle in degrees from horizontal (20 degrees is a typical value).\n' + 
-		'3. For Azimuth, type the photovoltaic array azimuth angle in degrees East of North (180 degrees, or facing south, is a typical value).\n' + 
-		'4. If you are modeling a ground-mounted or roof-mounted array that allows air to flow beneath the array, for Array Type, choose Fixed Open Rack.\n' + 
+		'1. For System Nameplate Capacity, type the system size in DC kilowatts.\n\n' + 
+		'2. For Tilt, type the photovoltaic array tilt angle in degrees from horizontal (20 degrees is a typical value).\n\n' + 
+		'3. For Azimuth, type the photovoltaic array azimuth angle in degrees East of North (180 degrees, or facing south, is a typical value).\n\n' + 
+		'4. If you are modeling a ground-mounted or roof-mounted array that allows air to flow beneath the array, for Array Type, choose Fixed Open Rack.\n\n' + 
 		'5. Go to the Electricity Rates page.');
 	}
 	else {
@@ -147,11 +176,11 @@ function generate_pagenotes() {
 	if (ok) {
 		pagenote('## Solar for All Macro Instructions ##\n\n' + 
 		'Electricity Rates Page\n\n' + 
-		'1. Click Search for Rates.\n' + 
-		'2. Type the project zip code and click Search by Zip Code, or if you know the name of the electric service provider, type a few letters of the provider name to filter the list.\n' + 
-		'3. Click the name of the electric service provider in the list, you should see a list of residential rates appear.\n' + 
-		'4. Choose the appropriate rate from the list.\n' + 
-		'  If the service provider or rate is not available, you will need to enter rate data manually from the appropriate rate sheet.\n' + 
+		'1. Click Search for Rates.\n\n' + 
+		'2. Type the project zip code and click Search by Zip Code, or if you know the name of the electric service provider, type a few letters of the provider name to filter the list.\n\n' + 
+		'3. Click the name of the electric service provider in the list, you should see a list of residential rates appear.\n\n' + 
+		'4. Choose the appropriate rate from the list.\n\n' + 
+		'  If the service provider or rate is not available, you will need to enter rate data manually from the appropriate rate sheet.\n\n' + 
 		'5. Go to the Electric Load page.');
 	}
 	else {
@@ -161,11 +190,11 @@ function generate_pagenotes() {
 	if (ok) {
 		pagenote('## Solar for All Macro Instructions ##\n\n' + 
 		'Electricity Load Page\n\n' + 
-		'1. Click Search for Rates.\n' + 
-		'2. Type the project zip code and click Search by Zip Code, or if you know the name of the electric service provider, type a few letters of the provider name to filter the list.\n' + 
-		'3. Click the name of the electric service provider in the list, you should see a list of residential rates appear.\n' + 
-		'4. Choose the appropriate rate from the list.\n' + 
-		'  If the service provider or rate is not available, you will need to enter rate data manually from the appropriate rate sheet.\n' + 
+		'1. Click Search for Rates.\n\n' + 
+		'2. Type the project zip code and click Search by Zip Code, or if you know the name of the electric service provider, type a few letters of the provider name to filter the list.\n\n' + 
+		'3. Click the name of the electric service provider in the list, you should see a list of residential rates appear.\n\n' + 
+		'4. Choose the appropriate rate from the list.\n\n' + 
+		'  If the service provider or rate is not available, you will need to enter rate data manually from the appropriate rate sheet.\n\n' + 
 		'5. Go to the Electric Load page.');
 	}
 	else {
@@ -191,13 +220,12 @@ if (!ok) {
 	exit;
 }
 
+if ( macro.highlight_inputs == true ) {
+	highlight_inputs();
+}
 
 if ( macro.generate_pagenotes == true ) {
 	generate_pagenotes();
-}
-
-if ( macro.highlight_inputs == true ) {
-	highlight_inputs();
 }
 
 // run simulation
