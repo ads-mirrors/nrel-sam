@@ -585,7 +585,8 @@ void fcall_show_page(lk::invoke_t &cxt)
 	wxString page_name = cxt.arg(0).as_string();
 	Case *active_case = CurrentCase();
 	if (CaseWindow *case_window = SamApp::Window()->GetCaseWindow(active_case))
-		cxt.result().assign((case_window->SwitchToPage(page_name) ? 1.0 : 0.0));
+		cxt.result().assign((case_window->SwitchToNavigationMenu(page_name) ? 1.0 : 0.0));
+//	cxt.result().assign((case_window->SwitchToPage(page_name) ? 1.0 : 0.0));
 	else cxt.error("no active case");
 }
 
