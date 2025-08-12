@@ -61,6 +61,118 @@
 
 @*/
 
+//@ name=generate_pagenotes;type=checkbox;label=Create page notes;value=0*/
+//@ name=highlight_inputs;type=checkbox;label=Highlight inputs;value=0*/
+
+function highlight( widget_name ) {
+		g = widgetpos(widget_name);
+		transp(g, highlight_color, highlight_transparency);
+		g[1] = g[1] + 30;
+		msgbox('Click OK to continue.',g);
+}
+
+function highlight_inputs() {
+
+	generate_pagenotes();
+
+	highlight_color = 'yellow';
+	highlight_transparency = 70;
+	transp();
+
+	ok = show_page('Location and Resource');
+	if (ok) {
+		highlight('in_location');
+		highlight('btn_download');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have a Location and Resource page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
+	}
+	ok = show_page('System Design');
+	if (ok) {
+		highlight('system_capacity');
+		highlight('tilt');
+		highlight('azimuth');
+		highlight('array_type');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have a System Design page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
+	}
+	ok = show_page('Electricity Rates');
+	if (ok) {
+		highlight('btnQueryOpenEI');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have an Electricity Rates page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
+	}
+	ok = show_page('Electric Load');
+	if (ok) {
+		highlight('load_user_data');
+		highlight('normalize_to_utility_bill');
+		highlight('utility_bill_data');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have an Electricity Rates page. The Solar for All Calculator macro is designed to work with the PVWatts/Residential configuration.');
+	}
+	transp(); // clear highight
+}
+
+function generate_pagenotes() {
+	ok = show_page('Location and Resource');
+	if (ok) {
+		pagenote('## Solar for All Macro Instructions ##\n\n' + 
+		'Location and Resource Page\n\n' + 
+		'1. Type the project street address or city and state in the box under Download Weather Files.\n' + 
+		'2. Click Download and Add to Library.\n' + 
+		'3. When the download finishes, review the data under Weather Data Information to verify the data.\n' +
+		'4. Go to the System Design page.');
+
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have a Location and Resource page. The Solar for All Calculator macro is designed to work with the PVWatts model that has a Location and Resource page.');
+	}
+	ok = show_page('System Design');
+	if (ok) {
+		pagenote('## Solar for All Macro Instructions ##\n\n' + 
+		'System Design Page\n\n' + 
+		'1. For System Nameplate Capacity, type the system size in DC kilowatts.\n' + 
+		'2. For Tilt, type the photovoltaic array tilt angle in degrees from horizontal (20 degrees is a typical value).\n' + 
+		'3. For Azimuth, type the photovoltaic array azimuth angle in degrees East of North (180 degrees, or facing south, is a typical value).\n' + 
+		'4. If you are modeling a ground-mounted or roof-mounted array that allows air to flow beneath the array, for Array Type, choose Fixed Open Rack.\n' + 
+		'5. Go to the Electricity Rates page.');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have a System Design page. The Solar for All Calculator macro is designed to work with the PVWatts model that has a Location and Resource page.');
+	}
+	ok = show_page('Electricity Rates');
+	if (ok) {
+		pagenote('## Solar for All Macro Instructions ##\n\n' + 
+		'Electricity Rates Page\n\n' + 
+		'1. Click Search for Rates.\n' + 
+		'2. Type the project zip code and click Search by Zip Code, or if you know the name of the electric service provider, type a few letters of the provider name to filter the list.\n' + 
+		'3. Click the name of the electric service provider in the list, you should see a list of residential rates appear.\n' + 
+		'4. Choose the appropriate rate from the list.\n' + 
+		'  If the service provider or rate is not available, you will need to enter rate data manually from the appropriate rate sheet.\n' + 
+		'5. Go to the Electric Load page.');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have a Electricity Rates page. The Solar for All Calculator macro is designed to work with the PVWatts model that has a Location and Resource page.');
+	}
+	ok = show_page('Electric Load');
+	if (ok) {
+		pagenote('## Solar for All Macro Instructions ##\n\n' + 
+		'Electricity Load Page\n\n' + 
+		'1. Click Search for Rates.\n' + 
+		'2. Type the project zip code and click Search by Zip Code, or if you know the name of the electric service provider, type a few letters of the provider name to filter the list.\n' + 
+		'3. Click the name of the electric service provider in the list, you should see a list of residential rates appear.\n' + 
+		'4. Choose the appropriate rate from the list.\n' + 
+		'  If the service provider or rate is not available, you will need to enter rate data manually from the appropriate rate sheet.\n' + 
+		'5. Go to the Electric Load page.');
+	}
+	else {
+		msgbox('Input page error!\nThis case does not have a Electricity Rates page. The Solar for All Calculator macro is designed to work with the PVWatts model that has a Location and Resource page.');
+	}
+}
+
 // check for valid configuration only PVWatts/Residential is supported
 config = configuration();
 
@@ -77,6 +189,15 @@ if (!ok) {
 	       'The financial model for this case is: ' + fin + '\n' + 
 	       'Exiting macro.');
 	exit;
+}
+
+
+if ( macro.generate_pagenotes == true ) {
+	generate_pagenotes();
+}
+
+if ( macro.highlight_inputs == true ) {
+	highlight_inputs();
 }
 
 // run simulation
