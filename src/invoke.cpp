@@ -93,6 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "graph.h"
 #include "ptesdesignptdialog.h"
 #include "geotools.h"
+#include "nohrsc.h"
 
 
 
@@ -2719,6 +2720,36 @@ void fcall_wfdownloaddir( lk::invoke_t &cxt)
 	cxt.result().assign(wfdir);
 }
 
+void fcall_nohrscquery(lk::invoke_t& cxt)
+{
+	LK_DOC("nohrscquery", "Creates the NOHRSC data download dialog box, lists all available resource files, downloads multiple solar resource files, and returns local file name for weather file", "(none) : string");
+	//Create the wind data object
+	NOHRSCDialog dlgNOHRSC(SamApp::Window(), "Advanced NOHRSC Download");
+	dlgNOHRSC.CenterOnParent();
+	int code = dlgNOHRSC.ShowModal(); //shows the dialog and makes it so you can't interact with other parts until window is closed
+
+	//Return an empty string if the window was dismissed
+	if (code == wxID_CANCEL)
+	{
+		cxt.result().assign(wxEmptyString);
+		return;
+	}
+
+	//Get selected filename
+	wxString year = dlgNOHRSC.GetNOHRSCYear();
+	wxString url = dlgNOHRSC.GetNOHRSCURL();
+	wxString stationID = dlgNOHRSC.GetNOHRSCstationID();
+
+	cxt.result().empty_hash();
+
+	// meta data
+	cxt.result().hash_item("year").assign(year);
+	cxt.result().hash_item("url").assign(url);
+	cxt.result().hash_item("stationID").assign(stationID);
+	cxt.result().hash_item("stationURL").assign(dlgNOHRSC.GetNOHRSCURL());
+}
+
+
 
 void fcall_nsrdbquery(lk::invoke_t &cxt)
 {
@@ -3794,19 +3825,34 @@ static bool copy_mat(lk::invoke_t &cxt, wxString sched_name, matrix_t<double> &m
 	return true;
 }
 
-void fcall_geocode(lk::invoke_t& cxt) 
+void fcall_geocode(lk::invoke_t& cxt)
 {
 	LK_DOC("geocode",
-		"Given a street address or location name, returns latitude, longitude, and time zone. Not designed to take latitude and longitude as input. Uses the MapQuest Geocoding API via a private NREL wrapper. Returned table fields are 'lat', 'lon', 'tz', 'ok'.",
-		"(string):table");
+		"Given a street address or location name, returns latitude, longitude. Returns optional time zone if get_tz is true. Not designed to take latitude and longitude as input. Uses the MapQuest Geocoding API via a private NREL wrapper. Returned table fields are 'lat', 'lon', 'tz', 'ok'.",
+		"(string:location, [boolean:get_tz]):table");
 
-	double lat = 0, lon = 0, tz = 0;
-	// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
-	bool ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
+	bool get_tz = false;
+	if (cxt.arg_count() > 1) {
+		get_tz = cxt.arg(1).as_boolean();
+	}
+
+	double lat = std::numeric_limits<double>::quiet_NaN();
+	double lon = std::numeric_limits<double>::quiet_NaN();
+	double tz = std::numeric_limits<double>::quiet_NaN();
+	bool ok = false;
 	cxt.result().empty_hash();
+
+	// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
+ 	if (get_tz) {
+		ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
+		cxt.result().hash_item("tz").assign(tz);
+	}
+	else {
+		ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon);
+	}
+	
 	cxt.result().hash_item("lat").assign(lat);
 	cxt.result().hash_item("lon").assign(lon);
-	cxt.result().hash_item("tz").assign(tz);
 	cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
 }
 
@@ -6555,6 +6601,7 @@ lk::fcall_t* invoke_uicallback_funcs()
 		fcall_current_at_voltage_sandia,
 		fcall_windtoolkit,
 		fcall_nsrdbquery,
+		fcall_nohrscquery,
 		fcall_combinecasesquery,
         fcall_wavetoolkit,
         fcall_ptesdesignptquery,
