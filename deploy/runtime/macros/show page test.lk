@@ -1,0 +1,9 @@
+/*@
+For testing only. Delete before merging into Patch or Develop.
+@*/
+show_page('System Design');
+msgbox('System Design page should be visible.');
+show_page('Location and Resource');
+g = widgetpos('in_location');
+transp(g,'yellow',75);
+msgbox('Location and Resource page should be visible.');
