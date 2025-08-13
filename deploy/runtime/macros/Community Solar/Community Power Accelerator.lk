@@ -109,6 +109,8 @@ fixedjobtraining = to_real(jobtraining);
 fixedcommunitybenefitspayments = to_real(communitybenefitspayments);
 fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 
+write_text_file(runtimedir() + 'quickstart/CPA-example_multipliers.txt', fixedcommunitybenefitspayments + " " + fixedjobtraining + " " + fixedtotal);
+
 varbenefits = ['Energy savings to subscriber','Lease payments to owner','Community benefits payments','Job training'];
 // 7/2/2025 meeting Lease payment to owner is cf_om_fixed
 //varcf = ["cf_subscriber1_bill_credit_amount","cf_community_solar_subscriber1_revenue","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
