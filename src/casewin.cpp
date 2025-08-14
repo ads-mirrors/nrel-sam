@@ -1098,7 +1098,6 @@ bool CaseWindow::SwitchToNavigationMenu(const wxString& name)
 		m_navigationMenu->SetCurrentItem(dvi);
 		m_currentSelection = (dvi);
 		m_left_panel->SetFocus();
-//		SwitchToInputPage(m_navigationMenu->GetItemText(dvi));
 		SwitchToPage(m_navigationMenu->GetItemText(dvi));
 		m_left_panel->Layout();
 	}
