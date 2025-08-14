@@ -353,6 +353,7 @@ static void fcall_dview_solar_data_file(lk::invoke_t& cxt)
         { "pres", "Pressure", "millibar" },
         { "snow", "Snow depth", "cm" },
         { "albedo", "Albedo", "fraction" },
+        { "pwater", "Precipitable water", "cm"},
         { 0, 0, 0 } };
 
     ssc_number_t start, step; // start & step in seconds, then convert to hours
