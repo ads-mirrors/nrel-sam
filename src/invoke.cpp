@@ -3840,17 +3840,19 @@ void fcall_geocode(lk::invoke_t& cxt)
 	cxt.result().empty_hash();
 
 	// if input string contains any non-numeric characters other than n/s/e/w, assume it is an address for geocoding
-	lk_string str = cxt.arg(0).as_string();
- 	wxString address;
-		
-	address = wxString::FromUTF8(str);
-	
+	//lk_string str = cxt.arg(0).as_string();
+	lk_string address = cxt.arg(0).as_string();
+	//wxString address;
+
+	//address = wxString::FromUTF8(str);
+
 	if (address.IsEmpty()) { // string contains invalid UTF-8 characters
 		cxt.result().hash_item("lat").assign(lat);
 		cxt.result().hash_item("lon").assign(lon);
 		cxt.result().hash_item("tz").assign(tz);
 		cxt.result().hash_item("ok").assign(ok ? 1.0 : 0.0);
-		err = wxString::Format("Location name \"%s\" contains invalid characters.", str);
+		//err = wxString::Format("Location name \"%s\" contains invalid characters.", str);
+		err = wxString::Format("Location name \"%s\" contains invalid characters.", address);
 	}
 	else { // string is valid
 		address = address.Lower();

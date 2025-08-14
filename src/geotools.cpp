@@ -100,16 +100,16 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
                 lon = tk.GetNextToken();
             }
             else
-                err = "No n/s/e/w indicator or comma decimal degree separator";
+                err = "No n/s/e/w indicator or comma decimal degree separator.";
         }
         else 
-		    err = "No n/s/e/w indicator";
+		    err = "No n/s/e/w indicator.";
 	}
 	else if (n > 1) {
-		err = "More than one latitude / longitude found";
+		err = "More than one latitude / longitude found.";
 	}
 	else if (n == 0) {
-		err = "No latitude / longitude found";
+		err = "No latitude / longitude found.";
 	}
 	else {
         lat = str.Left(x + 1);
@@ -131,19 +131,19 @@ bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
     wxString err = "";
 
 	if (m < 0 || s < 0) {
-		err = "Negative minutes or seconds not allowed";
+		err = "Negative minutes or seconds not allowed.";
 	}
 	else if (m > 60.0 || s > 60.0) {
-		err = "Minutes and seconds must be less than 60";
+		err = "Minutes and seconds must be less than 60.";
 	}
 	else if(std::abs(d) > 180) {
-		err = "Degrees must be between -180 and 180";
+		err = "Degrees must be between -180 and 180.";
 	}
 	else if ((d != int(d)) && (m != 0 || s != 0)) {
-		err = "Degrees must be an integer if minutes and seconds are not zero";
+		err = "Degrees must be an integer if minutes and seconds are not zero.";
 	}
 	else if (m != int(m) && s != 0) {
-		err = "Minutes must be an integer if seconds are not zero";
+		err = "Minutes must be an integer if seconds are not zero.";
 	}
     else {
         if (d < 0) {
@@ -173,23 +173,27 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
     str.Replace("east", "e");
     str.Replace("west", "w");
 
-    wchar_t c_prev = ' ';
+    wxString num = "";
+	wxString err = "";
+    wxUniChar c_prev = ' ';
     int n = 0;
-    std::string num = "";
     int sign = 1;
-	wxString err = ""; // implement error check later?
+    double x = 0;
 	double dms[3] = { 0.0, 0.0, 0.0 };
+    bool ok;
 
     for (int i = 0; i < str.Length(); i++) {
-        char c = str[i];
-        if (std::isdigit(c) || c == decimal_symbol) {
+        wxUniChar c = str[i];
+        if (wxIsdigit(c) || wchar_t(c) == decimal_symbol) {
             num = num + c;
         }
         else if (c == 's' || c == 'w' || c == '-') {
             sign = -1;
         }
-        else if (std::isdigit(c_prev) && n<3) {
-			dms[n] = std::stod(num);
+        else if (wxIsdigit(c_prev) && n<3) {
+			ok = num.ToDouble(&x);
+            if (ok) dms[n] = x;
+            else err = wxString::Format("Failed to convert string \"%s\" to number.",num);
             num = "";
             n++;
         }
@@ -197,8 +201,11 @@ bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* 
     }
 
 	if (err == "") {
-        if (n == 0) 
-            dms[0] = std::stod(num);
+        if (n == 0) {
+            ok = num.ToDouble(&x);
+            if (ok) dms[0] = x;
+            else err = wxString::Format("Failed to convert string \"%s\" to number.", num);
+        }
         *d = dms[0] * sign;
 		*m = dms[1];
 		*s = dms[2];
