@@ -1,7 +1,7 @@
 {
     "Name": "Solar Resource Download",
-    "Width": 885.0,
-    "Height": 295.0,
+    "Width": 884.0,
+    "Height": 304.0,
     "FormObjects": {
         "Hyperlink": {
             "Visible": 1.0,
@@ -16,7 +16,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 261.0
+                    "Integer": 267.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -53,11 +53,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 639.0
+                    "Integer": 636.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 99.0
+                    "Integer": 75.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -78,6 +78,43 @@
                 "TabOrder": {
                     "Type": 3.0,
                     "Integer": 9.0
+                }
+            }
+        },
+        "Button": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "btn_show_log"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 636.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 267.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 236.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 28.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": "Show download log"
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
                 }
             }
         },
@@ -152,15 +189,15 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 72.0
+                    "Integer": 156.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 81.0
+                    "Integer": 120.0
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 561.0
+                    "Integer": 711.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -215,7 +252,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 189.0
+                    "Integer": 207.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -256,7 +293,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 189.0
+                    "Integer": 207.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -301,11 +338,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 108.0
+                    "Integer": 114.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 156.0
+                    "Integer": 174.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -346,7 +383,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 189.0
+                    "Integer": 207.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -382,7 +419,7 @@
                 }
             }
         },
-        "CheckBox": {
+        "RadioChoice": {
             "Visible": 1.0,
             "ObjectProperties": {
                 "Name": {
@@ -391,19 +428,68 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 636.0
+                    "Integer": 36.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 69.0
+                    "Integer": 66.0
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 236.0
+                    "Integer": 405.0
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 28.0
+                    "Integer": 48.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Selection": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Items": {
+                    "Type": 6.0,
+                    "StringList": "Type an address or coordinates to download latest NSRDB data|Use Advanced NSRDB Options window to download legacy data"
+                },
+                "ShowCaptions": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "Horizontal": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "GroupBox": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "object 4"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 9.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 3.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 870.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 300.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -411,15 +497,11 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "Use Advanced NSRDB Options window"
+                    "String": "Download Weather Files"
                 },
-                "State": {
+                "Bold": {
                     "Type": 2.0,
                     "Boolean": 1.0
-                },
-                "TabOrder": {
-                    "Type": 3.0,
-                    "Integer": 8.0
                 }
             }
         },
@@ -428,7 +510,7 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "object 22"
+                    "String": "options_divider"
                 },
                 "X": {
                     "Type": 3.0,
@@ -436,7 +518,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 138.0
+                    "Integer": 156.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -465,44 +547,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "Advanced Options"
-                },
-                "Bold": {
-                    "Type": 2.0,
-                    "Boolean": 1.0
-                }
-            }
-        },
-        "GroupBox": {
-            "Visible": 1.0,
-            "ObjectProperties": {
-                "Name": {
-                    "Type": 5.0,
-                    "String": "object 4"
-                },
-                "X": {
-                    "Type": 3.0,
-                    "Integer": 9.0
-                },
-                "Y": {
-                    "Type": 3.0,
-                    "Integer": 6.0
-                },
-                "Width": {
-                    "Type": 3.0,
-                    "Integer": 870.0
-                },
-                "Height": {
-                    "Type": 3.0,
-                    "Integer": 288.0
-                },
-                "Tool Tip": {
-                    "Type": 5.0,
-                    "String": ""
-                },
-                "Caption": {
-                    "Type": 5.0,
-                    "String": "Download Weather Files"
+                    "String": "Options"
                 },
                 "Bold": {
                     "Type": 2.0,
@@ -515,7 +560,7 @@
         "in_location": {
             "Version": 4.0,
             "Type": 4.0,
-            "Label": "Address",
+            "Label": "Address or coordinates",
             "Units": " ",
             "Group": "Location and Resource",
             "IndexLabels": "",
@@ -554,7 +599,7 @@
         "in_nsrdb_options": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "NSRDB options",
+            "Label": "File options",
             "Units": " ",
             "Group": "Location and Resource",
             "IndexLabels": "Default TMY file|Choose year|Download files for all years",
@@ -580,13 +625,13 @@
         "is_advanced": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "Advanced download",
+            "Label": "Advanced download option",
             "Units": " ",
             "Group": "Location and Resource",
-            "IndexLabels": "",
+            "IndexLabels": "Type an address or coordinates to download latest NSRDB data|Use Advanced NSRDB Options window to download legacy data",
             "Flags": 1.0,
             "DefaultValue": 0.0,
-            "UIObject": "CheckBox",
+            "UIObject": "RadioChoice",
             "sscVariableName": "",
             "sscVariableValue": ""
         }
@@ -608,6 +653,17 @@
         "\tif ( value( 'is_advanced' ) ) { nsrdb_all(); }",
         "\telse { nsrdb_get(); }",
         "};",
+        "\r",
+        "on_change{'btn_show_log'} = define() {\r",
+        "\tfolder = replace(wfdownloaddir(),'\\\\','/');\r",
+        "\tlog_file = folder + '/sam_nsrdb_download_log.txt';\r",
+        "\tif ( file_exists( log_file ) ) {\r",
+        "\t\tbrowse(log_file); \r",
+        "\t}\r",
+        "\telse {\r",
+        "\t\tmsgbox('Failed to open download log.\\n' + log_file);\r",
+        "\t}\r",
+        "};\r",
         "\r",
         "on_change{ 'in_location_options' } = define() {\r",
         "\tenable('in_location_list', value('in_location_options') == 1 );\r",
@@ -635,12 +691,13 @@
         "\t\tproperty( 'download_weather_caption' , 'Caption' , 'The NSRDB is a database of thousands of weather files that you can download and add to your to your solar resource library: Download a default typical-year (TMY) file for most long-term cash flow analyses, or choose files to download for single-year or uncertainty (P50/P90) analyses. See Help for details.' );\r",
         "\t\tproperty( 'download_weather_caption' , 'TextColour', 'black' );\r",
         "\t}\r",
-        "\tshow('in_location_options', !value('is_advanced') );\r",
-        "\tshow('in_nsrdb_options', !value('is_advanced') );\r",
-        "\tshow('in_time_step', value('in_nsrdb_options') != 0 && !value('is_advanced')); \r",
-        "\tshow('in_location_list', !value('is_advanced') );\r",
-        "\tshow('in_location', !value('is_advanced') );\r",
-        "\trefresh();\r",
+        "\t//show('options_divider', !value('is_advanced') );\r",
+        "\tenable('in_location_options', !value('is_advanced') );\r",
+        "\tenable('in_nsrdb_options', !value('is_advanced') );\r",
+        "\tenable('in_time_step', value('in_nsrdb_options') != 0 && !value('is_advanced')); \r",
+        "\tenable('in_location_list', !value('is_advanced') );\r",
+        "\tenable('in_location', !value('is_advanced') );\r",
+        "\t//refresh();\r",
         "}\r",
         "\r",
         "// check JSON returned by a call to NSRDB Data Query for a valid response\r",
