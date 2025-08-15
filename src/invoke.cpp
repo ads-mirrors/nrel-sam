@@ -3900,7 +3900,6 @@ void fcall_geocode(lk::invoke_t& cxt)
 		wxString lat_str, lon_str;
 		ok = GeoTools::coordinates_to_lat_lon(coordinates, lat_str, lon_str);
 		if (ok) {
-			// cpg TO DO this works, but unneccessarily parses coordinates when they are already in lat/lon DD format like 45.5,-122
 			// degree, minute, seconds
 			double lat_d, lat_m, lat_s;
 			lat_d = lat_m = lat_s = std::numeric_limits<double>::quiet_NaN();

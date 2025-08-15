@@ -42,22 +42,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 #include "geotools.h"
 
-/*
-static wxString MyGet(const wxString& url)
-{
-    wxEasyCurl curl;
-    curl.AddHttpHeader("Content-type: text/plain");
-    curl.AddHttpHeader("Cache-Control: no-cache");
-    curl.Get(url);
-    return curl.GetDataAsString();
-}
-*/
-
 bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& lon) {
 
     wxString err, str;
     int n, i, x;
-
     bool is_numeric = true;
     std::locale loc{ "" };
     wchar_t decimal_symbol = std::use_facet< std::numpunct<wchar_t> >(loc).decimal_point();
@@ -68,15 +56,7 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
     str.Replace("east", "e");
     str.Replace("west", "w");
 
-    /*
-    for (int i = 0; i < str.Length(); i++) {
-		if (str[i] == 'n' || str[i] == 's' ) {
-            x=size_t(i);
-            n++;
-		}
-	}*/
-    i = 0;
-    n = 0;
+    i = n = 0;
     x = -1;
     for (wxString::const_iterator it = str.begin(); it != str.end(); ++it) {
         wxUniChar c = *it;
@@ -91,10 +71,9 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
     }
 
     err = "";
-	if (x == -1) { // cpg TO DO how would x ever be -1?
+	if (x == -1) {
         if (is_numeric) {
             wxStringTokenizer tk(str, ',');
-            //wxArrayString arr = wxSplit(str, ',');
             if (tk.CountTokens() == 2) {
                 lat = tk.GetNextToken();
                 lon = tk.GetNextToken();
@@ -127,7 +106,6 @@ bool GeoTools::coordinates_to_lat_lon(wxString& coord, wxString& lat, wxString& 
 bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
     
     int sign = 1;
-
     wxString err = "";
 
 	if (m < 0 || s < 0) {
@@ -163,7 +141,6 @@ bool GeoTools::dms_to_dd(double& d, double& m, double& s, double* dd) {
 
 bool GeoTools::coordinate_to_dms(wxString& coord, double* d, double* m, double* s)
 {
-
     std::locale loc{ "" };
     wchar_t decimal_symbol = std::use_facet< std::numpunct<wchar_t> >(loc).decimal_point();
 
