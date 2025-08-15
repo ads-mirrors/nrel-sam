@@ -18480,7 +18480,7 @@
     "ibi_uti_percent_maxvalue": 1e38,
     "ibi_uti_percent_tax_fed": 1.0,
     "ibi_uti_percent_tax_sta": 1.0,
-    "in_location": "Type a location name, street address, or lat,lon in decimal degrees",
+    "in_location": "",
     "in_location_list": "|||",
     "in_location_options": 0.0,
     "in_nsrdb_options": 0.0,
@@ -19213,7 +19213,7 @@
     "modulearray_power_w": 100000000.0,
     "months_receivables_reserve": 0.0,
     "months_working_reserve": 6.0,
-    "nominal_discount_rate": 9.060000000000003,
+    "nominal_discount_rate": 9.060000000000004,
     "om_capacity": [
         19.0
     ],
@@ -19393,7 +19393,7 @@
     "ui_step_minutes": 60.0,
     "ui_total_land_area_ha": 175.43871222814654,
     "ui_total_module_area": 526315.7894736842,
-    "ui_total_module_area_acres": 130.05534895540843,
+    "ui_total_module_area_acres": 130.05534895540846,
     "ui_total_module_area_ha": 52.63157894736842,
     "ui_use_acre_per_mw": 0.0,
     "ur_annual_min_charge": 0.0,

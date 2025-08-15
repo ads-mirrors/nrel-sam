@@ -17720,7 +17720,7 @@
         1e38
     ],
     "grid_interconnection_limit_kwac": 100000.0,
-    "in_location": "Type a location name, street address, or lat,lon in decimal degrees",
+    "in_location": "",
     "in_location_list": "|||",
     "in_location_options": 0.0,
     "in_nsrdb_options": 0.0,
@@ -35305,7 +35305,7 @@
         1.71415,
         1.87435
     ],
-    "nominal_discount_rate": 9.060000000000003,
+    "nominal_discount_rate": 9.060000000000004,
     "normalize_to_utility_bill": 0.0,
     "peak_1": 1.85407,
     "peak_10": 2.55071,
