@@ -849,7 +849,8 @@
         "  }",
         "  txt = analysis_period_message();",
         "  property('analysis_period_warning','caption',txt);",
-        "  refresh();",
+        "  refresh();\r",
+        "  change_tax_array_length();",
         "};",
         ""
     ]

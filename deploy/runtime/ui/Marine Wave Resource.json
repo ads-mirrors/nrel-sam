@@ -1,7 +1,7 @@
 {
     "Name": "Marine Wave Resource",
-    "Width": 1019.0,
-    "Height": 955.0,
+    "Width": 1102.0,
+    "Height": 1128.0,
     "FormObjects": {
         "Button": {
             "Visible": 1.0,
@@ -123,11 +123,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 897.0
+                    "Integer": 939.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 915.0
+                    "Integer": 948.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -214,7 +214,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 1000.0
+                    "Integer": 1075.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -251,11 +251,11 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 1000.0
+                    "Integer": 1075.0
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 524.0
+                    "Integer": 680.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -442,7 +442,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 915.0
+                    "Integer": 948.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -521,11 +521,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 438.0
+                    "Integer": 447.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 915.0
+                    "Integer": 948.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -604,11 +604,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 690.0
+                    "Integer": 711.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 915.0
+                    "Integer": 948.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -758,7 +758,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 464.0
+                    "Integer": 491.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
