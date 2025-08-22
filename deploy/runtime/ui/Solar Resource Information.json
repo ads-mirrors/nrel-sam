@@ -720,11 +720,11 @@
                 },
                 "Format": {
                     "Type": 3.0,
-                    "Integer": 1.0
+                    "Integer": 0.0
                 },
                 "Decimals": {
                     "Type": 3.0,
-                    "Integer": 3.0
+                    "Integer": 1.0
                 },
                 "Prefix": {
                     "Type": 5.0,
@@ -853,11 +853,11 @@
                 },
                 "Format": {
                     "Type": 3.0,
-                    "Integer": 1.0
+                    "Integer": 0.0
                 },
                 "Decimals": {
                     "Type": 3.0,
-                    "Integer": 3.0
+                    "Integer": 1.0
                 },
                 "Prefix": {
                     "Type": 5.0,
@@ -936,11 +936,11 @@
                 },
                 "Format": {
                     "Type": 3.0,
-                    "Integer": 1.0
+                    "Integer": 0.0
                 },
                 "Decimals": {
                     "Type": 3.0,
-                    "Integer": 3.0
+                    "Integer": 1.0
                 },
                 "Prefix": {
                     "Type": 5.0,
@@ -1581,11 +1581,11 @@
                 },
                 "Format": {
                     "Type": 3.0,
-                    "Integer": 1.0
+                    "Integer": 0.0
                 },
                 "Decimals": {
                     "Type": 3.0,
-                    "Integer": 3.0
+                    "Integer": 1.0
                 },
                 "Prefix": {
                     "Type": 5.0,
@@ -1660,7 +1660,7 @@
                 },
                 "Mode": {
                     "Type": 3.0,
-                    "Integer": 0.0
+                    "Integer": 1.0
                 },
                 "Format": {
                     "Type": 3.0,
@@ -1668,7 +1668,7 @@
                 },
                 "Decimals": {
                     "Type": 3.0,
-                    "Integer": 3.0
+                    "Integer": 0.0
                 },
                 "Prefix": {
                     "Type": 5.0,
@@ -1732,7 +1732,7 @@
             "Units": "kWh/m²/day",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 4.0,
+            "Flags": 8.0,
             "DefaultValue": 0.0,
             "UIObject": "Numeric",
             "sscVariableName": "",
@@ -1745,7 +1745,7 @@
             "Units": "kWh/m²/day",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 4.0,
+            "Flags": 8.0,
             "DefaultValue": 0.0,
             "UIObject": "Numeric",
             "sscVariableName": "",
@@ -1758,7 +1758,7 @@
             "Units": "kWh/m²/day",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 20.0,
+            "Flags": 8.0,
             "DefaultValue": 0.0,
             "UIObject": "Numeric",
             "sscVariableName": "",
@@ -1784,7 +1784,7 @@
             "Units": "°C",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 4.0,
+            "Flags": 8.0,
             "DefaultValue": 0.0,
             "UIObject": "Numeric",
             "sscVariableName": "",
@@ -1810,7 +1810,7 @@
             "Units": "m/s",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 4.0,
+            "Flags": 8.0,
             "DefaultValue": 0.0,
             "UIObject": "Numeric",
             "sscVariableName": "",
@@ -1914,9 +1914,9 @@
             "Units": " ",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 0.0,
+            "Flags": 8.0,
             "DefaultValue": "",
-            "UIObject": "Default",
+            "UIObject": "TextEntry",
             "sscVariableName": "",
             "sscVariableValue": ""
         },
@@ -2024,7 +2024,7 @@
     ],
     "Callbacks": [
         "on_load{'Solar Resource Information'} = define() {",
-        "\t//msgbox('Debug\\non_load Solar Resource Information');",
+        "\tmsgbox('Debug\\non_load Solar Resource Information');",
         "\tupdate_info( 'on_load Solar Resource Information');\r",
         "\tdisplay_tech_message();\r",
         "};",
@@ -2034,37 +2034,57 @@
         "};\r",
         "\r",
         "on_change{'solar_resource_file'} = define() {\r",
+        "\tmsgbox('Debug\\non_change solar_resource_file');\r",
         "\tupdate_info('on_change solar_resource_file');\r",
         "};\r",
         "\r",
+        "function clear_info() {\r",
+        "\tvalue( 'lat', nan() );\r",
+        "\tvalue( 'lon', nan() );\r",
+        "\tvalue( 'tz', nan() );\r",
+        "\tvalue( 'elev', nan() );\r",
+        "\tvalue( 'step', nan() );\r",
+        "\tvalue( 'station_id', '-' );\r",
+        "\tvalue( 'solar_data_source', '-' );\r",
+        "\r",
+        "\tvalue( 'annual_global', nan() );\r",
+        "\tvalue( 'annual_beam', nan() );\r",
+        "\tvalue( 'annual_diffuse', nan() );\r",
+        "\tvalue( 'annual_tdry', nan() );\r",
+        "\tvalue( 'annual_twet', nan() );\r",
+        "\tvalue( 'annual_wspd', nan() );\r",
+        "\tvalue( 'annual_snow', nan() );\r",
+        "\tvalue( 'annual_albedo', nan() );\r",
+        "\tvalue( 'wf_nrecords', nan() );\r",
+        "}\r",
+        "\r",
         "// update weather file, annual summaries and summary text\r",
         "// ctxt is for testing to see when function was called\r",
-        "function update_info( ctxt )\r",
-        "{\r",
-        "\t//msgbox('Debug\\nHello from update_info() in ' + ctxt );\r",
+        "function update_info( ctxt ) {\r",
+        "\tmsgbox('Debug\\nHello from update_info() in ' + ctxt );\r",
         "\r",
         "\t// paths use forward slash for cross-platform compatibility\r",
         "\twf = replace(value('solar_resource_file'),'\\\\','/');\r",
-        "\tlib_wf = replace(value('solar_data_file_name'),'\\\\','/');\r",
+        "\t//lib_wf = replace(value('solar_data_file_name'),'\\\\','/');\r",
         "\r",
-        "\t//if selected library file is no longer in library reload library, and exit\r",
-        "\twf_ok = false;\r",
-        "\tif (!file_exists(wf) )\r",
-        "\t{\r",
+        "\t// if selected library file is no longer in library reload library, and exit\r",
+        "\tif ( !file_exists(wf) ) {\r",
         "\t\tmsg_caption = 'Weather file does not exist. Please choose or download a different file above.';\r",
         "\t\tmsg_color = 'red';\r",
-        "\t\trescanlibrary('solar'); // remove deleted file from library\r",
+        "\t\tclear_info();\r",
+        "\t\trescanlibrary('solar');\r",
+        "\t\twf_exists = false;\r",
         "\t}\r",
-        "\telseif (wf != lib_wf)\r",
-        "\t{\r",
+        "\t/*elseif (wf != lib_wf) {\r",
         "\t\tmsg_caption = 'Weather file is not in library. You can add the file by clicking Add/Remove Weather File Folders above.';\r",
         "\t\tmsg_color = 'black';\r",
-        "\t}\r",
-        "\telse\r",
-        "\t{\r",
+        "\t\tclear_info();\r",
+        "\t\trescanlibrary('solar'); // remove deleted file from library\r",
+        "\t}*/\r",
+        "\telse {\r",
         "\t\tmsg_caption = 'The following information describes the data in the highlighted weather file from the Solar Resource library above. This is the file SAM will use when you click Simulate.';\r",
         "\t\tmsg_color = 'black';\r",
-        "\t\twf_ok = true;\r",
+        "\t\twf_exists = true;\r",
         "\t}\r",
         "\r",
         "\t// show / hide PV only summary data\r",
@@ -2075,13 +2095,21 @@
         "\tenable('annual_albedo',is_pv );\r",
         "\r",
         "\t// calculate and display annual summary data\r",
-        "\tif ( wf_ok )\r",
+        "\tif ( wf_exists )\r",
         "\t{\r",
         "\t\tobj = ssc_create();\r",
         "\t\tssc_var( obj, 'file_name', wf );\r",
         "\t\tresult = ssc_exec( obj, 'wfreader' );\r",
         "\t\tif ( 0 == result )\r",
         "\t\t{\r",
+        "\t\t\tvalue( 'lat', ssc_var(obj, 'lat') );\r",
+        "\t\t\tvalue( 'lon', ssc_var(obj, 'lon') );\r",
+        "\t\t\tvalue( 'tz', ssc_var(obj, 'tz') );\r",
+        "\t\t\tvalue( 'elev', ssc_var(obj, 'elev') );\r",
+        "\t\t\tvalue( 'step', ssc_var(obj, 'step') );\r",
+        "\t\t\tvalue( 'station_id', ssc_var(obj, 'location') );\r",
+        "\t\t\tvalue( 'solar_data_source', ssc_var(obj, 'source') );\r",
+        "\r",
         "\t\t\tvalue( 'annual_global', ssc_var(obj, 'annual_glob') );\r",
         "\t\t\tvalue( 'annual_beam', ssc_var(obj, 'annual_beam') );\r",
         "\t\t\tvalue( 'annual_diffuse', ssc_var(obj, 'annual_diff') );\r",
@@ -2103,7 +2131,8 @@
         "\t\t\tmsgbox('Weather file reader failed!\\n' \r",
         "\t\t\t+ result\r",
         "\t\t\t+ '\\n\\nTo avoid this message, remove  the following file from your weather file folders: \\n' + wf);\r",
-        "\t\t\tvalue( 'annual_global', nan() );\r",
+        "\t\t\tclear_info();\r",
+        "\t\t\t/*value( 'annual_global', nan() );\r",
         "\t\t\tvalue( 'annual_beam', nan() );\r",
         "\t\t\tvalue( 'annual_diffuse', nan() );\r",
         "\t\t\tvalue( 'annual_tdry', nan() );\r",
@@ -2111,12 +2140,10 @@
         "\t\t\tvalue( 'annual_wspd', nan() );\r",
         "\t\t\tvalue( 'annual_snow', nan() );\r",
         "\t\t\tvalue( 'annual_albedo', nan() );\r",
-        "\t\t\tvalue( 'wf_nrecords', nan() );\r",
+        "\t\t\tvalue( 'wf_nrecords', nan() );*/\r",
         "\t\t}\r",
         "\t\tssc_free( obj );\r",
         "\t}\r",
-        "\t\r",
-        "\t\r",
         "}\r",
         "",
         "function display_tech_message() \r",

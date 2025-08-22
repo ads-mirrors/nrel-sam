@@ -1,7 +1,7 @@
 {
     "Name": "Solar Resource Library",
-    "Width": 883.0,
-    "Height": 567.0,
+    "Width": 882.0,
+    "Height": 534.0,
     "FormObjects": {
         "GroupBox": {
             "Visible": 1.0,
@@ -24,7 +24,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 558.0
+                    "Integer": 525.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -90,7 +90,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 531.0
+                    "Integer": 495.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -451,7 +451,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 843.0
+                    "Integer": 855.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -575,7 +575,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 666.0
+                    "Integer": 690.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -667,7 +667,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 498.0
+                    "Integer": 495.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -704,15 +704,15 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 135.0
+                    "Integer": 195.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 531.0
+                    "Integer": 495.0
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 627.0
+                    "Integer": 567.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -828,7 +828,7 @@
             "Units": "",
             "Group": "Location and Resource",
             "IndexLabels": "",
-            "Flags": 2.0,
+            "Flags": 3.0,
             "DefaultValue": "",
             "UIObject": "TextEntry",
             "sscVariableName": "",
@@ -887,7 +887,14 @@
         "};\r",
         "\r",
         "function enable_user_specified_wf() {\r",
-        "\tenable('user_specified_weather_file', value('use_specific_weather_file') == 1 );\r",
+        "\tis_user_specified = ( value('use_specific_weather_file') == 1 );\r",
+        "\tenable('user_specified_weather_file', is_user_specified );\r",
+        "\tenable('btn_browse_file', is_user_specified );\r",
+        "\tenable('solar_resource', !is_user_specified );\r",
+        "\tenable('solar_data_file_name', !is_user_specified );\r",
+        "\tenable('library_folder_list', !is_user_specified );\r",
+        "\tenable('btn_add_remove_folders', !is_user_specified );\r",
+        "\tenable('btn_refresh_library', !is_user_specified );\r",
         "}\r",
         "\r",
         "// update ui list of library folders, and optionally add new path to library folders\r",
