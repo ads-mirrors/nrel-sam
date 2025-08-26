@@ -17,6 +17,7 @@ sys.path.append(g3p3PlottingFolder)
 import sco2_filenames
 import data_utility
 import design_point_tools as design_tools
+from sco2_filenames import BASE
 
 FIG_WIDTH_SMALL = 3.54331   # [in] 90 mm
 FIG_WIDTH_MED = 5.51181     # [in] 140 mm
@@ -185,37 +186,19 @@ def make_optimal_table(list_of_best_dict_list_w_kwarg, sweep_label_list, show_sw
 
 def make_comparison_plots():
     presplit = True
-
-    filenames_baseline_w_label = sco2_filenames.get_filenames_baseline(split=presplit)
-    filenames_eta8085_w_label = sco2_filenames.get_filenames_eta8085(split=presplit)
-    filenames_eta8090_w_label = sco2_filenames.get_filenames_eta8090(split=presplit)
-    filenames_coldapproach40_w_label = sco2_filenames.get_filenames_coldapproach40(split=presplit)
-    filenames_coldapproach60_w_label = sco2_filenames.get_filenames_coldapproach60(split=presplit)
-    filenames_TIT550_w_label = sco2_filenames.get_filenames_TIT550(split=presplit)
-    filenames_TIT625_w_label = sco2_filenames.get_filenames_TIT625(split=presplit)
-    filenames_heliocost_w_label = sco2_filenames.get_filenames_heliocost(split=presplit)
-    filenames_recup50_w_label = sco2_filenames.get_filenames_recup50(split=presplit)
-    filenames_recup150_w_label = sco2_filenames.get_filenames_recup150(split=presplit)
-    filenames_recup1000_w_label = sco2_filenames.get_filenames_recup1000(split=presplit)
-    filenames_tes50_w_label = sco2_filenames.get_filenames_tes50(split=presplit)
-    filenames_tes150_w_label = sco2_filenames.get_filenames_tes150(split=presplit)
-    filenames_tes1000_w_label = sco2_filenames.get_filenames_tes1000(split=presplit)
-    filenames_phxbucklow_w_label = sco2_filenames.get_filenames_phxbucklow(split=presplit)
-    filenames_phxbuckhigh_w_label = sco2_filenames.get_filenames_phxbuckhigh(split=presplit)
-    filenames_phxbuckhigh10x_w_label = sco2_filenames.get_filenames_phxbuckhigh10x(split=presplit)
-    filenames_helio_phxbuckhigh_w_label = sco2_filenames.get_filenames_helio_phxbuckhigh(split=presplit)
-    filenames_helio10x_w_label = sco2_filenames.get_filenames_helio10x(split=presplit)
-    filenames_helio100x_w_label = sco2_filenames.get_filenames_helio100x(split=presplit)
-
-    filenames_list_w_label = [filenames_baseline_w_label, filenames_eta8085_w_label, filenames_eta8090_w_label, 
-                              filenames_coldapproach40_w_label, filenames_coldapproach60_w_label, 
-                              filenames_TIT550_w_label, filenames_TIT625_w_label,
-                              filenames_heliocost_w_label,
-                              filenames_recup50_w_label, filenames_recup150_w_label,
-                              filenames_tes50_w_label, filenames_tes150_w_label,
-                              filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label
-                              ]
     
+    enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090,
+                 BASE.COLDAPP40, BASE.COLDAPP60,
+                 BASE.TIT550, BASE.TIT625,
+                 BASE.HELIO127,
+                 BASE.RECUP50, BASE.RECUP150,
+                 BASE.TES50, BASE.TES150,
+                 BASE.PHXBUCKLO, BASE.PHXBUCKHI]
+
+    filenames_list_w_label = []
+    for enum in enum_list:
+        filenames_list_w_label.append(sco2_filenames.get_file_via_enum(enum, presplit))
+
     #filenames_list_w_label = [filenames_baseline_w_label]
 
     key_list = ["cycle_config", "config_name",
@@ -223,7 +206,12 @@ def make_comparison_plots():
                 "LTR_UA_calculated", "HTR_UA_calculated",
                 "cost_per_kWe_net_ish", "eta_thermal_calc", 
                 "T_htf_hot_des", "T_htf_cold_des",
-                "cycle_cost" 
+                "cycle_cost",
+                "mc_cooler_q_dot", "pc_cooler_q_dot",
+                "id", "UA_BPX", "BPX_cost_equipment", "T_htf_bp_out_des",
+                "q_dot_in_total", "mc_cooler_q_dot", "pc_cooler_q_dot",
+                "is_bypass_ok", "UA_BPX", "HTR_cost_equipment", "LTR_cost_equipment",
+                "eta_thermal_net_less_cooling_des"
                 ]
 
     # Open Files
@@ -253,51 +241,53 @@ def make_comparison_plots():
     figsize_double = (FIG_WIDTH_FULL, 4.0)
 
     # Plot Approach Temperatures
-    T_PHX_sweep_labels = [filenames_baseline_w_label[1], 
-                          filenames_coldapproach40_w_label[1], filenames_coldapproach60_w_label[1],
-                          filenames_TIT550_w_label[1], filenames_TIT625_w_label[1]]
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, T_PHX_sweep_labels, COST_PER_kW_info, show_config_list)
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, T_PHX_sweep_labels, COST_PER_kW_info, show_config_list,
-    #                 is_norm=True)
+    #T_PHX_sweep_labels = [filenames_baseline_w_label[1], 
+    #                      filenames_coldapproach40_w_label[1], filenames_coldapproach60_w_label[1],
+    #                      filenames_TIT550_w_label[1], filenames_TIT625_w_label[1]]
+    
+    T_PHX_sweep_labels = [sco2_filenames.get_sweep_label(BASE.BASELINE), 
+                          sco2_filenames.get_sweep_label(BASE.COLDAPP40),
+                          sco2_filenames.get_sweep_label(BASE.COLDAPP60),
+                          sco2_filenames.get_sweep_label(BASE.TIT550),
+                          sco2_filenames.get_sweep_label(BASE.TIT625)]
+
     plot_comparisons_duo(list_of_best_dict_list_with_kwarg, final_sweep_labels, T_PHX_sweep_labels, COST_PER_kW_info, show_config_list,
                      figsize=figsize_double)
     
     # Plot Isentropic Efficiencies
-    ISEN_sweep_labels = [filenames_baseline_w_label[1], 
-                         filenames_eta8085_w_label[1], filenames_eta8090_w_label[1]]
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, ISEN_sweep_labels, COST_PER_kW_info, show_config_list)
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, ISEN_sweep_labels, COST_PER_kW_info, show_config_list,
-    #                 is_norm=True)
+    #ISEN_sweep_labels = [filenames_baseline_w_label[1], 
+    #                     filenames_eta8085_w_label[1], filenames_eta8090_w_label[1]]
+    ISEN_sweep_labels = [sco2_filenames.get_sweep_label(BASE.BASELINE), 
+                         sco2_filenames.get_sweep_label(BASE.ETA8085), 
+                         sco2_filenames.get_sweep_label(BASE.ETA8090)]
     plot_comparisons_duo(list_of_best_dict_list_with_kwarg, final_sweep_labels, ISEN_sweep_labels, COST_PER_kW_info, show_config_list,
                      figsize=figsize_double)
     
     # Plot PHX Costs
-    COST_PHX_sweep_labels = [filenames_baseline_w_label[1], 
-                             filenames_phxbucklow_w_label[1], filenames_phxbuckhigh_w_label[1]]
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, COST_PHX_sweep_labels, COST_PER_kW_info, show_config_list)
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, COST_PHX_sweep_labels, COST_PER_kW_info, show_config_list,
-    #                 is_norm=True)
+    #COST_PHX_sweep_labels = [filenames_baseline_w_label[1], 
+    #                         filenames_phxbucklow_w_label[1], filenames_phxbuckhigh_w_label[1]]
+    COST_PHX_sweep_labels = [sco2_filenames.get_sweep_label(BASE.BASELINE), 
+                             sco2_filenames.get_sweep_label(BASE.PHXBUCKLO), 
+                             sco2_filenames.get_sweep_label(BASE.PHXBUCKHI)]
+
     plot_comparisons_duo(list_of_best_dict_list_with_kwarg, final_sweep_labels, COST_PHX_sweep_labels, COST_PER_kW_info, show_config_list,
                      figsize=figsize_double)
     
     # Plot "Other" Costs
-    COST_other_sweep_labels = [filenames_baseline_w_label[1], 
-                             filenames_heliocost_w_label[1], 
-                             filenames_recup50_w_label[1], filenames_recup150_w_label[1],
-                             filenames_tes50_w_label[1], filenames_tes150_w_label[1]]
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, COST_other_sweep_labels, COST_PER_kW_info, show_config_list)
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, COST_other_sweep_labels, COST_PER_kW_info, show_config_list,
-    #                 is_norm=True)
+    #COST_other_sweep_labels = [filenames_baseline_w_label[1], 
+    #                         filenames_heliocost_w_label[1], 
+    #                         filenames_recup50_w_label[1], filenames_recup150_w_label[1],
+    #                         filenames_tes50_w_label[1], filenames_tes150_w_label[1]]
+    COST_other_sweep_labels = [sco2_filenames.get_sweep_label(BASE.BASELINE), 
+                             sco2_filenames.get_sweep_label(BASE.HELIO127), 
+                             sco2_filenames.get_sweep_label(BASE.RECUP50),
+                             sco2_filenames.get_sweep_label(BASE.RECUP150),
+                             sco2_filenames.get_sweep_label(BASE.TES50),
+                             sco2_filenames.get_sweep_label(BASE.TES150)]
     plot_comparisons_duo(list_of_best_dict_list_with_kwarg, final_sweep_labels, COST_other_sweep_labels, COST_PER_kW_info, show_config_list,
                      figsize=figsize_double)
 
     # Plot All
-    
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, final_sweep_labels, COST_PER_kW_info, show_config_list,
-    #                 figsize=figsize_local)
-    #plot_comparisons(list_of_best_dict_list_with_kwarg, final_sweep_labels, final_sweep_labels, COST_PER_kW_info, show_config_list,
-    #                 is_norm=True, figsize=figsize_local)
-
     plot_comparisons_duo(list_of_best_dict_list_with_kwarg, final_sweep_labels, final_sweep_labels, COST_PER_kW_info, show_config_list,
                      figsize=(FIG_WIDTH_FULL, 5), bottom_padding=0.2)
     

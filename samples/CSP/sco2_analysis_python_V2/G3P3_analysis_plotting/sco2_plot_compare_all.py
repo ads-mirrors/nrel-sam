@@ -18,8 +18,10 @@ parentDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parentDir)
 exampleFolder = os.path.join(parentDir, 'example')
 coreFolder = os.path.join(parentDir, 'core')
+g3p3paperfinalFolder = os.path.join(parentDir, 'G3P3_paper_final')
 sys.path.append(exampleFolder)
 sys.path.append(coreFolder)
+sys.path.append(g3p3paperfinalFolder)
 
 import sco2_cycle_ssc as sco2_solve
 import design_point_examples as design_pt
@@ -30,6 +32,11 @@ from sco2_plot_g3p3_baseline_FINAL import open_pickle
 import sco2_plot_g3p3_baseline_FINAL
 import concurrent.futures
 from tkinter.filedialog import asksaveasfilename
+import sco2_filenames
+from sco2_filenames import BASE
+from sco2_filenames import TIT550 
+from sco2_filenames import TIT625
+import data_utility
 
 figsize_global = (11, 6)
 fontsize_global = 9
@@ -65,6 +72,12 @@ def open_pickle_mmap(filename, keys=[]):
             partial_dict["run_id"].append(col_id)
             partial_dict["run_filename"].append(filename)
 
+            # Debug
+            basename = os.path.basename(filename)
+            if basename == "Simple.pkl":
+                if col_id == 988:
+                    x = 0
+
         mm.close()
         return return_dict
 
@@ -74,7 +87,7 @@ def plot_comparison(list_of_dict_list_w_kwarg):
 
     pass
 
-def plot_pareto(list_of_dict_list_w_kwarg, final_sweep_labels):
+def plot_pareto(list_of_dict_list_w_kwarg, final_sweep_labels, config_list=[]):
 
     PC_ETA_label = ["eta_thermal_calc", "", "PC Efficiency"]
     COST_PER_kW_NET_label = ["cost_per_kWe_net_ish", "$/kWe", "Cost per kWe Net"]
@@ -87,6 +100,9 @@ def plot_pareto(list_of_dict_list_w_kwarg, final_sweep_labels):
 
         result_dict_list = []
         for result_dict, kwarg in result_dict_list_w_kwarg:
+
+            if (len(config_list) > 0 and (result_dict['config_name'][0] in config_list) == False):
+                continue
             result_dict_list.append(result_dict)
 
         pareto_dict = design_tools.get_min_Y_pareto_multiple(result_dict_list, PC_ETA_label[0], COST_PER_kW_NET_label[0], 50)
@@ -153,6 +169,10 @@ def plot_sco2_pareto(dict_list_w_kwarg, config_list, X_info, Y_info):
 def plot_sco2_vars(dict_list_w_kwarg, sweep_label=''):
 
     sco2_design_vars = sco2_varnames.get_sco2_design_vars_info_list()
+    sco2_design_vars = [
+        ["mc_cooler_q_dot", "MW", "MC Cooler"],
+        ["pc_cooler_q_dot", "MW", "PC Cooler"]
+    ]
     COST_PER_kW_NET_label = ["cost_per_kWe_net_ish", "$/kWe", "Cost per kWe Net"]
 
     # Remove preset color and marker from kwargs
@@ -173,9 +193,12 @@ def plot_sco2_vars(dict_list_w_kwarg, sweep_label=''):
 
 
 
-def plot_all(list_of_dict_list_w_kwarg, final_sweep_labels):
+def plot_all(list_of_dict_list_w_kwarg, final_sweep_labels, Y_info = None):
     PC_ETA_label = ["eta_thermal_calc", "", "PC Efficiency"]
     COST_PER_kW_NET_label = ["cost_per_kWe_net_ish", "$/kWe", "Cost per kWe Net"]
+
+    if Y_info == None:
+        Y_info = COST_PER_kW_NET_label
 
     sweep_dict_list_w_kwarg = []
 
@@ -210,9 +233,36 @@ def plot_all(list_of_dict_list_w_kwarg, final_sweep_labels):
         i += 1
 
     design_tools.plot_scatter_pts(sweep_dict_list_w_kwarg,
-        PC_ETA_label, COST_PER_kW_NET_label, 
+        PC_ETA_label, Y_info, 
         show_legend=True, legend_loc='upper right',show_line=False,
         disk_load=True, title="All config data", is_norm=False) 
+
+def plot_error(list_of_dict_list_w_kwarg, final_sweep_labels, X_info, Y_info):
+    sweep_dict_list_w_kwarg = []
+
+    # Loop through every sweep
+    i = 0
+    for result_dict_list_w_kwarg in list_of_dict_list_w_kwarg:
+
+        # Change color of series
+        local_result_dict_list_w_kwarg = []
+        j = 0
+        for result_dict, kwarg in result_dict_list_w_kwarg:
+            local_kwarg = copy.deepcopy(kwarg)
+            local_kwarg['c'] = sco2_filenames.color_list[j]
+
+            local_result_dict_list_w_kwarg.append([result_dict, local_kwarg])
+            j += 1
+
+        design_tools.plot_scatter_pts(local_result_dict_list_w_kwarg,
+            X_info, Y_info, 
+            show_legend=True, legend_loc='upper right',show_line=False,
+            disk_load=True, title=final_sweep_labels[i], is_norm=False) 
+        
+        i += 1
+
+    
+
 
 def plot_barcharts(best_dict_list_w_kwarg, config_list):
     
@@ -340,281 +390,113 @@ def write_array_to_file(list_list_data, filename=None):
     
     f.close()
 
-def process_sweep_fileset(filenames, sweep_label):
-    # Open files, split by config name
-    # Return dict list with kwarg, best cases?
-
-    # Open Pickles
-    print('Opening pickles...')
-    input_dict_list = []
-    for filename in filenames:
-        input_dict_list.append(open_pickle(filename))
+def get_all_enum():
+    enum_base = [BASE.BASELINE_OPT, BASE.ETA8085, BASE.ETA8090, 
+                BASE.COLDAPP40, BASE.COLDAPP60, 
+                BASE.HELIO127,
+                BASE.RECUP50, BASE.RECUP150,
+                BASE.TES50, BASE.TES150,
+                BASE.PHXBUCKLO, BASE.PHXBUCKHI]
     
-    # Rename config names
-    print('Naming cycles...')
-    is_new_config_names = False
-    presplit = True
-    for result_dict in input_dict_list:
-        NVal = len(result_dict[list(result_dict.keys())[0]])
-        if('config_name' in result_dict == False):
-            result_dict['config_name'] = []
-            for i in range(NVal):
-                result_dict['config_name'].append('')
-        
-        prev_config_name = result_dict['config_name'][0]
+    enum_TIT625 = [TIT625.BASELINE, TIT625.ETA8085, TIT625.ETA8090, 
+                TIT625.COLDAPP40, TIT625.COLDAPP60, 
+                TIT625.HELIO127,
+                TIT625.RECUP50, TIT625.RECUP150,
+                TIT625.TES50, TIT625.TES150,
+                TIT625.PHXBUCKLO, TIT625.PHXBUCKHI]
 
-        for i in range(NVal):
-            cycle_config = result_dict['cycle_config'][i]
-            recomp_frac = result_dict['recomp_frac'][i]
-            bypass_frac = 0 if (('bypass_frac' in result_dict) == False) else result_dict['bypass_frac'][i]
-            LTR_UA = result_dict['LTR_UA_calculated'][i]
-            HTR_UA = result_dict['HTR_UA_calculated'][i]
-            is_LTR = LTR_UA > 0
-            is_HTR = HTR_UA > 0
-            if(is_LTR == False) and (is_HTR == False):
-                x = 0
-
-            new_config_name = sco2_solve.get_config_name(cycle_config, recomp_frac, bypass_frac, is_LTR, is_HTR)
-
-            if new_config_name != result_dict['config_name'][i]:
-                result_dict['config_name'][i] = new_config_name
-                is_new_config_names = True
-
-            if result_dict['config_name'][i] != prev_config_name:
-                presplit = False
-
-    # Check if 
-
-    # Split by config name
-    if presplit == True:
-        print("Skipping dictionary splitting by config name...")
-        result_dict_list = input_dict_list
-    else:
-        print("Splitting dictionaries by config_name...")
-        result_dict_list = design_tools.split_by_config_name_optimized(input_dict_list)
-
-        # Clear original dict (for memory)
-        for input_dict in input_dict_list:
-            input_dict.clear()
-
-    # make dict_list_with_kwarg
-    dict_list_with_kwargs = []
-    marker_list = design_tools.get_marker_list()
-    i = 0
-    for result_dict in result_dict_list:
-        config_name = result_dict['config_name'][0]
-        dict_w_kwarg = [result_dict, {'label':config_name, 'marker':marker_list[i]}]
-        dict_list_with_kwargs.append(dict_w_kwarg)
-        i += 1
-
-    # Get Best Cases
-    print("Finding best $/kWe cases...")
-    best_dict_list_with_kwarg = []
-    for dict_kwarg in dict_list_with_kwargs:
-        diction = dict_kwarg[0]
-        kwarg = copy.deepcopy(dict_kwarg[1])
-        if('marker' in kwarg) == False:
-            kwarg['marker'] = 'X'
-        kwarg['label'] = 'Best ' + kwarg['label']
-        kwarg['c'] = 'black'
-        best_dict = sco2_plot_g3p3_baseline_FINAL.get_best_dict(diction, "cost_per_kWe_net_ish", False)
-        best_dict_list_with_kwarg.append([best_dict, kwarg])
-
-
-
-    return [dict_list_with_kwargs, best_dict_list_with_kwarg, sweep_label]
-
-def process_sweep_fileset_optimized(filenames, sweep_label, color, result_queue, key_list):
-    # Open files, split by config name
-    # Return dict list with kwarg, best cases?
-
-    # Open Pickles
-    print('Opening pickles...')
-    input_dict_list = []
-
-    # Track memory before and after operations
-    print(f"Memory before loading: {psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB")
-
-    for filename in filenames:
-        #input_dict_list.append(open_pickle(filename))
-        input_dict_list.append(open_pickle_mmap(filename, key_list))
-
-    # Rename config names
-    print('Naming cycles...')
-    is_new_config_names = False
-    presplit = True
-    for result_dict in input_dict_list:
-        NVal = len(result_dict[list(result_dict.keys())[0]])
-        if('config_name' in result_dict == False):
-            result_dict['config_name'] = []
-            for i in range(NVal):
-                result_dict['config_name'].append('')
-        
-        prev_config_name = result_dict['config_name'][0]
-
-        for i in range(NVal):
-            cycle_config = result_dict['cycle_config'][i]
-            recomp_frac = result_dict['recomp_frac'][i]
-            bypass_frac = 0 if (('bypass_frac' in result_dict) == False) else result_dict['bypass_frac'][i]
-            LTR_UA = result_dict['LTR_UA_calculated'][i]
-            HTR_UA = result_dict['HTR_UA_calculated'][i]
-            is_LTR = LTR_UA > 0
-            is_HTR = HTR_UA > 0
-            if(is_LTR == False) and (is_HTR == False):
-                x = 0
-
-            if bypass_frac == '':
-                bypass_frac = 0
-
-            new_config_name = sco2_solve.get_config_name(cycle_config, recomp_frac, bypass_frac, is_LTR, is_HTR)
-
-            if new_config_name != result_dict['config_name'][i]:
-                result_dict['config_name'][i] = new_config_name
-                is_new_config_names = True
-
-            if result_dict['config_name'][i] != prev_config_name:
-                presplit = False
-
-    # Split by config name
-    if presplit == True:
-        print("Skipping dictionary splitting by config name...")
-        result_dict_list = input_dict_list
-    else:
-        print("Splitting dictionaries by config_name...")
-        result_dict_list = design_tools.split_by_config_name_optimized(input_dict_list)
-
-        # Clear original dict (for memory)
-        for input_dict in input_dict_list:
-            input_dict.clear()
-
-
-    # Make dict_list_with_kwarg
-    dict_list_with_kwargs = []
-    marker_list = design_tools.get_marker_list()
-    for i, result_dict in enumerate(result_dict_list):
-        config_name = result_dict['config_name'][0]
-        dict_w_kwarg = [result_dict, {'label': config_name, 
-                                      'marker': marker_list[i],
-                                      'c':color}]
-        dict_list_with_kwargs.append(dict_w_kwarg)
-
-    # Get Best Cases
-    print("Finding best $/kWe cases...")
-    best_dict_list_with_kwarg = []
-    for dict_kwarg in dict_list_with_kwargs:
-        diction = dict_kwarg[0]
-        kwarg = copy.deepcopy(dict_kwarg[1])
-        kwarg.setdefault('marker', 'X')
-        kwarg['label'] = 'Best ' + kwarg['label']
-        kwarg['c'] = color
-        best_dict = sco2_plot_g3p3_baseline_FINAL.get_best_dict_optimized(diction, "cost_per_kWe_net_ish", False)
-        best_dict_list_with_kwarg.append([best_dict, kwarg])
-
-     # Put the result in the queue
-    result_queue.put([dict_list_with_kwargs, best_dict_list_with_kwarg, sweep_label])
-    #result_queue.put([result_dict_list])
-
-    # Clear memory
-    del input_dict_list
-    del result_dict_list
-    input_dict_list = None
-    gc.collect()
-
-    print(f"Memory after cleanup: {psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB")
-    #del dict_list_with_kwargs
-    #del best_dict_list_with_kwarg
-    #
+    enum_TIT550 = [TIT550.BASELINE, TIT550.ETA8085, TIT550.ETA8090, 
+                TIT550.COLDAPP40, TIT550.COLDAPP60, 
+                TIT550.HELIO127,
+                TIT550.RECUP50, TIT550.RECUP150,
+                TIT550.TES50, TIT550.TES150,
+                TIT550.PHXBUCKLO, TIT550.PHXBUCKHI]
     
-    return
+    enum_all = enum_base
+    enum_all.extend(enum_TIT625)
+    enum_all.extend(enum_TIT550)
+    
 
+    return enum_all
+    
+    
 
 def test_compare():
 
     presplit = True
+    enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090, 
+                BASE.COLDAPP40, BASE.COLDAPP40, 
+                BASE.TIT550, BASE.TIT625,
+                BASE.HELIO127,
+                BASE.RECUP50, BASE.RECUP150, BASE.RECUP1000,
+                BASE.TES50, BASE.TES150, BASE.TES1000,
+                BASE.PHXBUCKLO, BASE.PHXBUCKHI,
+                BASE.PHXBUCKHI10x,
+                BASE.HELIO127_PHXBUCKHI,
+                BASE.HELIO10x, BASE.HELIO100x]
 
-    filenames_baseline_w_label = sco2_filenames.get_filenames_baseline(split=presplit)
-    filenames_eta8085_w_label = sco2_filenames.get_filenames_eta8085(split=presplit)
-    filenames_eta8090_w_label = sco2_filenames.get_filenames_eta8090(split=presplit)
-    filenames_coldapproach40_w_label = sco2_filenames.get_filenames_coldapproach40(split=presplit)
-    filenames_coldapproach60_w_label = sco2_filenames.get_filenames_coldapproach60(split=presplit)
-    filenames_TIT550_w_label = sco2_filenames.get_filenames_TIT550(split=presplit)
-    filenames_TIT625_w_label = sco2_filenames.get_filenames_TIT625(split=presplit)
-    filenames_heliocost_w_label = sco2_filenames.get_filenames_heliocost(split=presplit)
-    filenames_recup50_w_label = sco2_filenames.get_filenames_recup50(split=presplit)
-    filenames_recup150_w_label = sco2_filenames.get_filenames_recup150(split=presplit)
-    filenames_recup1000_w_label = sco2_filenames.get_filenames_recup1000(split=presplit)
-    filenames_tes50_w_label = sco2_filenames.get_filenames_tes50(split=presplit)
-    filenames_tes150_w_label = sco2_filenames.get_filenames_tes150(split=presplit)
-    filenames_tes1000_w_label = sco2_filenames.get_filenames_tes1000(split=presplit)
-    filenames_phxbucklow_w_label = sco2_filenames.get_filenames_phxbucklow(split=presplit)
-    filenames_phxbuckhigh_w_label = sco2_filenames.get_filenames_phxbuckhigh(split=presplit)
-    filenames_phxbuckhigh10x_w_label = sco2_filenames.get_filenames_phxbuckhigh10x(split=presplit)
-    filenames_helio_phxbuckhigh_w_label = sco2_filenames.get_filenames_helio_phxbuckhigh(split=presplit)
-    filenames_helio10x_w_label = sco2_filenames.get_filenames_helio10x(split=presplit)
-    filenames_helio100x_w_label = sco2_filenames.get_filenames_helio100x(split=presplit)
+    enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090, 
+                BASE.COLDAPP40, BASE.COLDAPP40, 
+                BASE.TIT550, BASE.TIT625,
+                BASE.HELIO127,
+                BASE.RECUP50, BASE.RECUP150,
+                BASE.TES50, BASE.TES150,
+                BASE.PHXBUCKLO, BASE.PHXBUCKHI]
 
-    filenames_list_w_label = [filenames_baseline_w_label, filenames_eta8085_w_label, filenames_eta8090_w_label, 
-                              filenames_coldapproach40_w_label, filenames_coldapproach60_w_label, 
-                              filenames_TIT550_w_label, filenames_TIT625_w_label,
-                              filenames_heliocost_w_label,
-                              filenames_recup50_w_label, filenames_recup150_w_label, filenames_recup1000_w_label,
-                              filenames_tes50_w_label, filenames_tes150_w_label, filenames_tes1000_w_label,
-                              filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label,
-                              filenames_phxbuckhigh10x_w_label,
-                              filenames_helio_phxbuckhigh_w_label,
-                              filenames_helio10x_w_label, filenames_helio100x_w_label]
+    enum_list = [BASE.BASELINE]
+
     
-    filenames_list_w_label = [filenames_baseline_w_label, filenames_eta8085_w_label, filenames_eta8090_w_label, 
-                              filenames_coldapproach40_w_label, filenames_coldapproach60_w_label, 
-                              filenames_TIT550_w_label, filenames_TIT625_w_label,
-                              filenames_heliocost_w_label,
-                              filenames_recup50_w_label, filenames_recup150_w_label,
-                              filenames_tes50_w_label, filenames_tes150_w_label,
-                              filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label,
-                              ]
 
-    #filenames_list_w_label = [filenames_baseline_w_label, 
-    #                          filenames_heliocost_w_label,
-    #                          filenames_recup50_w_label, filenames_recup150_w_label,
-    #                          filenames_tes50_w_label, filenames_tes150_w_label,
-    #                          ]
+    enum_list = [TIT550.BASELINE, TIT550.ETA8085]
 
-    #filenames_list_w_label = [filenames_baseline_w_label, filenames_heliocost_w_label]
+    enum_list = [TIT550.BASELINE, TIT550.ETA8085, TIT550.ETA8090,
+                 TIT550.RECUP50, TIT550.RECUP150,
+                TIT550.TES50, TIT550.TES150,
+                TIT550.PHXBUCKLO, TIT550.PHXBUCKHI]
 
-    filenames_list_w_label = [filenames_baseline_w_label]
+    enum_list = [BASE.BASELINE, TIT550.BASELINE, TIT625.BASELINE]
 
-    #filenames_list_w_label = [filenames_baseline_w_label,
-    #                          filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label]
-    #filenames_list_w_label = [filenames_baseline_w_label]
+    enum_list = [TIT625.BASELINE, TIT625.ETA8085, TIT625.ETA8090]
+    #enum_list = [BASE.BASELINE, BASE.BASELINE_OPT]
+    
+    enum_list = [TIT550.BASELINE, TIT550.COLDAPP40, TIT550.COLDAPP60]
 
-    #filenames_list_w_label = [filenames_TIT550_w_label]
-#
-    #filenames_list_w_label = [filenames_baseline_w_label,
-    #                          filenames_recup50_w_label, filenames_recup150_w_label]
-#
-    #filenames_list_w_label = [filenames_baseline_w_label,
-    #                          filenames_tes50_w_label, filenames_tes150_w_label]
-#
-    #filenames_list_w_label = [filenames_baseline_w_label,
-    #                          filenames_helio10x_w_label, filenames_helio100x_w_label]
-    #
-    #filenames_list_w_label = [filenames_baseline_w_label,
-    #                          filenames_eta8085_w_label, filenames_eta8090_w_label]
-#
-    filenames_list_w_label = [filenames_baseline_w_label, 
-                              filenames_TIT550_w_label, filenames_TIT625_w_label]
+    enum_list = [TIT550.BASELINE, TIT550.ETA8085, TIT550.ETA8090,
+                 TIT550.COLDAPP40, TIT550.COLDAPP60, 
+                 TIT550.HELIO127, 
+                 TIT550.PHXBUCKLO, TIT550.PHXBUCKHI,
+                 TIT550.RECUP50, TIT550.RECUP150, TIT550.RECUP1000,
+                 TIT550.TES50, TIT550.TES150, TIT550.TES1000]
 
-    #filenames_list_w_label = [filenames_baseline_w_label, 
-    #                          filenames_coldapproach40_w_label, filenames_coldapproach60_w_label,
-    #                          filenames_TIT550_w_label, filenames_TIT625_w_label,]
-#
-    #filenames_list_w_label = [filenames_baseline_w_label, filenames_phxbucklow_w_label, filenames_phxbuckhigh_w_label]
-#
-    #filenames_list_w_label = [filenames_baseline_w_label, filenames_recup50_w_label, filenames_recup150_w_label, filenames_recup1000_w_label,
-    #                          filenames_tes50_w_label, filenames_tes150_w_label, filenames_tes1000_w_label,
-    #                          filenames_helio10x_w_label, filenames_helio100x_w_label]
-#
-    #filenames_list_w_label = [filenames_baseline_w_label, filenames_TIT550_w_label, filenames_TIT625_w_label]
+    enum_list = [TIT625.BASELINE, TIT625.ETA8085, TIT625.ETA8090,
+                 TIT625.COLDAPP40, TIT625.COLDAPP60, TIT625.HELIO127, 
+                 TIT625.PHXBUCKLO, TIT625.PHXBUCKHI,
+                 TIT625.RECUP50, TIT625.RECUP150, TIT625.RECUP1000,
+                 TIT625.TES50, TIT625.TES150, TIT625.TES1000]
+    #enum_list = [BASE.BASELINE, TIT625.BASELINE, TIT625.COLDAPP40, TIT625.COLDAPP60,
+    #             TIT550.BASELINE, TIT550.COLDAPP40, TIT550.COLDAPP60]
+
+    enum_list = [BASE.BASELINE_OPT, TIT550.BASELINE, TIT625.BASELINE]
+
+    #enum_list = [BASE.PHXBUCKLO, BASE.PHXBUCKHI,
+    #             TIT625.PHXBUCKLO, TIT625.PHXBUCKHI,
+    #             TIT550.PHXBUCKLO, TIT550.PHXBUCKHI]
+    #enum_list = [TIT625.RECUP150]
+    enum_list = get_all_enum()
+
+    enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090,
+                 BASE.COLDAPP40, BASE.COLDAPP60,
+                 BASE.TIT550, BASE.TIT625,
+                 BASE.HELIO127,
+                 BASE.RECUP50, BASE.RECUP150,
+                 BASE.TES50, BASE.TES150,
+                 BASE.PHXBUCKLO, BASE.PHXBUCKHI]
+
+    #enum_list = [BASE.COLDAPP60]
+
+    filenames_list_w_label = []
+    for enum in enum_list:
+        filenames_list_w_label.append(sco2_filenames.get_file_via_enum(enum, presplit))
 
     list_of_dict_list_w_kwargs = []
     list_of_best_dict_list_with_kwarg = []
@@ -643,42 +525,18 @@ def test_compare():
                 "is_PR_fixed", "is_IP_fixed", "is_recomp_ok",
                 "is_turbine_split_ok", "is_bypass_ok",
                 "HTR_cost_equipment", "LTR_cost_equipment",
-                "recup_total_cost_equipment"]
+                "recup_total_cost_equipment",
+                "mc_cooler_q_dot", "pc_cooler_q_dot",
+                "id", "UA_BPX", "BPX_cost_equipment", "T_htf_bp_out_des",
+                "q_dot_in_total", "mc_cooler_q_dot", "pc_cooler_q_dot"]
 
-    #key_list = sco2_varnames.get_core_var_list()
+    output = data_utility.open_file_set_w_label(filenames_list_w_label, key_list)
+    list_of_dict_list_w_kwargs = output[0]
+    list_of_best_dict_list_with_kwarg = output[1]
+    final_sweep_labels = output[2]
 
-    # Create a queue to hold the results
-    with Manager() as manager:
-        result_queue = manager.Queue()
-
-        with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
-            futures = [executor.submit(process_sweep_fileset_optimized, filenames_w_label[0], filenames_w_label[1], filenames_w_label[2], 
-                                       result_queue, key_list) 
-                       for filenames_w_label in filenames_list_w_label]
-
-        # Wait for all futures to complete
-        concurrent.futures.wait(futures)
-
-        # Collect all results from the queue
-        while not result_queue.empty():
-            dict_list_w_kwargs, best_dict_list_with_kwarg, sweep_label = result_queue.get()
-            list_of_dict_list_w_kwargs.append(dict_list_w_kwargs)
-            list_of_best_dict_list_with_kwarg.append(best_dict_list_with_kwarg)
-            final_sweep_labels.append(sweep_label)
-
-        # Create mapping based on the original order in filenames_list_w_label
-        label_order = [label for _, label, _ in filenames_list_w_label]
-        expected_order = {label: idx for idx, label in enumerate(label_order)}
-
-        # Sort the collected results to match the original order
-        sorted_indices = []
-        for i, label in enumerate(final_sweep_labels):
-            sorted_indices.append(expected_order[label])
-
-        # Apply sorting to all three lists
-        list_of_dict_list_w_kwargs = [x for _, x in sorted(zip(sorted_indices, list_of_dict_list_w_kwargs))]
-        list_of_best_dict_list_with_kwarg = [x for _, x in sorted(zip(sorted_indices, list_of_best_dict_list_with_kwarg))]
-        final_sweep_labels = [x for _, x in sorted(zip(sorted_indices, final_sweep_labels))]
+    # Set kwarg for best dict list
+    
 
     print('Plotting...')
 
@@ -694,6 +552,8 @@ def test_compare():
     CYCLE_COST_info = ["cycle_cost", "M$", "Cycle Cost"]
     HELIO_COST_info = ["csp.pt.cost.heliostats", "$", "Heliostat Cost"]
     TES_COST_info = ["csp.pt.cost.storage", "$", "Storage Cost"]
+    BP_FRAC_info = ["bypass_frac", "", "Bypass Frac Input"]
+    Q_ERROR_info = ["q_error", "MWt", "Q_error"]
 
     # Save sweep table to file
     if False:
@@ -709,7 +569,7 @@ def test_compare():
 
     # sco2 paretos
     if False:
-        config_list = ["Simple", "Recompression", "HTR BP", "Partial", "Turbine Split Flow"]
+        config_list = ["Turbine Split Flow"]
         for dict_list_w_kwarg in list_of_dict_list_w_kwargs:
             plot_sco2_pareto(dict_list_w_kwarg, config_list, PC_ETA_info, T_HTF_COLD_info)
             plot_sco2_pareto(dict_list_w_kwarg, config_list, PC_ETA_info, COST_PER_kW_info)
@@ -718,7 +578,6 @@ def test_compare():
     if False:
         for dict_list_w_kwarg, sweep_label in zip(list_of_dict_list_w_kwargs, final_sweep_labels):
             plot_sco2_vars(dict_list_w_kwarg, sweep_label)
-
 
     # Cost Bar Plots
     if False:
@@ -729,17 +588,22 @@ def test_compare():
             plot_barcharts(best_dict_list_w_kwarg, config_list_cost_plot)
 
     # Pareto by config
-    if True:
+    if False:
         Y_label = ["recup_total_cost_equipment", "M$", "Recup Cost"]
         Y_label = "recup_over_cycle"
         Y_label = ["cycle_cost", "M$", "Cycle Cost"]
         Y_label = ["UA_recup_tot_des", "MW/K", "Recup Total Conductance"]
         plot_pareto_spec_config(list_of_dict_list_w_kwargs, final_sweep_labels, show_config_list, Y_label=COST_PER_kW_info)
     
-    # Sweep Comparison
+    # Plot Error
     if True:
-        plot_pareto(list_of_dict_list_w_kwargs, final_sweep_labels)
+        plot_error(list_of_dict_list_w_kwargs, final_sweep_labels, COST_PER_kW_info, Q_ERROR_info)
+
+    # Sweep Comparison
+    if False:
+        plot_pareto(list_of_dict_list_w_kwargs, final_sweep_labels, show_config_list)
         plot_all(list_of_dict_list_w_kwargs, final_sweep_labels)
+        
 
         design_tools.plot_sweep_cost_comparison(list_of_best_dict_list_with_kwarg, final_sweep_labels, show_config_list, COST_PER_kW_info, disk_load=True, figsize=figsize_global, fontsize=fontsize_global)
         design_tools.plot_sweep_cost_comparison(list_of_best_dict_list_with_kwarg, final_sweep_labels, show_config_list, COST_PER_kW_info, disk_load=True, is_norm=True, figsize=figsize_global, fontsize=fontsize_global)
@@ -748,6 +612,7 @@ def test_compare():
         design_tools.plot_sweep_cost_comparison(list_of_best_dict_list_with_kwarg, final_sweep_labels, show_config_list, CYCLE_COST_info, disk_load=True, figsize=figsize_global, fontsize=fontsize_global)
         design_tools.plot_sweep_cost_comparison(list_of_best_dict_list_with_kwarg, final_sweep_labels, show_config_list, HELIO_COST_info, disk_load=True, figsize=figsize_global, fontsize=fontsize_global)
         design_tools.plot_sweep_cost_comparison(list_of_best_dict_list_with_kwarg, final_sweep_labels, show_config_list, TES_COST_info, disk_load=True, figsize=figsize_global, fontsize=fontsize_global)
+        design_tools.plot_sweep_cost_comparison(list_of_best_dict_list_with_kwarg, final_sweep_labels, show_config_list, BP_FRAC_info, disk_load=True, figsize=figsize_global, fontsize=fontsize_global)
 
     
 

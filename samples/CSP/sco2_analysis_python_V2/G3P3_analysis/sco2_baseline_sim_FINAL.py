@@ -337,10 +337,13 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, 
+                                                                 global_var_dict["Nproc"], N_run_total=N_cases, 
+                                                                 N_run_curr=run_index_current)
 
         file_name = "partial_G3P3_collection"
-        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = (global_var_dict['folder_location'] + run_folder + file_name 
+                         + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv")
         solve_collection.write_to_csv(combined_name)
 
     finished = ""

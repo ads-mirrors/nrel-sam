@@ -1,59 +1,7 @@
+import os
+from enum import Enum, auto
+
 # Color List (for plotting)
-color_list = [
-    "#FF5733",
-    "#33FF57",
-    "#5733FF",
-    "#F2C037",
-    "#37F2C0",
-    "#C037F2",
-    "#FF8533",
-    "#33FF85",
-    "#8533FF",
-    "#FF3385",
-    "#3385FF",
-    "#85FF33",
-    "#C033FF",
-    "#33C0FF",
-    "#FF33C0",
-    "#FFB833",
-    "#33B8FF",
-    "#B833FF",
-    "#FF33B8",
-    "#B8FF33"
-]
-
-color_list = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', 
-                  '#c2c2f0', '#ffb3e6', '#c4e17f', '#76d7c4', 
-                  '#ff7f50', '#87ceeb', '#da70d6', '#ffa07a', 
-                  '#20b2aa', '#778899', '#b0c4de', '#ff6347', 
-                  '#40e0d0', '#ff69b4', "#FF33B8",
-    "#B8FF33"]
-
-
-
-
-color_list = [
-    "#1A5A7C",  # Dark Blue
-    "#D46A09",  # Dark Orange
-    "#2A7D32",  # Dark Green
-    "#A6231E",  # Dark Red
-    "#6A4C91",  # Dark Purple
-    "#6F4F44",  # Dark Brown
-    "#9E2B73",  # Dark Pink
-    "#585858",  # Dark Gray
-    "#8C8D1D",  # Olive Green
-    "#137A8C",  # Dark Teal
-    "#9D2E30",  # Dark Maroon
-    "#4C6B3C",  # Dark Forest Green
-    "#D77C27",  # Dark Amber
-    "#5A2A56",  # Dark Plum
-    "#4C7E99",  # Dark Light Blue
-    "#7CAEA5",  # Dark Aqua
-    "#D1655F",  # Dark Peach
-    "#5A2A6F",  # Dark Dark Purple
-    "#6A5D89",  # Dark Lavender
-    "#9E8C5A"   # Dark Taupe
-]
 
 color_list = [
     "#000000",  # Black
@@ -83,7 +31,7 @@ color_list = [
     "#F1A7A0"   # Peach (swapped with Burgundy)
 ]
 
-
+linestyle_list = ['-', '--', ':']
 
 
 # Collection of filenames
@@ -782,3 +730,223 @@ def get_filenames_helio100x(split=False):
 
     return [filename_list, sweep_label, color]
 
+
+def get_all_files_from_folder(parent_folder, file_extension='.pkl'):
+
+    if os.path.exists(parent_folder):
+        all_files = os.listdir(parent_folder)
+        # Filter for files with specified extension and create full paths
+        filename_list = [os.path.join(parent_folder, f) for f in all_files if f.endswith(file_extension)]
+        # Sort the list for consistent ordering
+        filename_list.sort()
+        return filename_list
+    else:
+        print(f"Warning: Directory '{parent_folder}' does not exist.")
+        return []
+
+def get_filenames_OPT(split=False):
+    sweep_label = 'Baseline Optimized Par'
+    i = 20
+    color = color_list[i]
+    
+    if split == True:
+        parent_folder = r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_OPT\run_10_20250718_164740\mega_slim_pickled_merged\split_config'
+
+    else:
+        parent_folder = r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_OPT\run_10_20250718_164740\mega_slim_pickled_merged'
+
+    # Use the separate function to get all files from the parent folder
+    filename_list = get_all_files_from_folder(parent_folder)
+
+    return [filename_list, sweep_label, color]
+
+class BASE(Enum):
+    
+    BASELINE = auto()
+    ETA8085 = auto()
+    ETA8090 = auto()
+    COLDAPP40 = auto()
+    COLDAPP60 = auto()
+
+    TIT550 = auto()
+    TIT625 = auto()
+
+    HELIO127 = auto()
+
+    RECUP50 = auto()
+    RECUP150 = auto()
+    RECUP1000 = auto()
+
+    TES50 = auto()
+    TES150 = auto()
+    TES1000 = auto()
+
+    PHXBUCKLO = auto()
+    PHXBUCKHI = auto()
+    
+    PHXBUCKHI10x = auto()
+    HELIO127_PHXBUCKHI = auto()
+    HELIO10x = auto()
+    HELIO100x = auto()
+    BASELINE_OPT = auto()
+    
+
+#class BASE(Enum):
+#    
+#    BASELINE_OPT = auto()
+#    ETA8085 = auto()
+#    ETA8090 = auto()
+#    COLDAPP40 = auto()
+#    COLDAPP60 = auto()
+#    HELIO127 = auto()
+#    PHXBUCKLO = auto()
+#    PHXBUCKHI = auto()
+#    RECUP50 = auto()
+#    RECUP150 = auto()
+#    RECUP1000 = auto()
+#    TES50 = auto()
+#    TES150 = auto()
+#    TES1000 = auto()
+#    
+#    PHXBUCKHI10x = auto()
+#    HELIO127_PHXBUCKHI = auto()
+#    HELIO10x = auto()
+#    HELIO100x = auto()
+#    BASELINE = auto()
+#    TIT550 = auto()
+#    TIT625 = auto()
+
+BASE_dict = {
+    BASE.BASELINE: ["Baseline", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_FINAL\run_10_20250210_142612\mega_slim_pickled_merged"],
+    BASE.BASELINE_OPT: ["Baseline Opt", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_OPT\run_10_20250718_164740\mega_slim_pickled_merged"],
+    BASE.ETA8085: ["ETA C:80% T:85%", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_eta8085\run_10_20250212_210400\mega_slim_pickle_merged"],
+    BASE.ETA8090: ["ETA C:80% T:90%", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\baseline_eta8090\run_10_20250212_165328\mega_slim_pickled_merged"],
+    BASE.COLDAPP40: ["Cold Approach 40 °C", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\coldapproach40\run_10_20250220_133225\mega_slim_pickled_merged"],
+    BASE.COLDAPP60: ["Cold Approach 60 °C", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\coldapproach60\run_10_20250225_164104\mega_slim_pickled_merged"],
+    BASE.TIT550: ["TIT 550 °C", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550\run_10_20250219_111034\mega_slim_pickled_merged"],
+    BASE.TIT625: ["TIT 625 °C", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625\run_10_20250228_160546\mega_slim_pickled_merged"],
+    BASE.HELIO127: ["Heliostat 127 $/m2", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Heliostat Cost SAM Default\run_10_20250210_142612\mega_slim_pickled_merged"],
+    BASE.RECUP50: ["Recuperator Cost 0.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Recup 50\recup50_20250310_114334"],
+    BASE.RECUP150: ["Recuperator Cost 1.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Recup 150\recup150_20250310_114347"],
+    BASE.RECUP1000: ["Recuperator Cost 10x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Recup 1000\recup1000_20250313_144401"],
+    BASE.TES50: ["TES Cost 0.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\TES 50\tes50_20250310_120314"],
+    BASE.TES150: ["TES Cost 1.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\TES 150\tes150_20250310_120325"],
+    BASE.TES1000: ["TES Cost 10x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\TES 1000\tes1000_20250313_143001"],
+    BASE.PHXBUCKLO: ["PHX Buck Low", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\PHX Buck Low\phxbl0_20250313_093120"],
+    BASE.PHXBUCKHI: ["PHX Buck High", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\PHX Buck High\phxbhi_20250313_093131"],
+    BASE.PHXBUCKHI10x: ["PHX Buck High 10x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\PHX Buck High 10x\phxh10_20250313_094756"],
+    BASE.HELIO127_PHXBUCKHI: ["Helio 127 PHX Buck High", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Helio PHX Buck High\helio_phxbhi_20250313_163556"],
+    BASE.HELIO10x: ["Heliostat Cost 10x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Heliostat Cost 10x\h10_20250325_162534"],
+    BASE.HELIO100x: ["Heliostat Cost 100x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\Sensitivity\Heliostat Cost 100x\h100_20250325_162731"],
+}
+
+class TIT550(Enum):
+    BASELINE = auto()
+    ETA8085 = auto()
+    ETA8090 = auto()
+    COLDAPP40 = auto()
+    COLDAPP60 = auto()
+    HELIO127 = auto()
+    PHXBUCKLO = auto()
+    PHXBUCKHI = auto()
+    RECUP50 = auto()
+    RECUP150 = auto()
+    RECUP1000 = auto()
+    TES50 = auto()
+    TES150 = auto()
+    TES1000 = auto()
+
+TIT550_dict = {
+    TIT550.BASELINE : [ "TIT550 Optimized", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\mega_slim_pickled_merged'],
+    TIT550.ETA8085 : ["TIT550 ETA C:80% T:85%", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_eta8085\run_10_20250718_203708\mega_slim_pickled_merged'],
+    TIT550.ETA8090 : ["TIT550 ETA C:80% T:90%", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_eta8090\run_10_20250720_203224\mega_slim_pickled_merged'],
+    TIT550.COLDAPP40 : ["TIT550 Cold Approach 40 °C", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_coldapproach40\run_10_20250728_163300\mega_slim_pickled_merged'],
+    TIT550.COLDAPP60 : ["TIT550 Cold Approach 60 °C", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_coldapproach60\run_10_20250729_155626\mega_slim_pickled_merged'],
+    TIT550.HELIO127 : ["TIT550 Heliostat 127 $/m2", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\helio127_20250721_151340"],
+    TIT550.PHXBUCKLO : ["TIT550 PHX Buck Low", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\phxblo_20250721_150724"],
+    TIT550.PHXBUCKHI : ["TIT550 PHX Buck High", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\phxbhi_20250721_150739"],
+    TIT550.RECUP50 : ["TIT550 Recuperator Cost 0.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\recup50_20250721_150641"],
+    TIT550.RECUP150 : ["TIT550 Recuperator Cost 1.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\recup150_20250721_150655"],
+    TIT550.RECUP1000 : ["TIT550 Recuperator Cost 10x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\recup1000_20250721_150709"],
+    TIT550.TES50 : ["TIT550 TES Cost 0.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\tes50_20250721_150604"],
+    TIT550.TES150 : ["TIT550 TES Cost 1.5x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\tes150_20250721_150615"],
+    TIT550.TES1000 : ["TIT550 TES Cost 10x", r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT550_baseline_OPT\run_10_20250718_113615\post\tes1000_20250721_150627"]
+
+}
+
+class TIT625(Enum):
+    BASELINE = auto()
+    ETA8085 = auto()
+    ETA8090 = auto()
+    COLDAPP40 = auto()
+    COLDAPP60 = auto()
+    HELIO127 = auto()
+    PHXBUCKLO = auto()
+    PHXBUCKHI = auto()
+    RECUP50 = auto()
+    RECUP150 = auto()
+    RECUP1000 = auto()
+    TES50 = auto()
+    TES150 = auto()
+    TES1000 = auto()
+
+TIT625_dict = {
+    TIT625.BASELINE : [ "TIT625 Optimized", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\mega_slim_pickled_merged'],
+    TIT625.ETA8085 : ["TIT625 ETA C:80% T:85%", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_eta8085\run_10_20250723_164049\mega_slim_pickled_merged'],
+    TIT625.ETA8090 : ["TIT625 ETA C:80% T:90%", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_eta8090\run_10_20250725_165741\mega_slim_pickled_merged'],
+    TIT625.COLDAPP40 : ["TIT625 Cold Approach 40 °C", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_coldapproach40\run_10_20250801_092726\mega_slim_pickled_merged'],
+    TIT625.COLDAPP60 : ["TIT625 Cold Approach 60 °C", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_coldapproach60\run_10_20250801_192238\mega_slim_pickled_merged'],
+    TIT625.HELIO127 : ["TIT625 Heliostat 127 $/m2", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\helio127_20250801_093753'],
+    TIT625.PHXBUCKLO : ["TIT625 PHX Buck Low", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\phxblo_20250801_093715'],
+    TIT625.PHXBUCKHI : ["TIT625 PHX Buck High", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\phxbhi_20250801_093735'],
+    TIT625.RECUP50 : ["TIT625 Recuperator Cost 0.5x", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\recup50_20250801_093615'],
+    TIT625.RECUP150 : ["TIT625 Recuperator Cost 1.5x", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\recup150_20250801_093635'],
+    TIT625.RECUP1000 : ["TIT625 Recuperator Cost 10x", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\recup1000_20250801_093655'],
+    TIT625.TES50 : ["TIT625 TES Cost 0.5x", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\tes50_20250801_093518'],
+    TIT625.TES150 : ["TIT625 TES Cost 1.5x", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\tes150_20250801_093538'],
+    TIT625.TES1000 : ["TIT625 TES Cost 10x", r'C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\runs\TIT625_baseline_OPT\run_10_20250721_170456\post\tes1000_20250801_093556'],
+    }
+
+def get_file_via_enum(enum, split=False):
+    """
+    Generic function that works with both BASE and TIT550 enums.
+    Automatically determines which dictionary to use based on enum type.
+    """
+    # Determine which dictionary to use based on enum type
+    sweep_id = 0
+    if isinstance(enum, BASE):
+        config_dict = BASE_dict
+        sweep_id = 0
+    elif isinstance(enum, TIT625):
+        config_dict = TIT625_dict
+        sweep_id = 1
+    elif isinstance(enum, TIT550):
+        config_dict = TIT550_dict
+        sweep_id = 2
+    
+    else:
+        raise ValueError(f"Unsupported enum type: {type(enum)}")
+    
+    folder = config_dict[enum][1]
+    sweep_label = config_dict[enum][0]
+    color = color_list[enum.value - 1]  # Convert enum to 0-based index
+    linestyle = linestyle_list[sweep_id]
+
+    kwarg_dict = {'c':color, 'linestyle':linestyle}
+
+    if split == True:
+        folder = os.path.join(folder, "split_config")
+
+    filename_list = get_all_files_from_folder(folder)
+
+    return [filename_list, sweep_label, kwarg_dict]
+
+def get_sweep_label(enum):
+    if isinstance(enum, BASE):
+        config_dict = BASE_dict
+    elif isinstance(enum, TIT550):
+        config_dict = TIT550_dict
+    else:
+        raise ValueError(f"Unsupported enum type: {type(enum)}")
+    
+    return config_dict[enum][0]

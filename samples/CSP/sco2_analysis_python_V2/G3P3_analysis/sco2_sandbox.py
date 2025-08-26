@@ -3,6 +3,9 @@ import os
 import numpy as np
 import math
 from tkinter.filedialog import asksaveasfilename
+from tkinter.filedialog import askopenfilename
+import pickle
+import multiprocessing
 
 parentDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parentDir)
@@ -529,6 +532,80 @@ def test_tsf_inflation():
     else:
         print("tsf inflation looks good")
 
+def run_sco2_case_from_GUI():
+    
+    filename = askopenfilename(filetypes =[
+            ('All supported', '*.pkl *.txt *.tsv'),
+            ('Pickle files', '*.pkl'),
+            ('Text files', '*.txt'),
+            ('Tab-separated', '*.tsv')],
+          title="Open htrbp pkl file")
+    _, ext = os.path.splitext(filename)
+
+    result_dict = {}
+
+    match ext:
+        case ".txt" | ".tsv":
+            result_dict = design_tools.get_dict_from_file_w_STRING(filename)
+        case ".pkl":
+            with open(filename, 'rb') as f:
+                result_dict = pickle.load(f)
+
+    # Get default par
+    sim_dict = design_pt.get_sco2_G3P3()
+
+    # Overwrite all keys in sim_dict
+    for key in sim_dict:
+        if key in result_dict:
+            sim_dict[key] = result_dict[key][0]
+        else:
+            trouble = 0
+
+    # Add missing keys
+    sim_dict['T_bypass_target'] = 0
+    sim_dict['deltaT_bypass'] = 0
+
+    # Make Cycle class
+    c_sco2 = sco2_solve.C_sco2_sim(result_dict['cycle_config'][0])
+
+    # Overwrite Variables
+    c_sco2.overwrite_default_design_parameters(sim_dict)            
+    
+    # Solve
+    c_sco2.solve_sco2_case()
+    solve_dict = c_sco2.m_solve_dict
+
+    if c_sco2.m_solve_success == False:
+        return
+
+    # Add cmod success var
+    solve_dict['cmod_success'] = True
+    solve_dict['id'] = 0
+    solve_dict['filename'] = os.path.basename(filename)
+
+    # Run G3P3
+    sys.path.append(r"C:\Users\tbrown2\OneDrive - NREL\sCO2-CSP 10302.41.01.40\Notes\G3P3\Design Point\G3P3_python_design_point")
+    import g3p3_design_sim
+
+    manager = multiprocessing.Manager()
+    solve_dict_queue = manager.Queue()
+
+    g3p3_design_sim.run_once_solve_dict(solve_dict, solve_dict_queue)
+    g3p3_solve_dict = solve_dict_queue.get()
+
+    # Make mega g3p3 dict
+    mega_dict = {}
+    for sco2_key in solve_dict:
+        mega_dict[sco2_key] = solve_dict[sco2_key]
+    for g3p3_key in g3p3_solve_dict:
+        mega_dict[g3p3_key] = g3p3_solve_dict[g3p3_key]
+
+    # Save
+    save_filename = asksaveasfilename(filetypes =[('Text file', '*.txt')], title="Select save file")
+    design_tools.write_dict(save_filename, mega_dict, '\t')   
+    
+        
+
 
 if __name__ == "__main__":
     #run_bad_partial()
@@ -538,9 +615,10 @@ if __name__ == "__main__":
     #test_recomp()
     #test_partial_no_recomp()
     #test_simple_cost_htr()
-    test_recomp_inflation()
-    test_partial_inflation()
-    test_htrbp_inflation()
-    test_tsf_inflation()
+    run_sco2_case_from_GUI()
+    #test_recomp_inflation()
+    #test_partial_inflation()
+    #test_htrbp_inflation()
+    #test_tsf_inflation()
     #get_IP_pressure_range()
     #run_bad_partial()

@@ -9,17 +9,41 @@ parentDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parentDir)
 exampleFolder = os.path.join(parentDir, 'example')
 coreFolder = os.path.join(parentDir, 'core')
+simsharedFolder = os.path.join(parentDir, 'sco2_sim_shared')
 sys.path.append(exampleFolder)
 sys.path.append(coreFolder)
+sys.path.append(simsharedFolder)
 
 import design_point_examples as design_pt
+import json
+import sco2_baseline_parameters as sco2_pars
+import sco2_sim_core
+
 
 # Global variables
 
-folder_location = "C:\\Users\\tbrown2\\OneDrive - NREL\\sCO2-CSP 10302.41.01.40\\Notes\\G3P3\\runs\\baseline_FINAL_nodes\\"
-Nproc = 20
+#folder_location = "C:\\Users\\tbrown2\\OneDrive - NREL\\sCO2-CSP 10302.41.01.40\\Notes\\G3P3\\runs\\baseline_FINAL\\"
+#Nproc = 16
+run_name = "baseline_OPT"
+
+global_var_dict = {}
+is_global_var = False
+
 eta_cutoff = 0.2
 N_per_batch = 50000
+
+def initialize_global_var():
+    local_var_dict = {}
+
+    json_file_path = os.path.join(parentDir, 'local_var.json')
+    if os.path.exists(json_file_path):
+        with open(json_file_path, 'r') as json_file:
+            local_var_dict = json.load(json_file)
+
+    global global_var_dict
+    global is_global_var
+    global_var_dict = local_var_dict
+    is_global_var = True
 
 # Default Case Parameters
 
@@ -75,7 +99,7 @@ def get_sco2_G3P3():
     des_par["dT_mc_approach"] = 6.0  # [C] Use 6 here per Neises & Turchi 19. Temperature difference between main compressor CO2 inlet and ambient air
 
     # Pressure
-    des_par["PHX_co2_deltaP_des_in"] = 0.01  # [kPa] Relative pressure loss
+    des_par["PHX_co2_deltaP_des_in"] = 0.0056  # [kPa] Relative pressure loss
     des_par["deltaP_cooler_frac"] = 0.005  # [-] Fraction of CO2 inlet pressure that is design point cooler CO2 pressure drop
     des_par["is_P_high_fixed"] = 1  # 0 = No, optimize. 1 = Yes (=P_high_limit)
     des_par["P_high_limit"] = 25  # [MPa] Cycle high pressure limit
@@ -88,15 +112,16 @@ def get_sco2_G3P3():
     des_par["HTR_HP_deltaP_des_in"] = HP_deltaP  # [-]
 
     # Recuperators
-    
+    eff_max = 0.999
         # LTR
     des_par["LTR_design_code"] = 2        # 1 = UA, 2 = min dT, 3 = effectiveness
     des_par["LTR_min_dT_des_in"] = 10.0   # [C] (required if LTR_design_code == 2)
-    
+    des_par["LT_recup_eff_max"] = eff_max    # [-] Maximum effectiveness low temperature recuperator
 
         # HTR
     des_par["HTR_design_code"] = 2        # 1 = UA, 2 = min dT, 3 = effectiveness
     des_par["HTR_min_dT_des_in"] = 10.0   # [C] (required if LTR_design_code == 2)
+    des_par["HT_recup_eff_max"] = eff_max  # [-] Maximum effectiveness high temperature recuperator
 
     des_par["eta_thermal_cutoff"] = eta_cutoff
 
@@ -116,19 +141,20 @@ def get_sco2_G3P3():
     # Default
     des_par["deltaP_counterHX_frac"] = 0.0054321  # [-] Fraction of CO2 inlet pressure that is design point counterflow HX (recups & PHX) pressure drop
     des_par["deltaT_bypass"] = 0
-
+    
+    des_par["yr_inflation"] = 2024
 
     # NOT USED
 
     # LTR
-    eff_max = 1
+    
     
     des_par["LTR_eff_des_in"] = 0.895     # [-] (required if LTR_design_code == 3)
-    des_par["LT_recup_eff_max"] = eff_max    # [-] Maximum effectiveness low temperature recuperator
+    
     
     # HTR
     des_par["HTR_eff_des_in"] = 0.945      # [-] (required if LTR_design_code == 3)
-    des_par["HT_recup_eff_max"] = eff_max  # [-] Maximum effectiveness high temperature recuperator
+    
 
     des_par["eta_thermal_des"] = 0.44  # [-] Target power cycle thermal efficiency (used when design_method == 1)
     
@@ -139,20 +165,21 @@ def get_sco2_G3P3():
 # Methods for each config type
 
 def run_G3P3_tsf_sweep(n_par, run_folder = ''):
-
     # Define constant parameters
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 4
     
+    # Get design parameter ranges
+    design_var_dict = sco2_pars.get_design_vars_opt()
 
     # Organize Variable Combinations
     Npts = n_par
-    ltr_ua_frac_list = np.linspace(0,1.0,Npts, True)
-    min_pressure = 5
-    max_pressure = 13
+    ltr_ua_frac_list = np.linspace(design_var_dict['LTR_UA_split'][0],design_var_dict['LTR_UA_split'][1],Npts, True)
+    min_pressure = design_var_dict['is_PR_fixed'][0]
+    max_pressure = design_var_dict['is_PR_fixed'][1]
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
-    UA_total_list = np.linspace(100, 5000, Npts, True)
-    split_frac_list = np.linspace(0, 0.7, Npts, True)
+    UA_total_list = np.linspace(design_var_dict['UA_recup_tot_des'][0],design_var_dict['UA_recup_tot_des'][1], Npts, True)
+    split_frac_list = np.linspace(design_var_dict['tsf_split_frac'][0],design_var_dict['tsf_split_frac'][1], Npts, True)
 
     dict_list = design_pt.make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
@@ -175,10 +202,10 @@ def run_G3P3_tsf_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "TSF_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -189,16 +216,17 @@ def run_G3P3_recomp_sweep(n_par, run_folder = ''):
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 1
 
+    # Get design parameter ranges
+    design_var_dict = sco2_pars.get_design_vars_opt()
+
     # Organize Variable Combinations
     Npts = n_par
-    ltr_ua_frac_list = np.linspace(0,1.0,Npts, True)
-    min_pressure = 5
-    max_pressure = 13
+    ltr_ua_frac_list = np.linspace(design_var_dict['LTR_UA_split'][0],design_var_dict['LTR_UA_split'][1],Npts, True)
+    min_pressure = design_var_dict['is_PR_fixed'][0]
+    max_pressure = design_var_dict['is_PR_fixed'][1]
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
-    UA_total_list = np.linspace(100, 5000, Npts, True)
-    recomp_frac_list = np.linspace(0, 0.7, Npts, True)
-    eta_compressor_list = np.linspace(0.7, 0.9, 5, True)
-    approach_list = np.linspace(10, 70, 7, True)
+    UA_total_list = np.linspace(design_var_dict['UA_recup_tot_des'][0],design_var_dict['UA_recup_tot_des'][1], Npts, True)
+    recomp_frac_list = np.linspace(design_var_dict['is_recomp_ok'][0],design_var_dict['is_recomp_ok'][1], Npts, True)
 
     dict_list = design_pt.make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
@@ -221,10 +249,10 @@ def run_G3P3_recomp_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "recomp_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -236,15 +264,18 @@ def run_G3P3_htrbp_sweep(n_par, run_folder = ''):
     default_par["cycle_config"] = 3
     default_par["T_bypass_target"] = 0 # (not used)
 
+    # Get design parameter ranges
+    design_var_dict = sco2_pars.get_design_vars_opt()
+
     # Organize Variable Combinations
     Npts = n_par
-    ltr_ua_frac_list = np.linspace(0,1.0,Npts, True)
-    min_pressure = 5
-    max_pressure = 13
+    ltr_ua_frac_list = np.linspace(design_var_dict['LTR_UA_split'][0],design_var_dict['LTR_UA_split'][1],Npts, True)
+    min_pressure = design_var_dict['is_PR_fixed'][0]
+    max_pressure = design_var_dict['is_PR_fixed'][1]
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
-    UA_total_list = np.linspace(100, 5000, Npts, True)
-    recomp_frac_list = np.linspace(0, 0.7, Npts, True)
-    bp_frac_list = np.linspace(0, 0.99, Npts, True)
+    UA_total_list = np.linspace(design_var_dict['UA_recup_tot_des'][0],design_var_dict['UA_recup_tot_des'][1], Npts, True)
+    recomp_frac_list = np.linspace(design_var_dict['is_recomp_ok'][0],design_var_dict['is_recomp_ok'][1], Npts, True)
+    bp_frac_list = np.linspace(design_var_dict['is_bypass_ok'][0],design_var_dict['is_bypass_ok'][1],  Npts, True)
 
     dict_list = design_pt.make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
                                    UA_total_list=UA_total_list, 
@@ -268,10 +299,10 @@ def run_G3P3_htrbp_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "htrbp_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -282,15 +313,18 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
     default_par = get_sco2_G3P3()
     default_par["cycle_config"] = 2
 
+    # Get design parameter ranges
+    design_var_dict = sco2_pars.get_design_vars_opt()
+
     # Organize Variable Combinations
     Npts = n_par
-    ltr_ua_frac_list = np.linspace(0,1.0,Npts, True)
-    min_pressure = 1
-    max_pressure = 13
+    ltr_ua_frac_list = np.linspace(design_var_dict['LTR_UA_split'][0],design_var_dict['LTR_UA_split'][1],Npts, True)
+    min_pressure = design_var_dict['is_PR_fixed'][0]
+    max_pressure = design_var_dict['is_PR_fixed'][1]
     pressure_list = np.linspace(min_pressure, max_pressure, Npts, True)
-    UA_total_list = np.linspace(100, 5000, Npts, True)
-    recomp_frac_list = np.linspace(0, 0.7, Npts, True)
-    partial_IP_frac_list = np.linspace(0.0, 0.54, Npts, True)
+    UA_total_list = np.linspace(design_var_dict['UA_recup_tot_des'][0],design_var_dict['UA_recup_tot_des'][1], Npts, True)
+    recomp_frac_list = np.linspace(design_var_dict['is_recomp_ok'][0],design_var_dict['is_recomp_ok'][1], Npts, True)
+    partial_IP_frac_list = np.linspace(design_var_dict['partial_IP'][0],design_var_dict['partial_IP'][1], Npts, True)
     max_pressure_list = [default_par["P_high_limit"]]
 
     dict_list = design_pt.make_dict_par_list(ltr_ua_frac_list=ltr_ua_frac_list, 
@@ -316,10 +350,10 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
     time_string = design_pt.get_time_string()
     for i in range(N_batches):
         run_index_current = i * N_per_batch
-        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, Nproc, N_run_total=N_cases, N_run_curr=run_index_current)
+        solve_collection = design_pt.run_opt_parallel_solve_dict(dict_list_batches[i], default_par, global_var_dict["Nproc"], N_run_total=N_cases, N_run_curr=run_index_current)
 
         file_name = "partial_G3P3_collection"
-        combined_name = folder_location + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
+        combined_name = global_var_dict['folder_location'] + run_folder + file_name + '_' + str(n_par) + '_' + time_string + '_' + str(i).zfill(3) + ".csv"
         solve_collection.write_to_csv(combined_name)
 
     finished = ""
@@ -329,11 +363,14 @@ def run_G3P3_partial_sweep(n_par, run_folder = ''):
 
 def run_G3P3_sweeps(n_par):
     
+    if is_global_var == False:
+        initialize_global_var()
+
     # Get Run Meta Data
     time = design_pt.get_time_string()
     py_basename = os.path.basename(__file__)
     py_basename_no_ext, py_ext = os.path.splitext(py_basename)
-    run_folder_name = 'run_' + str(n_par) + '_' + time + '\\'
+    run_folder_name = run_name + '\\run_' + str(n_par) + '_' + time + '\\'
 
     # Run Sweeps
     run_G3P3_partial_sweep(n_par, run_folder_name)
@@ -342,14 +379,22 @@ def run_G3P3_sweeps(n_par):
     run_G3P3_htrbp_sweep(n_par, run_folder_name)
 
     # Copy this py script to save folder
-    shutil.copy(__file__, folder_location + run_folder_name) 
-    py_copy_name = folder_location + run_folder_name + py_basename
-    py_copy_newname = folder_location + run_folder_name + py_basename_no_ext + time + py_ext
+    shutil.copy(__file__, global_var_dict['folder_location'] + run_folder_name) 
+    py_copy_name = global_var_dict['folder_location'] + run_folder_name + py_basename
+    py_copy_newname = global_var_dict['folder_location'] + run_folder_name + py_basename_no_ext + time + py_ext
     os.rename(py_copy_name, py_copy_newname)
     
-
+def test_sim_core():
+    design_var_dict = sco2_pars.get_design_vars_opt()
+    default_par = sco2_pars.get_sco2_G3P3()
+    n_par = 2
+    run_name = "test_run"
+    sco2_sim_core.run_all_sweeps(n_par, run_name, default_par, design_var_dict)
 
 # Main function
 
 if __name__ == "__main__":
-    run_G3P3_sweeps(5)
+    #initialize_global_var()
+    #run_G3P3_sweeps(5)
+    test_sim_core()
+

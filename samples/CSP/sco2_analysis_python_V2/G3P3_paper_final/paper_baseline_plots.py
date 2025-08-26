@@ -18,6 +18,10 @@ import sco2_filenames
 import data_utility
 import design_point_tools as design_tools
 import sco2_varnames
+import paper_comparison_plots
+from sco2_filenames import BASE
+from sco2_filenames import TIT550
+from sco2_filenames import TIT625
 
 FIG_WIDTH_SMALL = 3.54331   # [in] 90 mm
 FIG_WIDTH_MED = 5.51181     # [in] 140 mm
@@ -332,7 +336,11 @@ def generate_table(best_dict_list_w_kwarg, show_config_list):
     write_array_to_file(table_data_complete)
 
 def make_baseline_plots():
-    filenames_baseline_w_label = sco2_filenames.get_filenames_baseline(split=True)
+    
+    file_enum = BASE.BASELINE
+    #file_enum = TIT550.BASELINE
+    
+    filenames_baseline_w_label = sco2_filenames.get_file_via_enum(file_enum, True)
     
     filenames_list_w_label = [filenames_baseline_w_label]
 
@@ -359,7 +367,10 @@ def make_baseline_plots():
                 "is_PR_fixed", "is_IP_fixed", "is_recomp_ok",
                 "is_turbine_split_ok", "is_bypass_ok",
                 "HTR_cost_equipment", "LTR_cost_equipment",
-                "recup_total_cost_equipment"]
+                "recup_total_cost_equipment",
+                "mc_cooler_q_dot", "pc_cooler_q_dot",
+                "id", "UA_BPX", "BPX_cost_equipment", "T_htf_bp_out_des",
+                "q_dot_in_total", "mc_cooler_q_dot", "pc_cooler_q_dot"]
 
     output = data_utility.open_file_set_w_label(filenames_list_w_label, key_list)
     list_of_dict_list_w_kwargs = output[0]
@@ -421,6 +432,11 @@ def make_baseline_plots():
     #                    'Partial', 'Partial w/o HTR', 'Partial w/o LTR', 'Partial Intercooling w/o HTR',
     #                    'Turbine Split Flow']
     plot_barcharts(list_of_best_dict_list_with_kwarg[0], bar_configs)
+
+
+    #T_PHX_sweep_labels = [filenames_baseline_w_label[1]]
+    #paper_comparison_plots.plot_comparisons_duo(list_of_best_dict_list_with_kwarg, final_sweep_labels, T_PHX_sweep_labels, COST_PER_kW_info, show_config_list)
+
 
     plt.rcParams['savefig.dpi'] = 1000
     plt.show(block=True)

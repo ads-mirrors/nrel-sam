@@ -454,7 +454,12 @@ def change_phx_cost(result_dict, phx_cost_func):
     return result_dict  
 
 # Handles file IO and calls change_csp_cost or change_phx_cost
-def modify_baseline(cost_keys, cost_factor, mod_name, change_type="", phx_cost_func=None, filenames=[]):
+def modify_baseline(cost_keys, cost_factor, mod_name, change_type="", phx_cost_func=None, 
+                    g3p3_json_dict_arg = None, filenames=[]):
+
+    if (g3p3_json_dict_arg != None):
+        global g3p3_json_dict
+        g3p3_json_dict = g3p3_json_dict_arg
 
     # Get baseline filenames (if necessary)
     if len(filenames) == 0:

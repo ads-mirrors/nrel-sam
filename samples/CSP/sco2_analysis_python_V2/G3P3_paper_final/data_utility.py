@@ -8,6 +8,7 @@ import psutil
 import pickle
 import copy
 import gc
+import numpy as np
 
 parentDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parentDir)
@@ -47,9 +48,100 @@ def open_pickle_mmap(filename, keys=[]):
         mm.close()
         return return_dict
 
-def process_sweep_fileset_optimized(filenames, sweep_label, color, result_queue, key_list):
+def validate_bypass(result_dict, sweep_label = ""):
+
+    vec = []
+    NVal = len(result_dict['cycle_config'])
+
+    if not ('q_error' in result_dict):
+        result_dict['q_error'] = []
+
+    for i in range(NVal):
+
+        keys = ['config_name', 'cycle_config', 'recomp_frac', 'is_bypass_ok', 'bypass_frac',
+                'LTR_UA_calculated', 'HTR_UA_calculated', 'UA_BPX',
+                'BPX_cost_equipment', 'HTR_cost_equipment', 'LTR_cost_equipment',
+                'T_htf_bp_out_des', 'T_htf_cold_des',
+                'eta_thermal_calc', "q_dot_in_total", "mc_cooler_q_dot", "pc_cooler_q_dot",
+                "eta_thermal_net_less_cooling_des"]
+        temp_dict = {}
+        for key in keys:
+            key_val = 0
+
+            if key in result_dict:
+
+                val_len = len(result_dict[key])
+                if val_len <= i:
+                    trouble = 0
+                else:
+                    key_val = result_dict[key][i]
+                
+                if key_val == '':
+                    key_val = 0
+
+                if not isinstance(key_val, str) and np.isnan(key_val):
+                    key_val = 0
+            
+            temp_dict[key] = key_val
+
+
+        cycle_config = temp_dict['cycle_config']
+        config_name = temp_dict['config_name']
+        recomp_frac = temp_dict['recomp_frac']
+        is_bypass_ok = temp_dict['is_bypass_ok']
+        bypass_frac = temp_dict['bypass_frac']
+        LTR_UA_calculated = temp_dict['LTR_UA_calculated']
+        HTR_UA_calculated = temp_dict['HTR_UA_calculated']
+        UA_BPX = temp_dict['UA_BPX']
+        BPX_cost_equipment = temp_dict['BPX_cost_equipment']
+        HTR_cost_equipment = temp_dict['HTR_cost_equipment']
+        LTR_cost_equipment = temp_dict['LTR_cost_equipment']
+        T_htf_bp_out_des = temp_dict['T_htf_bp_out_des']
+        T_htf_cold_des = temp_dict['T_htf_cold_des']
+        eta_thermal_calc = temp_dict['eta_thermal_calc']
+        q_dot_in_total = temp_dict['q_dot_in_total']
+        mc_cooler_q_dot = temp_dict['mc_cooler_q_dot']
+        pc_cooler_q_dot = temp_dict['pc_cooler_q_dot']
+        eta_thermal_net_less_cooling_des = temp_dict['eta_thermal_net_less_cooling_des']
+
+
+        # Test critical failures
+
+        # Equipment must have a value if UA > 0 (and vice versa)
+        if ((LTR_UA_calculated == 0) ^ (LTR_cost_equipment == 0)):
+            return False
+        if ((HTR_UA_calculated == 0) ^ (HTR_cost_equipment == 0)):
+            return False
+        if ((UA_BPX == 0) ^ (BPX_cost_equipment == 0)):
+            return False
+        
+        # Cannot have bypass if HTR doesn't exist
+        if UA_BPX > 0 and HTR_UA_calculated <= 0:
+            return False
+        
+        # Check energy balance
+        q_error = abs((q_dot_in_total * (1 - eta_thermal_calc)) - (mc_cooler_q_dot + pc_cooler_q_dot))
+        result_dict['q_error'].append(q_error)
+
+        # if is_bypass_ok, MUST have bypass unless HTR doesn't exist
+        if cycle_config == 3 and abs(is_bypass_ok) > 0 and HTR_UA_calculated > 0:
+            if UA_BPX <= 0:
+                return False
+            
+            # If there is a bypass, MUST have the correct bypass_frac
+            if abs(is_bypass_ok) != bypass_frac:
+                return False
+            
+            # Must have same Temp bp out as T_htf out
+            if T_htf_bp_out_des != T_htf_cold_des:
+                return False        
+            
+    return True
+
+def process_sweep_fileset_optimized(filenames, sweep_label, kwarg_arg, result_queue, key_list):
     # Open files, split by config name
     # Return dict list with kwarg, best cases?
+    color = kwarg_arg['c']
 
     # Open Pickles
     print('Opening pickles...')
@@ -59,8 +151,15 @@ def process_sweep_fileset_optimized(filenames, sweep_label, color, result_queue,
     print(f"Memory before loading: {psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB")
 
     for filename in filenames:
-        #input_dict_list.append(open_pickle(filename))
         input_dict_list.append(open_pickle_mmap(filename, key_list))
+
+    # Validate bypass values...
+    print('Validating bypass results...')
+    error_dict = {'sweep_label':[], 'eta_thermal_calc':[], 'q_error':[], 'cycle_config':[], 'config_name':[]}
+    for result_dict in input_dict_list:
+        if validate_bypass(result_dict, sweep_label) == False:
+            problems = 0
+            print('BYPASS ERROR!!!!!!!!')
 
     # Rename config names
     print('Naming cycles...')
@@ -79,6 +178,7 @@ def process_sweep_fileset_optimized(filenames, sweep_label, color, result_queue,
             cycle_config = result_dict['cycle_config'][i]
             recomp_frac = result_dict['recomp_frac'][i]
             bypass_frac = 0 if (('bypass_frac' in result_dict) == False) else result_dict['bypass_frac'][i]
+            is_bypass_ok = 0 if (('is_bypass_ok' in result_dict) == False) else result_dict['is_bypass_ok'][i]
             LTR_UA = result_dict['LTR_UA_calculated'][i]
             HTR_UA = result_dict['HTR_UA_calculated'][i]
             is_LTR = LTR_UA > 0
@@ -86,8 +186,13 @@ def process_sweep_fileset_optimized(filenames, sweep_label, color, result_queue,
             if(is_LTR == False) and (is_HTR == False):
                 x = 0
 
+            # Process bypass frac correctly
             if bypass_frac == '':
                 bypass_frac = 0
+            if abs(is_bypass_ok) == 0 and bypass_frac > 0:
+                bypass_frac = 0
+                if cycle_config == 3 and is_HTR == True and result_dict['UA_BPX'][0] > 0:
+                    print('--------Bypass issue------------')
 
             new_config_name = sco2_solve.get_config_name(cycle_config, recomp_frac, bypass_frac, is_LTR, is_HTR)
 
