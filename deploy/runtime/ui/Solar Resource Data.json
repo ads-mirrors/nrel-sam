@@ -418,6 +418,89 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
+                    "String": "annual_precipitation"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 666.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 891.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 103.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Value": {
+                    "Type": 1.0,
+                    "Double": 0.0
+                },
+                "Mode": {
+                    "Type": 3.0,
+                    "Integer": 1.0
+                },
+                "Format": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Decimals": {
+                    "Type": 3.0,
+                    "Integer": 3.0
+                },
+                "Prefix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Suffix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "ThousandsSep": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "Numeric": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
                     "String": "annual_snow"
                 },
                 "X": {
@@ -2823,6 +2906,45 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
+        "annual_csky_beam": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "annual_csky_diffuse": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "annual_csky_global": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
         "annual_diffuse": {
             "Version": 4.0,
             "Type": 1.0,
@@ -2846,6 +2968,19 @@
             "Flags": 20.0,
             "DefaultValue": 0.0,
             "UIObject": "Numeric",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "annual_precipitation": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Annual precipitation",
+            "Units": "cm",
+            "Group": "Location and Resource",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
             "sscVariableName": "",
             "sscVariableValue": ""
         },
@@ -3618,7 +3753,8 @@
         "\tshow('btn_add_file_to_library', show_button);",
         "\tshow('group_optional', is_pv );",
         "\tshow('annual_snow', is_pv );",
-        "\tshow('annual_albedo',is_pv );",
+        "\tshow('annual_albedo',is_pv );\r",
+        "\tshow('annual_precipitation', is_pv );",
         "\trefresh(''); // always refresh after calling show()",
         "",
         "\t// display message for new users if library contains only default files",
@@ -3646,7 +3782,11 @@
         "\t\t\tvalue( 'annual_twet', ssc_var(obj, 'annual_twet') );",
         "\t\t\tvalue( 'annual_wspd', ssc_var(obj, 'annual_wspd') );",
         "\t\t\tvalue( 'annual_snow', ssc_var(obj, 'annual_snow') );",
-        "\t\t\tvalue( 'annual_albedo', ssc_var(obj, 'annual_albedo') );",
+        "\t\t\tvalue( 'annual_albedo', ssc_var(obj, 'annual_albedo') );\r",
+        "\t\t\tvalue( 'annual_precipitation', ssc_var(obj, 'annual_precipitation'));\r",
+        "\t\t\tvalue( 'annual_csky_global', ssc_var(obj, 'annual_csky_glob') );\r",
+        "\t\t\tvalue( 'annual_csky_beam', ssc_var(obj, 'annual_csky_beam') );\r",
+        "\t\t\tvalue( 'annual_csky_diffuse', ssc_var(obj, 'annual_csky_diff') );",
         "\t\t\tvalue( 'step', ssc_var(obj, 'step') );\r",
         "\t\t\t\r",
         "\t\t\trhum = ssc_var(obj, 'rhum');",
@@ -3667,7 +3807,11 @@
         "\t\t\tvalue( 'annual_twet', nan() );",
         "\t\t\tvalue( 'annual_wspd', nan() );",
         "\t\t\tvalue( 'annual_snow', nan() );",
-        "\t\t\tvalue( 'annual_albedo', nan() );",
+        "\t\t\tvalue( 'annual_albedo', nan() );\r",
+        "\t\t\tvalue( 'annual_precipitation', nan() );\r",
+        "\t\t\tvalue( 'annual_csky_global', nan() );\r",
+        "\t\t\tvalue( 'annual_csky_beam', nan() );\r",
+        "\t\t\tvalue( 'annual_csky_diffuse', nan() );",
         "\t\t\tvalue( 'wf_nrecords', nan() );",
         "\t\t}",
         "\t\tssc_free( obj );",
@@ -4095,15 +4239,15 @@
         "\t\t\t\t// https://developer.nrel.gov/docs/solar/nsrdb/",
         "\t\t\t\tif ( dataset[n].name == 'nsrdb-GOES-aggregated-v4-0-0')",
         "\t\t\t\t{",
-        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,air_temperature,surface_pressure,relative_humidity,wind_direction,wind_speed,surface_albedo,clearsky_dhi,clearsky_dni,clearsky_ghi';",
+        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,air_temperature,surface_pressure,relative_humidity,wind_direction,wind_speed,surface_albedo,clearsky_dhi,clearsky_dni,clearsky_ghi,total_precipitable_water';",
         "\t\t\t\t}",
         "\t\t\t\telseif ( dataset[n].name == 'nsrdb-GOES-tmy-v4-0-0')",
         "\t\t\t\t{",
-        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,air_temperature,surface_pressure,wind_direction,wind_speed,surface_albedo,clearsky_dhi,clearsky_dni,clearsky_ghi';",
+        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,air_temperature,surface_pressure,wind_direction,wind_speed,surface_albedo,clearsky_dhi,clearsky_dni,clearsky_ghi,total_precipitable_water';",
         "\t\t\t\t}",
         "\t\t\t\telseif ( dataset[n].name == 'suny-india' )",
         "\t\t\t\t{",
-        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,surface_temperature,surface_pressure,relative_humidity,wdir,wspd,snow_depth';",
+        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,surface_temperature,surface_pressure,relative_humidity,wdir,wspd,snow_depth,total_precipitable_water';",
         "\t\t\t\t}",
         "\t\t\t\telseif ( dataset[n].name == 'suny-india-tmy' )",
         "\t\t\t\t{",
@@ -4111,7 +4255,7 @@
         "\t\t\t\t}",
         "\t\t\t\telseif ( dataset[n].name == 'msg-iodc' )",
         "\t\t\t\t{",
-        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,air_temperature,surface_pressure,relative_humidity,wind_direction,wind_speed,surface_albedo,clearsky_dhi,clearsky_dni,clearsky_ghi';",
+        "\t\t\t\t\tbase_url += '&attributes=dni,dhi,ghi,dew_point,air_temperature,surface_pressure,relative_humidity,wind_direction,wind_speed,surface_albedo,clearsky_dhi,clearsky_dni,clearsky_ghi,total_precipitable_water';",
         "\t\t\t\t}",
         "\t\t\t\twrite_line( flog, '\\nFile ' + to_string(i+1) + ' of ' + #type + ': ' + type[i]);",
         "\t\t\t\twrite_line( flog, '----------------------------------------------------------\\n');\t",
