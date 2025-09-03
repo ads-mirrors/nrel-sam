@@ -1145,11 +1145,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 87.0
+                    "Integer": 90.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 435.0
+                    "Integer": 456.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -2240,11 +2240,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 72.0
+                    "Integer": 75.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 384.0
+                    "Integer": 405.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -3541,11 +3541,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 69.0
+                    "Integer": 72.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 267.0
+                    "Integer": 288.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -3582,11 +3582,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 54.0
+                    "Integer": 57.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 366.0
+                    "Integer": 387.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -3682,11 +3682,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 54.0
+                    "Integer": 57.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 240.0
+                    "Integer": 261.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -4914,6 +4914,47 @@
                 }
             }
         },
+        "Choice": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "start_day_of_year"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 261.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 195.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 120.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Items": {
+                    "Type": 6.0,
+                    "StringList": "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday"
+                },
+                "Selection": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
         "ToolTipCtrl": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -4997,11 +5038,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 414.0
+                    "Integer": 417.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 294.0
+                    "Integer": 315.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -5071,11 +5112,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 279.0
+                    "Integer": 282.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 294.0
+                    "Integer": 315.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -5728,6 +5769,19 @@
             "Flags": 2.0,
             "DefaultValue": 1.0,
             "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
+        "start_day_of_year": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Jan 1st Day of Week",
+            "Units": "",
+            "Group": "Electric Load",
+            "IndexLabels": "",
+            "Flags": 2.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Choice",
             "sscVariableName": "",
             "sscVariableValue": ""
         },
