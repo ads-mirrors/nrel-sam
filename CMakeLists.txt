@@ -410,5 +410,17 @@ else()
         COMMAND ${CMAKE_COMMAND}
         ARGS -E copy $ENV{SSCDIR}/ssc/sscapi.h ${CMAKE_CURRENT_SOURCE_DIR}/deploy/runtime
     )
+
+    file(GLOB ORTOOLS_DLLS "$ENV{ORTOOLSDIR}/bin/*.dll")
+    foreach( file_i ${ORTOOLS_DLLS})
+        add_custom_command(
+        TARGET ${SAM_EXE}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy ${file_i} ${SAMEXE_DIR}
+    )
+    endforeach( file_i )
+
+
 endif()
 
