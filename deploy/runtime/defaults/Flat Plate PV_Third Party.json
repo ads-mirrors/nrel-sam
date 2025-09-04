@@ -28173,7 +28173,7 @@
     "inv_ds_pnt": 1.0,
     "inv_ds_pnt_suggested": 1.0,
     "inv_ds_pso": 0.0,
-    "inv_ds_pso_suggested": 0.0,
+    "inv_ds_pso_suggested": 32.0,
     "inv_ds_vdcmax": 600.0,
     "inv_ds_vdco": 310.0,
     "inv_num_mppt": 1.0,
