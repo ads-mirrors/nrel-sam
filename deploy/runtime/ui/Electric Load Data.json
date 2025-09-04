@@ -4919,7 +4919,7 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "start_day_of_year"
+                    "String": "start_day_of_year_load_ui"
                 },
                 "X": {
                     "Type": 3.0,
@@ -5772,7 +5772,7 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
-        "start_day_of_year": {
+        "start_day_of_year_load_ui": {
             "Version": 4.0,
             "Type": 1.0,
             "Label": "Jan 1st Day of Week",
@@ -6162,6 +6162,13 @@
         "\t\t\t}\r",
         "\t\t}\r",
         "\t}\r",
-        "}"
+        "}\r",
+        "\r",
+        "on_change{'start_day_of_year_load_ui'} = define() {\r",
+        "\tvalue('start_day_of_year', value('start_day_of_year_load_ui'));\r",
+        "\tif(financing() == 'Host Developer') {\r",
+        "\t\tvalue('start_day_of_year_tod_ui', value('start_day_of_year'));\r",
+        "\t}\r",
+        "};"
     ]
 }
