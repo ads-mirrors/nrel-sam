@@ -55529,6 +55529,7 @@
     "standalonebatt.cost.sales_tax.value": 5.0,
     "start_day_of_year": 3.335046e-317,
     "start_day_of_year_load_ui": 3.335046e-317,
+    "start_day_of_year_tod_ui": 3.335046e-317,
     "state_tax_rate": [
         7.0
     ],
