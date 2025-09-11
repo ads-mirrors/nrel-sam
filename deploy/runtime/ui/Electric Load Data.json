@@ -6166,9 +6166,14 @@
         "\r",
         "on_change{'start_day_of_year_load_ui'} = define() {\r",
         "\tvalue('start_day_of_year', value('start_day_of_year_load_ui'));\r",
-        "\tif(financing() == 'Host Developer') {\r",
+        "\tfin = financing();\r",
+        "\tif(fin == 'Host Developer') {\r",
         "\t\tvalue('start_day_of_year_tod_ui', value('start_day_of_year'));\r",
         "\t}\r",
+        "\telse if(fin == 'Residential' || fin == 'Third Party') {\r",
+        "\t\tvalue('start_day_of_year_belpe_ui', value('start_day_of_year'));\r",
+        "\t}\r",
+        "\t\r",
         "};"
     ]
 }
