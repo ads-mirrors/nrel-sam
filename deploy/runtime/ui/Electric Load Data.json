@@ -6266,10 +6266,15 @@
         "on_change{'start_day_of_year_load_ui'} = define() {\r",
         "\tvalue('start_day_of_year', value('start_day_of_year_load_ui'));\r",
         "\tmsg = '';\r",
-        "\tif(financing() == 'Host Developer') {\r",
+        "\tfin = financing();\r",
+        "\tif(fin == 'Host Developer') {\r",
         "\t\tvalue('start_day_of_year_tod_ui', value('start_day_of_year'));\r",
         "\t\tmsg = 'January 1 day of week is linked to input on TOD Factors page.';\r",
         "\t}\r",
+        "\telse if(fin == 'Residential' || fin == 'Third Party') {\r",
+        "\t\tvalue('start_day_of_year_belpe_ui', value('start_day_of_year'));\r",
+        "\t}\r",
+        "\t\r",
         "\tproperty('lbl_start_day','Caption',msg);\r",
         "};"
     ]
