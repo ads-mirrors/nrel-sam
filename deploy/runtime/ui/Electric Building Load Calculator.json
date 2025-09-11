@@ -4548,7 +4548,7 @@
         "start_day_of_year_belpe_ui": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "Jan 1st Day of Week",
+            "Label": "January 1 day of week",
             "Units": "",
             "Group": "Residential Load Calculator",
             "IndexLabels": "",
