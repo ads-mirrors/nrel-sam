@@ -3342,6 +3342,68 @@
                 }
             }
         },
+        "Label": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "lbl_start_day"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 63.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 222.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 375.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 28.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "TextColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "Bold": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "FontSize": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "WordWrap": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "AlignRight": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "AlignTop": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                }
+            }
+        },
         "Numeric": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -5103,6 +5165,43 @@
                 }
             }
         },
+        "ToolTipCtrl": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "tt_start_day"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 414.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 195.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 24.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Tips": {
+                    "Type": 5.0,
+                    "String": "Type a tip here or define in runtime/help/tooltips.json"
+                },
+                "TipTitle": {
+                    "Type": 5.0,
+                    "String": "Type a tip title here or define in runtime/help/tooltips.json"
+                }
+            }
+        },
         "MonthlyFactor": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -5775,7 +5874,7 @@
         "start_day_of_year_load_ui": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "Jan 1st Day of Week",
+            "Label": "January  1 day of week",
             "Units": "",
             "Group": "Electric Load",
             "IndexLabels": "",
@@ -6166,14 +6265,12 @@
         "\r",
         "on_change{'start_day_of_year_load_ui'} = define() {\r",
         "\tvalue('start_day_of_year', value('start_day_of_year_load_ui'));\r",
-        "\tfin = financing();\r",
-        "\tif(fin == 'Host Developer') {\r",
+        "\tmsg = '';\r",
+        "\tif(financing() == 'Host Developer') {\r",
         "\t\tvalue('start_day_of_year_tod_ui', value('start_day_of_year'));\r",
+        "\t\tmsg = 'January 1 day of week is linked to input on TOD Factors page.';\r",
         "\t}\r",
-        "\telse if(fin == 'Residential' || fin == 'Third Party') {\r",
-        "\t\tvalue('start_day_of_year_belpe_ui', value('start_day_of_year'));\r",
-        "\t}\r",
-        "\t\r",
+        "\tproperty('lbl_start_day','Caption',msg);\r",
         "};"
     ]
 }
