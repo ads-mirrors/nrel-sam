@@ -3275,7 +3275,7 @@
     ],
     "Callbacks": [
         "on_load{'Solar Resource Data'} = define() {",
-        "\t//msgbox('on load');",
+        "\t//msgbox('Debug\\non_load Solar Resource Data');",
         "\t//hide legacy data for 2020.2.29 Patch 3",
         "\tshow('is_advanced',true);",
         "\ton_change{'in_location_options'}();",
