@@ -316,168 +316,164 @@ bool GeoTools::GeocodeGoogle(const wxString& address, double* lat, double* lon, 
 }
 
 // Geocode using NREL Developer API (MapQuest) for NREL builds of SAM
-// submit address and no lat/lon to get lat/lon and optional time zone
-// submit no address and lat/lon to get time zone
-bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lon, double* tz, bool showprogress) {
+// submit address and no lat/lon to get lat/lon
+bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lon, bool showprogress) {
     wxBusyCursor _curs;
 
     bool success = false;
 
-    if (!address.IsEmpty()) {
+    wxString plusaddr, url, webapi_string, str;
+    plusaddr = url = webapi_string, str = "";
+    wxEasyCurl curl;
+    wxBusyCursor curs;
+    rapidjson::GenericDocument < rapidjson::UTF16<> > reader; // change from UTF8 to UTF16 encoding to address unicode characters per SAM issue 1848
+    rapidjson::ParseResult ok;
 
-        wxString plusaddr, url, webapi_string, str;
-        plusaddr = url = webapi_string, str = "";
-        wxEasyCurl curl;
-        wxBusyCursor curs;
-        rapidjson::GenericDocument < rapidjson::UTF16<> > reader; // change from UTF8 to UTF16 encoding to address unicode characters per SAM issue 1848
-        rapidjson::ParseResult ok;
+    plusaddr = address;
+    plusaddr.Replace(", ", "+");
+    plusaddr.Replace(",", "+");
+    plusaddr.Replace("   ", " ");
+    plusaddr.Replace("  ", " ");
+    plusaddr.Replace(" ", "+");
 
-        plusaddr = address;
-        plusaddr.Replace(", ", "+");
-        plusaddr.Replace(",", "+");
-        plusaddr.Replace("   ", " ");
-        plusaddr.Replace("  ", " ");
-        plusaddr.Replace(" ", "+");
+    webapi_string = SamApp::WebApi("nrel_geocode_api");
 
-       webapi_string = SamApp::WebApi("nrel_geocode_api");
+    if (webapi_string == "debug-mock-api")
+        url = address;
+    else {
+        url = SamApp::WebApi("nrel_geocode_api") + "&location=" + plusaddr;
+        url.Replace("<GEOCODEAPIKEY>", wxString(geocode_api_key));
+    }
 
-        if (webapi_string == "debug-mock-api")
-            url = address;
-        else {
-            url = SamApp::WebApi("nrel_geocode_api") + "&location=" + plusaddr;
-            url.Replace("<GEOCODEAPIKEY>", wxString(geocode_api_key));
-        }
+    // SAM issue 1968 
+    curl.AddHttpHeader("Content-Type: application/json");
+    curl.AddHttpHeader("Accept: application/json");
 
-        // SAM issue 1968 
-        curl.AddHttpHeader("Content-Type: application/json");
-        curl.AddHttpHeader("Accept: application/json");
+    if (showprogress) {
+        if (!curl.Get(url, "Geocoding address '" + address + "'..."))
+            return false;
+    }
+    else {
+        if (!curl.Get(url))
+            return false;
+    }
 
-        if (showprogress) {
-            if (!curl.Get(url, "Geocoding address '" + address + "'..."))
-                return false;
-        }
-        else {
-            if (!curl.Get(url))
-                return false;
-        }
-
-        str = curl.GetDataAsString();
-        ok = reader.Parse(str.c_str());
-        if (!reader.HasParseError()) {
-            if (reader.HasMember(L"results")) {
-                if (reader[L"results"].IsArray()) {
-                    if (reader[L"results"][0].HasMember(L"locations")) {
-                        if (reader[L"results"][0][L"locations"].IsArray()) {
-                            if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
-                                if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
-                                    if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
-                                        *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
-                                        if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
-                                            if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
-                                                *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
-                                                success = true; // only if lat and lon are numbers
-                                            }
+    str = curl.GetDataAsString();
+    ok = reader.Parse(str.c_str());
+    if (!reader.HasParseError()) {
+        if (reader.HasMember(L"results")) {
+            if (reader[L"results"].IsArray()) {
+                if (reader[L"results"][0].HasMember(L"locations")) {
+                    if (reader[L"results"][0][L"locations"].IsArray()) {
+                        if (reader[L"results"][0][L"locations"][0].HasMember(L"latLng")) {
+                            if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lat")) {
+                                if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].IsNumber()) {
+                                    *lat = reader[L"results"][0][L"locations"][0][L"latLng"][L"lat"].GetDouble();
+                                    if (reader[L"results"][0][L"locations"][0][L"latLng"].HasMember(L"lng")) {
+                                        if (reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].IsNumber()) {
+                                            *lon = reader[L"results"][0][L"locations"][0][L"latLng"][L"lng"].GetDouble();
+                                            success = true; // only if lat and lon are numbers
                                         }
-
                                     }
+
                                 }
                             }
                         }
                     }
                 }
             }
-            // check status code
-            success = false;//overrides success of retrieving data
+        }
+        // check status code
+        success = false;//overrides success of retrieving data
 
-            // cpg to do check this
-            if (reader.HasMember(L"info")) {
-                if (reader[L"info"].HasMember(L"statuscode")) {
-                    if (reader[L"info"][L"statuscode"].IsInt()) {
-                        success = reader[L"info"][L"statuscode"].GetInt() == 0;
-                    }
+        // cpg to do check this
+        if (reader.HasMember(L"info")) {
+            if (reader[L"info"].HasMember(L"statuscode")) {
+                if (reader[L"info"][L"statuscode"].IsInt()) {
+                    success = reader[L"info"][L"statuscode"].GetInt() == 0;
                 }
             }
         }
-        else {
-            wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
-        }
-
-        if (!success)
-            return false;
+    }
+    else {
+        wxMessageBox(rapidjson::GetParseError_En(ok.Code()), "geocode developer parse error ");
     }
 
-    // time zone is optional
-    // lat/lon may have been geocoded above or passed in as arguments
-    if (tz != 0) // tz=0 if not passed as parameter
-    {
-        success = false;
+    return success;
+}
 
-        wxString url, str;
-        url = str = "";
-        wxEasyCurl curl = wxEasyCurl();
-        rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
+// submit lat/lon to get tz
+bool GeoTools::GetTimeZone(double* lat, double* lon, double* tz, bool showprogress) {
+    wxBusyCursor _curs;
 
-        // azure maps time zone api
-        url = SamApp::WebApi("azure_maps_timezone_api");
-        url.Replace("<LATLON>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
-        url.Replace("<AZUREAPIKEY>", wxString(azure_api_key));
+    bool success = false;
 
-        curl.AddHttpHeader("Content-Type: application/json");
-        curl.AddHttpHeader("Accept: application/json");
+    wxString url, str;
+    url = str = "";
+    wxEasyCurl curl = wxEasyCurl();
+    rapidjson::GenericDocument < rapidjson::UTF16<> > reader;
 
-        if (showprogress) {
-            curl.Get(url, "Getting time zone '" + address + "'...");
-        }
-        else {
-            curl.Get(url);
-        }
+    // azure maps time zone api
+    url = SamApp::WebApi("azure_maps_timezone_api");
+    url.Replace("<LATLON>", wxString::Format("%.14lf,%.14lf", *lat, *lon));
+    url.Replace("<AZUREAPIKEY>", wxString(azure_api_key));
 
-        str = curl.GetDataAsString();
-        reader.Parse(str.c_str());
-        if (reader.HasMember(L"error")) {
-            if (reader[L"error"].HasMember(L"code")) {
-                if (reader[L"error"][L"code"].IsString()) {
-                    wxString error_str = reader[L"error"][L"code"].GetString();
-                    if (error_str.Lower() != "") {
-                        wxMessageBox(wxString::Format("Time Zone API Error!\n%s", error_str));
-                        return false;
-                    } 
+    curl.AddHttpHeader("Content-Type: application/json");
+    curl.AddHttpHeader("Accept: application/json");
+
+    if (showprogress) {
+        curl.Get(url, wxString::Format("Getting time zone for %g, %g.", *lat, *lon));
+    }
+    else {
+        curl.Get(url);
+    }
+
+    str = curl.GetDataAsString();
+    reader.Parse(str.c_str());
+    if (reader.HasMember(L"error")) {
+        if (reader[L"error"].HasMember(L"code")) {
+            if (reader[L"error"][L"code"].IsString()) {
+                wxString error_str = reader[L"error"][L"code"].GetString();
+                if (error_str.Lower() != "") {
+                    wxMessageBox(wxString::Format("Time Zone API Error!\n%s", error_str));
+                    return false;
                 }
             }
         }
+    }
 
-        *tz = NULL;
-        if (!reader.HasParseError()) {
-            if (reader.HasMember(L"TimeZones")) {
-                if (reader[L"TimeZones"].IsArray()) {
-                    if (reader[L"TimeZones"][0].HasMember(L"ReferenceTime")) {
-                        if (reader[L"TimeZones"][0][L"ReferenceTime"].HasMember(L"StandardOffset")) {
-                            if (reader[L"TimeZones"][0][L"ReferenceTime"][L"StandardOffset"].IsString()) {
-                                wxString stz = reader[L"TimeZones"][0][L"ReferenceTime"][L"StandardOffset"].GetString();
-                                wxArrayString as = wxSplit(stz, ':');
-                                if (as.Count() != 3) return false; // example "-08:00:00"
-                                if (!as[0].ToDouble(tz)) return false;
-                                double offset = 0;
-                                if (as[1] == "30") offset = 0.5;
-                                if (*tz < 0)
-                                    *tz = *tz - offset;
-                                else
-                                    *tz = *tz + offset;
-                                success = true;
-                            }
+    *tz = NULL;
+    if (!reader.HasParseError()) {
+        if (reader.HasMember(L"TimeZones")) {
+            if (reader[L"TimeZones"].IsArray()) {
+                if (reader[L"TimeZones"][0].HasMember(L"ReferenceTime")) {
+                    if (reader[L"TimeZones"][0][L"ReferenceTime"].HasMember(L"StandardOffset")) {
+                        if (reader[L"TimeZones"][0][L"ReferenceTime"][L"StandardOffset"].IsString()) {
+                            wxString stz = reader[L"TimeZones"][0][L"ReferenceTime"][L"StandardOffset"].GetString();
+                            wxArrayString as = wxSplit(stz, ':');
+                            if (as.Count() != 3) return false; // example "-08:00:00"
+                            if (!as[0].ToDouble(tz)) return false;
+                            double offset = 0;
+                            if (as[1] == "30") offset = 0.5;
+                            if (*tz < 0)
+                                *tz = *tz - offset;
+                            else
+                                *tz = *tz + offset;
+                            success = true;
                         }
                     }
                 }
             }
         }
-        else { // parse error
-            wxMessageBox(wxString::Format("Time Zone API Error!\nFailed to parse response."));
-            success = false;
-        }
+    }
+    else { // parse error
+        wxMessageBox(wxString::Format("Time Zone API Error!\nFailed to parse response."));
+        success = false;
     }
 
     return success;
 }
+
 
 wxBitmap GeoTools::StaticMap(double lat, double lon, int zoom, MapProvider service) {
 

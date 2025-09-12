@@ -3133,7 +3133,7 @@ void fcall_windtoolkit(lk::invoke_t &cxt)
 		wxBusyInfo bid("Converting address to lat/lon.");
 
 		// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
-        if (!GeoTools::GeocodeDeveloper(spd.GetAddress(), &lat, &lon, NULL, false))
+        if (!GeoTools::GeocodeDeveloper(spd.GetAddress(), &lat, &lon, false))
 		{
 			wxMessageDialog* md = new wxMessageDialog(NULL, "Failed to convert address to lat/lon. This may be caused by a geocoding service outage or internet connection problem.", "WIND Toolkit Download Error", wxOK);
 			md->ShowModal();
@@ -3884,18 +3884,12 @@ void fcall_geocode(lk::invoke_t& cxt)
 
 	// use GeoTools::GeocodeGoogle for non-NREL builds and set google_api_key in private.h
 	if (is_address) {
-		if (get_tz) {
-			ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
-			cxt.result().hash_item("tz").assign(tz);
-		}
-		else {
-			ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon);
-		}
+		ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon);
 		if (!ok) {
 			err = wxString::Format("Call to geocoding API failed for address: %s", address);
 		}
 	}
-	else if (!address.IsEmpty()) { // if address is assume input string is lat/lon pair and try to parse
+	else if (!address.IsEmpty()) { // if address is empty assume input string is lat/lon pair and try to parse
 		wxString coordinates = cxt.arg(0).as_string();
 		wxString lat_str, lon_str;
 		ok = GeoTools::coordinates_to_lat_lon(coordinates, lat_str, lon_str);
@@ -3908,17 +3902,21 @@ void fcall_geocode(lk::invoke_t& cxt)
 			ok = GeoTools::coordinate_to_dms(lat_str, &lat_d, &lat_m, &lat_s) && GeoTools::coordinate_to_dms(lon_str, &lon_d, &lon_m, &lon_s);
 			if (ok) {
 				ok = GeoTools::dms_to_dd(lat_d, lat_m, lat_s, &lat) && GeoTools::dms_to_dd(lon_d, lon_m, lon_s, &lon);
-				if (ok && get_tz) {
-					// cpg TO DO passing "" as first argument is when we only need tz, consider separate GeoTools::GetTimeZone() function?
-					//ok = GeoTools::GeocodeDeveloper(cxt.arg(0).as_string(), &lat, &lon, &tz);
-					ok = GeoTools::GeocodeDeveloper("", &lat, &lon, &tz);
-					if (!ok) {
-						err = wxString::Format("Timezone not found for: (%g, %g)", lat, lon);
-					}
+				if (!ok) {
+					err = wxString::Format("Failed to parse latitude/longitude pair %s.", coordinates);
 				}
 			}
 		}
 	}
+
+	if (get_tz) {
+		ok = GeoTools::GetTimeZone(&lat, &lon, &tz);
+		if (!ok) {
+			err = wxString::Format("Timezone not found for: (%g, %g)", lat, lon);
+		}
+		cxt.result().hash_item("tz").assign(tz);
+	}
+
 	
 	cxt.result().hash_item("lat").assign(lat);
 	cxt.result().hash_item("lon").assign(lon);
