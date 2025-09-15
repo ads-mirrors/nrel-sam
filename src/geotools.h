@@ -51,7 +51,7 @@ public:
 
     // Use Microsoft Azure API to return time zone from lat/lon
     // Azure Map API key is defined in private.h
-    static bool GeoTools::GetTimeZone(double* lat, double* lon, double* tz, bool showprogress = true);
+    static bool GetTimeZone(double* lat, double* lon, double* tz, bool showprogress = true);
 
     // Convert array of degrees, minutes, seconds to decimal degrees (DD)
     static bool dms_to_dd(double &d, double &m, double &s, double* dd);
