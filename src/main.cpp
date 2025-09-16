@@ -515,9 +515,9 @@ CaseWindow *MainWindow::CreateCaseWindow( Case *c )
         }
 		// load first page of hybrid and non-hybrid configurations
 		if (c->GetConfiguration()->Technology.size() > 1) // hybrid	
-			win->SwitchToInputPage(c->GetConfiguration()->InputPageGroups[c->GetConfiguration()->Technology.size() - 1][0]->SideBarLabel);
+			win->SwitchToNavigationMenu(c->GetConfiguration()->InputPageGroups[c->GetConfiguration()->Technology.size() - 1][0]->SideBarLabel);	
 		else
-			win->SwitchToInputPage(pages[0]);
+			win->SwitchToNavigationMenu(pages[0]);
 
 		// reevaluate all equations address SAM #1583
 		c->EvaluateEquations();
