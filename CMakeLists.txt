@@ -134,13 +134,13 @@ if (UNIX)
     endif ()
 
     if (APPLE)
-        find_package(wxWidgets REQUIRED xrc webview stc richtext ribbon propgrid aui gl html qa adv core xml net base )
+        find_package(wxWidgets  QUIET REQUIRED xrc webview stc richtext ribbon propgrid aui gl html qa adv core xml net base )
     else()
-	    find_package(wxWidgets REQUIRED xrc stc richtext ribbon propgrid aui gl html qa adv core xml net base )
+	    find_package(wxWidgets QUIET  REQUIRED xrc stc richtext ribbon propgrid aui gl html qa adv core xml net base )
     endif()
-else()
-	set(wxWidgets_ROOT_DIR $ENV{WXMSW3})
-	find_package(wxWidgets REQUIRED xrc webview stc richtext ribbon propgrid aui gl html qa adv core xml net base scintilla)
+#else()
+#	set(wxWidgets_ROOT_DIR $ENV{WXMSW3})
+#	find_package(wxWidgets QUIET  REQUIRED xrc webview stc richtext ribbon propgrid aui gl html qa adv core xml net base scintilla)
 endif()
 
 include(${wxWidgets_USE_FILE})
@@ -411,5 +411,17 @@ else()
         COMMAND ${CMAKE_COMMAND}
         ARGS -E copy $ENV{SSCDIR}/ssc/sscapi.h ${CMAKE_CURRENT_SOURCE_DIR}/deploy/runtime
     )
+
+    file(GLOB ORTOOLS_DLLS "$ENV{ORTOOLSDIR}/bin/*.dll")
+    foreach( file_i ${ORTOOLS_DLLS})
+        add_custom_command(
+        TARGET ${SAM_EXE}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy ${file_i} ${SAMEXE_DIR}
+    )
+    endforeach( file_i )
+
+
 endif()
 
