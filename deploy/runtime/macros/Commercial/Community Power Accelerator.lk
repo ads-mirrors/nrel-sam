@@ -1,0 +1,147 @@
+/*@
+<p>Welcome to the community power accelerator example macro!
+Enter community power accelerator meaningful benefits. 
+Then, a pdf report and a cash flow are generated.
+The report and cash flow gives insights for your community power accelerator project.
+This macro is an initial implementation intended as a proof-of-concept. 
+If you have questions or suggestions for improving the macro, please contact us at sam.support@nrel.gov</p>
+
+<p><strong>To use the macro:</strong></p>
+<ol>
+<li>If you have not already, set up a PVWatts Commercial case.</li>
+<li>Enter the community benefits payment in $/yr.</li>
+<li>Enter the job training value in $/yr.</li>
+<li>Click <strong>Run macro</strong> above.</li>
+</ol>
+
+@*/
+
+
+//@ name=communitybenefitspayments;type=number;label=Community benefits payment ($/yr):;value=5000
+//@ name=jobtraining;type=number;label=Job training value ($/yr):;value=25000
+
+// Now use template file
+/*************************************/
+/**           Runtime Tools         **/
+
+// Save the current dir for later use
+curDir = userlocaldatadir();
+//outln( curDir );
+
+// Determine screen size and set default pop-up positions
+
+scrn = scrnres();
+
+defaultX = scrn[0] - scrn[0]/2;
+defaultY = 60;
+
+// exit function (and removes any highlighting)
+function exitIf( exitCondition ){
+	if( exitCondition ){
+		transp();
+		exit;
+	}
+}
+
+function send_excel( xl, variable)
+{
+	xl_set( xl, value(variable), variable );
+}
+
+if ( typeof(macro) == 'unknown' ) 
+{
+	msgbox('This macro must be run from within a case.');
+	exit;
+}	
+communitybenefitspayments = macro.communitybenefitspayments;
+jobtraining = macro.jobtraining;
+
+
+caseName = case_name();
+exitIf(caseName == "");
+
+
+exitIf(communitybenefitspayments == '');
+x[0] = to_real(communitybenefitspayments);
+exitIf(jobtraining == '');
+x[0] += to_real(jobtraining);
+
+set('cs_cost_recurring_fixed', x );
+
+
+/*************************************/
+/**            Simulate             **/
+
+// simulate
+simulate('',true);
+outln("Simulation finished");
+/*************************************/
+/**            Outputs              **/
+
+// create HTML table showing Benefits
+case = case_name();
+
+/* cash flow line items from Third Party outputs with 
+1.	Energy savings to subscriber  (Bill credits)
+2.	Community benefits payments (upfront and recurring)
+3.	Job training (upfront and recurring)
+*/
+
+fixedjobtraining = to_real(jobtraining);
+fixedcommunitybenefitspayments = to_real(communitybenefitspayments);
+fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
+
+data = {'fixedjobtraining' = fixedjobtraining, 'fixedcommunitybenefitspayments' = fixedcommunitybenefitspayments, 'fixedtotal' = fixedtotal};
+
+varbenefits = ['Energy savings to subscriber','Community benefits payments','Job training'];
+varcf = ["cf_energy_value","cf_om_fixed_expense","cf_om_fixed_expense"];
+varmultiplier = [1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
+str_html = '<table bgcolor=#dddddd width=100%>';
+ap = round(to_real(get('analysis_period')));
+
+//str_html += '<tr><th>year</th>';
+str_html += '<tr><th>Benefit</th>';
+// Total added based on 7/2/2025 meeting
+str_html += '<th>Total</th>';
+for (i=0;i<=ap;i++)
+{
+	str_html +=  '<th>' + sprintf("%d",i) + '</th>';
+}
+str_html += '</tr>';
+
+for (i=0;i<#varcf;i++)
+{
+	str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + '</td>';
+	cfline = get(varcf[i]);
+	// add sum per 7/2/2025 meeting
+	str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * sum(cfline))) + '</td>';
+	
+	for (j=0; j<#cfline; j++)
+	{
+		str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * cfline[j])) + '</td>';
+	}
+	str_html += '</tr>';
+}
+str_html +=  '</table></body></html>';
+
+
+html_dialog ( str_html , 'Benefits for "' + case + '" Case' , [300,300,2600,600]);
+outln("Benefits table shown.");
+
+
+// export cashflow to Excel
+export_cashflow_excel();
+
+
+// create pdf report quickstart/CPA-example.samreport 
+if( yesno("This report will be saved to:\n" + homedir()+"/CPA-Commercial_Macro_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
+	reportFile = homedir()+"/CPA-Commercial_Macro_Report.pdf";
+} else {
+	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
+}
+
+ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-Commercial.samreport', 'metadata'=data });
+
+// Open Report
+browse(reportFile);
+outln("PDF report generated " + reportFile);
