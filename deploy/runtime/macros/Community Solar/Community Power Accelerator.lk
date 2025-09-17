@@ -109,7 +109,8 @@ fixedjobtraining = to_real(jobtraining);
 fixedcommunitybenefitspayments = to_real(communitybenefitspayments);
 fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 
-write_text_file(runtimedir() + 'quickstart/CPA-example_multipliers.txt', fixedcommunitybenefitspayments + " " + fixedjobtraining + " " + fixedtotal);
+//write_text_file(runtimedir() + 'quickstart/CPA-example_multipliers.txt', fixedcommunitybenefitspayments + " " + fixedjobtraining + " " + fixedtotal);
+data = {'fixedjobtraining' = fixedjobtraining, 'fixedcommunitybenefitspayments' = fixedcommunitybenefitspayments, 'fixedtotal' = fixedtotal};
 
 varbenefits = ['Energy savings to subscriber','Lease payments to owner','Community benefits payments','Job training'];
 // 7/2/2025 meeting Lease payment to owner is cf_om_fixed
@@ -160,7 +161,7 @@ if( yesno("This report will be saved to:\n" + homedir()+"/CPA-Macro_Report.pdf\n
 	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
 }
 
-ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-example.samreport'});
+ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-example.samreport', 'metadata'=data });
 
 // Open Report
 browse(reportFile);
