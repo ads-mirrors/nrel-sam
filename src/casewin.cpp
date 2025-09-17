@@ -1063,13 +1063,29 @@ wxArrayString CaseWindow::GetInputPages()
 bool CaseWindow::SwitchToNavigationMenu(const wxString& name)
 {
 	// iterate over menu tree items and match "name" or select first item (SAM issue 1618)
-	wxDataViewItem dvi;// = m_navigationMenu->GetNthChild(wxDataViewItem(0), 0);
+	wxDataViewItem dvi, dvi_child;// = m_navigationMenu->GetNthChild(wxDataViewItem(0), 0);
 	bool found = false;
+
 	int count = m_navigationMenu->GetChildCount(wxDataViewItem(0));
 	for (int i = 0; i < count && !found; i++) {
 		dvi = m_navigationMenu->GetNthChild(wxDataViewItem(0), i);
-		if (dvi.IsOk() && m_navigationMenu->GetItemText(dvi) == name)
-			found = true;
+		// should be a lambda function but not more than one deep...
+		if (m_navigationMenu->IsContainer(dvi)) {
+			int count_child = m_navigationMenu->GetChildCount(dvi);
+			for (int j = 0; j < count_child && !found; j++) {
+				dvi_child = m_navigationMenu->GetNthChild(dvi, j);
+				wxString stmp = m_navigationMenu->GetItemText(dvi_child); // for debugging
+				if (dvi_child.IsOk() && stmp == name) {
+					found = true;
+					dvi = dvi_child;
+				}
+			}
+		}
+		else {
+			wxString stmp = m_navigationMenu->GetItemText(dvi);
+			if (dvi.IsOk() && m_navigationMenu->GetItemText(dvi) == name)
+				found = true;
+		}
 	}
 	// first item if not found
 	if (!found)
@@ -1081,9 +1097,10 @@ bool CaseWindow::SwitchToNavigationMenu(const wxString& name)
 	if (dvi.IsOk()) {
 		m_navigationMenu->SetCurrentItem(dvi);
 		m_currentSelection = (dvi);
-		SwitchToInputPage(m_navigationMenu->GetItemText(dvi));
+		m_left_panel->SetFocus();
+		SwitchToPage(m_navigationMenu->GetItemText(dvi));
+		m_left_panel->Layout();
 	}
-
 
 	return true;
 }
@@ -1119,6 +1136,7 @@ bool CaseWindow::SwitchToInputPage( const wxString &name )
 	int p = m_inputPageList->Find(name);
 	m_inputPageList->Select( p );
 	m_inputPageList->Refresh();
+	m_navigationMenu->Layout();
 	m_left_panel->Layout();// try to force onPaint call for the input page list
 
 	return true;
@@ -1157,7 +1175,9 @@ bool CaseWindow::SwitchToPage( const wxString &name )
 	else
 	{
 		m_pageFlipper->SetSelection( PG_INPUTS );
-		return SwitchToInputPage( name );
+//		return SwitchToInputPage(name);
+		SwitchToInputPage(name);
+		m_left_panel->Layout();
 	}
 
 	return true;
