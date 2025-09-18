@@ -66,7 +66,7 @@ x[0] = to_real(communitybenefitspayments);
 exitIf(jobtraining == '');
 x[0] += to_real(jobtraining);
 
-set('cs_cost_recurring_fixed', x );
+set('om_fixed', x );
 
 
 /*************************************/
