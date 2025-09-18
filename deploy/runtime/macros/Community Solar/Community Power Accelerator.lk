@@ -155,13 +155,13 @@ export_cashflow_excel();
 
 
 // create pdf report quickstart/CPA-example.samreport 
-if( yesno("This report will be saved to:\n" + homedir()+"/CPA-Macro_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
-	reportFile = homedir()+"/CPA-Macro_Report.pdf";
-} else {
-	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
-}
+//if( yesno("This report will be saved to:\n" + homedir()+"/CPA-CommunitySolar_Macro_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
+	reportFile = homedir()+"/CPA-CommunitySolar_Macro_Report.pdf";
+//} else {
+//	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
+//}
 
-ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-example.samreport', 'metadata'=data });
+ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-CommunitySolar.samreport', 'metadata'=data });
 
 // Open Report
 browse(reportFile);

@@ -134,11 +134,11 @@ export_cashflow_excel();
 
 
 // create pdf report quickstart/CPA-example.samreport 
-if( yesno("This report will be saved to:\n" + homedir()+"/CPA-Commercial_Macro_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
+//if( yesno("This report will be saved to:\n" + homedir()+"/CPA-Commercial_Macro_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
 	reportFile = homedir()+"/CPA-Commercial_Macro_Report.pdf";
-} else {
-	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
-}
+//} else {
+//	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
+//}
 
 ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-Commercial.samreport', 'metadata'=data });
 
