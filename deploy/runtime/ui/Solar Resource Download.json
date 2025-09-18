@@ -139,7 +139,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 42.0
+                    "Integer": 36.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -147,7 +147,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "The NSRDB is a database of thousands of weather files that you can download and add to your to your solar resource library: Download a default typical-year (TMY) file for most long-term cash flow analyses, or choose files to download for single-year or P50/P90 analyses. See Help for details."
+                    "String": "The NSRDB is a database of weather files that you can download and add to your to your solar resource library: Download a default typical-year (TMY) file for most long-term cash flow analyses, or choose files for single-year or P50/P90 analyses. See Help for details."
                 },
                 "TextColour": {
                     "Type": 4.0,
@@ -189,7 +189,7 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 171.0
+                    "Integer": 180.0
                 },
                 "Y": {
                     "Type": 3.0,
@@ -197,7 +197,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 696.0
+                    "Integer": 687.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -432,7 +432,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 69.0
+                    "Integer": 66.0
                 },
                 "Width": {
                     "Type": 3.0,
