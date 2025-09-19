@@ -93,7 +93,7 @@ fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 
 data = {'fixedjobtraining' = fixedjobtraining, 'fixedcommunitybenefitspayments' = fixedcommunitybenefitspayments, 'fixedtotal' = fixedtotal};
 
-varbenefits = ['Energy savings to subscriber','Community benefits payments','Job training'];
+varbenefits = ['Energy savings to beneficiary','Community benefits payments','Job training'];
 varcf = ["cf_energy_value","cf_om_fixed_expense","cf_om_fixed_expense"];
 varmultiplier = [1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
 str_html = '<table bgcolor=#dddddd width=100%>';
