@@ -2878,6 +2878,8 @@ void fcall_wavetoolkit(lk::invoke_t& cxt)
         end_string = "wave_query_hawaii";
     else if (endpoint == "Alaska")
         end_string = "wave_query_alaska";
+    else if (endpoint == "Gulf of America and Puerto Rico")
+        end_string = "wave_query_pr";
 
     for (size_t i = 0; i < years_final.Count(); i++)
     {

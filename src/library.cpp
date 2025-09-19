@@ -1454,8 +1454,17 @@ bool ScanWaveResourceTSData(const wxString& db_file, bool show_busy)
                 if (ssc_data_get_number(pdata, "location_id", &val))
                     csv(row, 1) = wxString::Format("%g", val);
 
-                if ((str = ssc_data_get_string(pdata, "location_name")) != 0)
-                    csv(row, 2) = wxString(str);
+                if ((str = ssc_data_get_string(pdata, "location_name")) != 0) {
+                    if (wxString(str).StartsWith("b'") && wxString(str).EndsWith("'")) { // strip leading b' and trailing '
+                        wxString mod_str = wxString(str).Mid((size_t)2, size_t((int)wxString(str).Len() - 3));
+                        csv(row, 2) = mod_str;
+                    }
+                    else {
+                        csv(row, 2) = wxString(str);
+                    }
+
+                    
+                }
 
                 if (ssc_data_get_number(pdata, "distance_to_shore_file", &val))
                     csv(row, 3) = wxString::Format("%g", val);

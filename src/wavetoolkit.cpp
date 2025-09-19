@@ -78,6 +78,9 @@ WaveDownloadDialog::WaveDownloadDialog(wxWindow *parent, const wxString &title)
 {
 	wxString dnpath;
     dnpath = ::wxGetHomeDir() + "/SAM Downloaded Weather Files";
+    SamApp::Settings().Read("WaveDownloadFolder", &dnpath);
+    if (dnpath.Len() <= 0)
+        SamApp::Settings().Read("wave_download_path", &dnpath);
 	m_txtFolder = new wxTextCtrl(this, ID_txtFolder, dnpath, wxDefaultPosition, wxDefaultSize, 0);// , wxDefaultPosition, wxSize(500, 30));
 	m_txtFolder->SetValue(dnpath);
     m_btnFolder = new wxButton(this, ID_btnFolder, "...", wxDefaultPosition, wxSize(30, 30));
@@ -94,6 +97,7 @@ WaveDownloadDialog::WaveDownloadDialog(wxWindow *parent, const wxString &title)
     endpoints.Add("U.S. Atlantic Coast");
     endpoints.Add("Hawaii");
     endpoints.Add("Alaska");
+    endpoints.Add("Gulf of America and Puerto Rico");
 
     wxString InitialValue = "U.S. West Coast";
     cboEndpoint = new wxComboBox(this, ID_cboEndpoint, InitialValue, wxDefaultPosition, wxDefaultSize, endpoints, wxCB_READONLY);
