@@ -1744,7 +1744,7 @@ bool ScanTidalResourceData(const wxString& db_file, bool show_busy)
     return csv.WriteFile(db_file);
 }
 
-wxString WaveResourceTSData_makeJPD(const wxString& ts_file, bool show_busy)
+wxString WaveResourceTSData_makeJPD(const wxString& ts_file, ssc_number_t* resource_matrix, bool show_busy)
 {
     // TODO - update fields based on final file
     wxBusyInfo* busy = 0;
