@@ -55,6 +55,62 @@ function variable_name_change(new, old){
 	value(new, oldvalue(old), 'Variable name changed from \"' + old + '\" to \"' +  new + '\"');
 }
 
+version_upgrade{'2025.9.19'} = define() {
+
+	const cfg = config();
+
+	if(cfg.tech == 'PVWatts' || cfg.tech == 'PVWatts Battery') {
+		message('We converted PVWatts to run in the GUI in lifetime mode by default.', 'warning');
+		old_degradation = value('degradation');
+		
+		value('dc_degradation', old_degradation, 'Update degradation from AC to DC degradation');
+	}
+	if (cfg.tech == 'PVWatts Battery') {
+		message('Converting simple battery to detailed battery for configurations paired with PVWatts.', 'warning');
+		old_kw = value('batt_simple_kw');
+		old_kwh = value('batt_simple_kwh');
+		old_dispatch = value('batt_simple_dispatch');
+		old_chem = value('batt_simple_chemistry'); // batt_type
+		
+		value('batt_bank_power', old_kw);
+		value('batt_duration_choice', 0);
+		value('batt_bank_duration', old_kwh);
+		
+		message("DEBUG: " + old_dispatch + " chem: " + old_chem, 'warning');
+		
+		// From cmod_battwatts lines 254 - 259
+		value('batt_dispatch_auto_can_charge', true);
+		value('batt_dispatch_auto_can_gridcharge', true);
+		value('batt_dispatch_auto_btm_can_discharge_to_grid', true);
+		value('batt_dispatch_auto_can_clipcharge', false);
+		value('batt_dispatch_charge_only_system_exceeds_load', false);
+		value('batt_dispatch_discharge_only_load_exceeds_system', false);
+		
+		
+		if (old_dispatch == 0 || old_dispatch == 1) {
+			value('batt_dispatch_choice_ui', 0);
+			value('batt_dispatch_choice', 0);
+			value('peak_shaving_batt_dispatch_choice', old_dispatch);
+			value('batt_dispatch_load_forecast_choice_peak_shaving', old_dispatch);
+		}
+		else {
+			// Should only be 2 (custom dispatch)
+			value('batt_dispatch_choice_ui', old_dispatch);
+			value('batt_dispatch_choice', old_dispatch);
+		
+		}
+		if (old_chem == 0) {
+			// Lead Acid
+			value('batt_type', 0);
+		
+		}
+		else {
+			// Li-ion NMC
+			value('batt_type', 8);
+		}
+	}
+};
+
 version_upgrade{'2024.12.12'} = define() {
 	
 	const cfg = config();
