@@ -4393,20 +4393,20 @@ void fcall_rescanlibrary( lk::invoke_t &cxt )
 	else if (type == "wave")
 	{
 		wxString wave_resource_db = SamApp::GetUserLocalDataDir() + "/WaveResourceData.csv";
-		ScanWaveResourceData(wave_resource_db, true);
+		ScanWaveResourceData(wave_resource_db, false);
 		reloaded = Library::Load(wave_resource_db);
 	}
     else if (type == "wave_ts")
     {
         wxString wave_resource_ts_db = SamApp::GetUserLocalDataDir() + "/WaveResourceTSData.csv";
         wxString wave_resource_db = SamApp::GetRuntimePath() + "../wave_resource/test_time_series_jpd.csv";
-        ScanWaveResourceTSData(wave_resource_ts_db, true);
+        ScanWaveResourceTSData(wave_resource_ts_db, false);
         reloaded = Library::Load(wave_resource_ts_db);
     }
     else if (type == "tidal")
     {
         wxString tidal_resource_db = SamApp::GetUserLocalDataDir() + "/TidalResourceData.csv";
-        ScanTidalResourceData(tidal_resource_db, true);
+        ScanTidalResourceData(tidal_resource_db, false);
         reloaded = Library::Load(tidal_resource_db);
     }
 
@@ -4671,7 +4671,8 @@ void fcall_make_jpd_multiyear(lk::invoke_t& cxt)
             csv(1, 1) = "";
             csv(1, 2) = "";
             csv(1, 3) = "";
-            csv(1, 0) = wxString(final_file).substr(0, wxString(final_file).Find(".csv"));
+            csv(1, 0) = wxFileNameFromPath(final_file);
+            //csv(1, 0) = wxString(final_file).substr(0, wxString(final_file).Find(".csv"));
 
 
             csv.WriteFile(final_file);
@@ -4725,6 +4726,7 @@ void fcall_make_jpd_multiyear(lk::invoke_t& cxt)
     //                lc->ReloadLibrary();
     //    }
     //}
+    cxt.result().assign("");
     return;
 }
 
