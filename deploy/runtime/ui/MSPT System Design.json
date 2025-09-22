@@ -1,7 +1,7 @@
 {
     "Name": "MSPT System Design",
-    "Width": 871.0,
-    "Height": 1091.0,
+    "Width": 866.0,
+    "Height": 1188.0,
     "FormObjects": {
         "Numeric": {
             "Visible": 1.0,
@@ -16,7 +16,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 117.0
+                    "Integer": 180.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -99,7 +99,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 165.0
+                    "Integer": 408.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -182,7 +182,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 240.0
+                    "Integer": 456.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -265,7 +265,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 216.0
+                    "Integer": 432.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -348,7 +348,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 165.0
+                    "Integer": 204.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -431,7 +431,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 117.0
+                    "Integer": 96.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -501,68 +501,6 @@
                 }
             }
         },
-        "Label": {
-            "Visible": 1.0,
-            "ObjectProperties": {
-                "Name": {
-                    "Type": 5.0,
-                    "String": "heater_msg"
-                },
-                "X": {
-                    "Type": 3.0,
-                    "Integer": 408.0
-                },
-                "Y": {
-                    "Type": 3.0,
-                    "Integer": 393.0
-                },
-                "Width": {
-                    "Type": 3.0,
-                    "Integer": 300.0
-                },
-                "Height": {
-                    "Type": 3.0,
-                    "Integer": 54.0
-                },
-                "Tool Tip": {
-                    "Type": 5.0,
-                    "String": ""
-                },
-                "Caption": {
-                    "Type": 5.0,
-                    "String": ""
-                },
-                "TextColour": {
-                    "Type": 4.0,
-                    "Color": {
-                        "Red": 255.0,
-                        "Green": 0.0,
-                        "Blue": 0.0,
-                        "Alpha": 255.0
-                    }
-                },
-                "Bold": {
-                    "Type": 2.0,
-                    "Boolean": 0.0
-                },
-                "FontSize": {
-                    "Type": 3.0,
-                    "Integer": 0.0
-                },
-                "WordWrap": {
-                    "Type": 2.0,
-                    "Boolean": 1.0
-                },
-                "AlignRight": {
-                    "Type": 2.0,
-                    "Boolean": 0.0
-                },
-                "AlignTop": {
-                    "Type": 2.0,
-                    "Boolean": 1.0
-                }
-            }
-        },
         "Numeric": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -576,7 +514,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 399.0
+                    "Integer": 537.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -646,6 +584,55 @@
                 }
             }
         },
+        "RadioChoice": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "is_control_target_elec"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 621.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 270.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 171.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 48.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Selection": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Items": {
+                    "Type": 6.0,
+                    "StringList": "Heat to cycle (original)|Net system electricity output"
+                },
+                "ShowCaptions": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "Horizontal": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
         "CheckBox": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -659,7 +646,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 372.0
+                    "Integer": 510.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -687,6 +674,56 @@
                 }
             }
         },
+        "Divider": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "label_system"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 444.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 255.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 405.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 22.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Orientation": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Colour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 120.0,
+                        "Green": 120.0,
+                        "Blue": 120.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": "System"
+                },
+                "Bold": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                }
+            }
+        },
         "Numeric": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -700,7 +737,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 141.0
+                    "Integer": 324.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -783,7 +820,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 354.0
+                    "Integer": 492.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -833,7 +870,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 483.0
+                    "Integer": 624.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -866,11 +903,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 12.0
+                    "Integer": 444.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 273.0
+                    "Integer": 78.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -920,7 +957,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 198.0
+                    "Integer": 366.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -970,7 +1007,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 96.0
+                    "Integer": 159.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1020,7 +1057,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 96.0
+                    "Integer": 129.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1057,6 +1094,56 @@
                 }
             }
         },
+        "Divider": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "object 21217"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 12.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 78.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 405.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 16.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Orientation": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Colour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 120.0,
+                        "Green": 120.0,
+                        "Blue": 120.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": "Resource"
+                },
+                "Bold": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                }
+            }
+        },
         "GroupBox": {
             "Visible": 1.0,
             "ObjectProperties": {
@@ -1078,7 +1165,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 462.0
+                    "Integer": 603.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -1107,6 +1194,68 @@
                 },
                 "Y": {
                     "Type": 3.0,
+                    "Integer": 147.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 402.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 123.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Caption": {
+                    "Type": 5.0,
+                    "String": "The heliostat field layout does not automatically update when you change the design (for example, the solar multiple). We assume a field optical efficiency of 60% to estimate the solar multiple and thermal power achievable with the current field layout. If these estimated values are significantly different than the corresponding values in the Tower and Receiver section below, you may want to generate a new field layout. On the Heliostat Field page, you have options to generate a new layout from the user interface or generate a new layout when you run the model."
+                },
+                "TextColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "Bold": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "FontSize": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "WordWrap": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "AlignRight": {
+                    "Type": 2.0,
+                    "Boolean": 0.0
+                },
+                "AlignTop": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                }
+            }
+        },
+        "Label": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "object 72"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 18.0
+                },
+                "Y": {
+                    "Type": 3.0,
                     "Integer": 30.0
                 },
                 "Width": {
@@ -1115,7 +1264,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 66.0
+                    "Integer": 39.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -1169,7 +1318,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 477.0
+                    "Integer": 618.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1206,11 +1355,94 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 423.0
+                    "Integer": 561.0
                 },
                 "Width": {
                     "Type": 3.0,
                     "Integer": 100.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 21.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Value": {
+                    "Type": 1.0,
+                    "Double": 0.0
+                },
+                "Mode": {
+                    "Type": 3.0,
+                    "Integer": 1.0
+                },
+                "Format": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Decimals": {
+                    "Type": 3.0,
+                    "Integer": 2.0
+                },
+                "Prefix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Suffix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "ThousandsSep": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "Numeric": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "q_dot_rec_abs_from_sf_est_des_calc"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 219.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 336.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 99.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -1289,11 +1521,94 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 189.0
+                    "Integer": 228.0
                 },
                 "Width": {
                     "Type": 3.0,
                     "Integer": 100.0
+                },
+                "Height": {
+                    "Type": 3.0,
+                    "Integer": 21.0
+                },
+                "Tool Tip": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Value": {
+                    "Type": 1.0,
+                    "Double": 0.0
+                },
+                "Mode": {
+                    "Type": 3.0,
+                    "Integer": 1.0
+                },
+                "Format": {
+                    "Type": 3.0,
+                    "Integer": 0.0
+                },
+                "Decimals": {
+                    "Type": 3.0,
+                    "Integer": 2.0
+                },
+                "Prefix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "Suffix": {
+                    "Type": 5.0,
+                    "String": ""
+                },
+                "ThousandsSep": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "Editable": {
+                    "Type": 2.0,
+                    "Boolean": 1.0
+                },
+                "ForeColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 0.0,
+                        "Green": 0.0,
+                        "Blue": 0.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "BackColour": {
+                    "Type": 4.0,
+                    "Color": {
+                        "Red": 255.0,
+                        "Green": 255.0,
+                        "Blue": 255.0,
+                        "Alpha": 255.0
+                    }
+                },
+                "TabOrder": {
+                    "Type": 3.0,
+                    "Integer": -1.0
+                }
+            }
+        },
+        "Numeric": {
+            "Visible": 1.0,
+            "ObjectProperties": {
+                "Name": {
+                    "Type": 5.0,
+                    "String": "rec_sm_from_sf_est_des_calc"
+                },
+                "X": {
+                    "Type": 3.0,
+                    "Integer": 219.0
+                },
+                "Y": {
+                    "Type": 3.0,
+                    "Integer": 312.0
+                },
+                "Width": {
+                    "Type": 3.0,
+                    "Integer": 99.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -1372,7 +1687,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 141.0
+                    "Integer": 384.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1451,11 +1766,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 219.0
+                    "Integer": 687.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 294.0
+                    "Integer": 102.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1538,7 +1853,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 447.0
+                    "Integer": 585.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1617,11 +1932,11 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 219.0
+                    "Integer": 687.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 318.0
+                    "Integer": 126.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -1696,23 +2011,23 @@
             "ObjectProperties": {
                 "Name": {
                     "Type": 5.0,
-                    "String": "ui_msg"
+                    "String": "ui_sm_comp_msg"
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 447.0
+                    "Integer": 18.0
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 246.0
+                    "Integer": 273.0
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 405.0
+                    "Integer": 402.0
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 87.0
+                    "Integer": 36.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
@@ -1741,7 +2056,7 @@
                 },
                 "WordWrap": {
                     "Type": 2.0,
-                    "Boolean": 1.0
+                    "Boolean": 0.0
                 },
                 "AlignRight": {
                     "Type": 2.0,
@@ -1749,7 +2064,7 @@
                 },
                 "AlignTop": {
                     "Type": 2.0,
-                    "Boolean": 1.0
+                    "Boolean": 0.0
                 }
             }
         }
@@ -2418,6 +2733,19 @@
             "sscVariableName": " ",
             "sscVariableValue": ""
         },
+        "is_control_target_elec": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Plant control target",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 0.0,
+            "DefaultValue": 0.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
         "is_parallel_htr": {
             "Version": 4.0,
             "Type": 1.0,
@@ -2665,6 +2993,19 @@
             "sscVariableName": " ",
             "sscVariableValue": ""
         },
+        "q_dot_rec_abs_from_sf_est_des_calc": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Estimated thermal power delivered",
+            "Units": "MWt",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": -999.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
+            "sscVariableValue": ""
+        },
         "q_dot_tes_est": {
             "Version": 4.0,
             "Type": 1.0,
@@ -2715,6 +3056,19 @@
             "DefaultValue": -999.0,
             "UIObject": "Default",
             "sscVariableName": " ",
+            "sscVariableValue": ""
+        },
+        "rec_sm_from_sf_est_des_calc": {
+            "Version": 4.0,
+            "Type": 1.0,
+            "Label": "Estimated solar multiple",
+            "Units": "",
+            "Group": "",
+            "IndexLabels": "",
+            "Flags": 8.0,
+            "DefaultValue": -999.0,
+            "UIObject": "Default",
+            "sscVariableName": "",
             "sscVariableValue": ""
         },
         "receiver_cost_calc": {
@@ -2977,19 +3331,6 @@
             "sscVariableName": " ",
             "sscVariableValue": ""
         },
-        "ui_msg": {
-            "Version": 4.0,
-            "Type": 4.0,
-            "Label": "System design message",
-            "Units": " ",
-            "Group": "System Design",
-            "IndexLabels": "",
-            "Flags": 9.0,
-            "DefaultValue": "",
-            "UIObject": "Label",
-            "sscVariableName": " ",
-            "sscVariableValue": ""
-        },
         "vel_rec_htf_des_calc": {
             "Version": 4.0,
             "Type": 1.0,
@@ -3064,6 +3405,8 @@
         "\t\t${land_area_base_calc} = ssc_var(obj, \"land_area_base_calc\");",
         "\t\t${total_land_area_before_rad_cooling_calc} = ssc_var(obj, \"total_land_area_before_rad_cooling_calc\");",
         "\t\t${W_dot_col_tracking_des_calc} = ssc_var(obj, \"W_dot_col_tracking_des\");",
+        "\t\t${q_dot_rec_abs_from_sf_est_des_calc} = ssc_var(obj, \"q_dot_rec_abs_from_sf_est_des\");\r",
+        "\t\t${rec_sm_from_sf_est_des_calc} = ssc_var(obj, \"rec_sm_from_sf_est_des\");\r",
         "\t",
         "\t\t${rec_height_calc} = ssc_var(obj, \"rec_height_calc\");",
         "\t\t${D_rec_calc} = ssc_var(obj, \"D_rec_calc\");",
@@ -3163,7 +3506,9 @@
         "\t\t${land_max_abs_calc} = fail;",
         "\t    ${land_area_base_calc} = fail;",
         "        ${total_land_area_before_rad_cooling_calc} = fail;",
-        "\t    ${W_dot_col_tracking_des_calc} = fail;",
+        "\t    ${W_dot_col_tracking_des_calc} = fail;\r",
+        "\t    ${q_dot_rec_abs_from_sf_est_des_calc} = fail;\r",
+        "\t    ${rec_sm_from_sf_est_des_calc} = fail;",
         "\t    ",
         "\t    ${rec_height_calc} = fail;",
         "\t\t${D_rec_calc} = fail;",
@@ -3252,57 +3597,25 @@
         ""
     ],
     "Callbacks": [
-        "function change_msg ( v ) {",
-        "\tmsg = '';",
-        "\tm = 'NOT DEFINED';",
-        "\tif ( v != '' ) {",
-        "\t\tif ( v == 'dni_des' || v == 'sf_excess' ) m = 'solar field size at the design point';",
-        "\t\telseif ( v == 'solarm' ||",
-        "\t\t         v == 'P_ref'  ||",
-        "\t\t         v == 'design_eff' ) m = 'receiver thermal power at the design point';",
-        "\t\tv_info = varinfo(v);",
-        "\t\tif ( value('field_model_type') != 0 )",
-        "\t\t\tmsg = 'You changed the value of ' + v_info.label + ', which changes the ' + m + '. You may want to optimize the field to ensure that the field layout and geometry are appropriate for the new value.';",
-        "\t}",
-        "\tproperty('ui_msg','Caption',msg);",
-        "}",
+        "function compare_solarmult (){\r",
+        "\tmsg = \"\";\r",
+        "\tif(${rec_sm_from_sf_est_des_calc} > ${solarm}*1.05)\r",
+        "\t{\r",
+        "\t\tperc_diff = ${rec_sm_from_sf_est_des_calc} / ${solarm} * 100.0 - 100.0;\r",
+        "\t\tmsg = \"The estimated solar multiple is \" + to_string(perc_diff) + \"% greater than the receiver solar multiple.\";\r",
+        "\t}\r",
+        "\telse if(${rec_sm_from_sf_est_des_calc} < ${solarm}*0.95)\r",
+        "\t{\r",
+        "\t\tperc_diff = 100.0 - ${rec_sm_from_sf_est_des_calc} / ${solarm} * 100.0;\r",
+        "\t\tmsg = \"The estimated solar multiple is \" + to_string(perc_diff) + \"% less than the receiver solar multiple.\";\r",
+        "\t}\r",
+        "\tproperty('ui_sm_comp_msg','Caption', msg);\r",
+        "}\r",
         "",
         "on_load{'MSPT System Design'} = define() ",
-        "\t{ change_msg('');",
-        "\t\ton_change{'is_parallel_htr'}();};",
-        "on_change{'dni_des'} = define()",
-        "\t{ change_msg('dni_des'); };",
-        "on_change{'solarm'} = define() ",
-        "\t{ change_msg('solarm'); };",
-        "on_change{'P_ref'} = define() ",
-        "\t{ change_msg('P_ref'); };",
-        "on_change{'design_eff'} = define() ",
-        "\t{ change_msg('design_eff'); };",
-        "//on_change{'tshours'} = define() { var_change_msg('tshours'); };",
-        "on_change{'sf_excess'} = define()",
-        "\t{ change_msg('sf_excess'); };",
-        "",
-        "",
-        "on_change{'is_parallel_htr'} = define()",
-        "{ \tis_htr = value('is_parallel_htr') == 1;",
-        "\tenable(\"heater_mult\", is_htr);",
-        "\tenable(\"tshours_heater\", is_htr);",
-        "\tenable(\"q_dot_heater_des_calc\", is_htr);",
-        "\tis_dispatch = value('is_dispatch') == 1;",
-        "\tmsg = \"\";",
-        "\tif(is_htr && !is_dispatch){",
-        "\t\tmsg  = \"Dispatch optimization is required when using the electric charger. \"",
-        "\t\t\"Please select dispatch optimization on the System Control page.\";",
-        "\t}",
-        "\tproperty('heater_msg','Caption',msg);",
-        "};",
-        "",
-        "",
-        "/*",
-        "",
-        "\"W_dot_rec_pump_tower_share_des\", ",
-        "\"W_dot_rec_pump_rec_share_des\",   ",
-        "",
-        "*/"
+        "\t{ on_change{'Q_rec_des'}();};",
+        "\r",
+        "on_change{'Q_rec_des'} = define()\r",
+        "\t{ compare_solarmult(); };"
     ]
 }
