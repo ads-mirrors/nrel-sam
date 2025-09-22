@@ -463,7 +463,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "If you prefer not to use the library, choose a file from disk."
+                    "String": "If you prefer not to use the Solar Resource Library, check Use Weather File on Disk to disable it, and click Browse to choose a weather file."
                 },
                 "TextColour": {
                     "Type": 4.0,
@@ -663,7 +663,7 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 21.0
+                    "Integer": 27.0
                 },
                 "Y": {
                     "Type": 3.0,
@@ -671,7 +671,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 171.0
+                    "Integer": 174.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -704,7 +704,7 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 195.0
+                    "Integer": 204.0
                 },
                 "Y": {
                     "Type": 3.0,
@@ -712,7 +712,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 567.0
+                    "Integer": 558.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -958,6 +958,12 @@
         "\t\tlibrarynotifytext('solar_resource', ''); //'Everything is fine.'\r",
         "\t}\r",
         "\r",
+        "\tif (value('use_specific_weather_file') == 1) {\r",
+        "\t\tproperty('caption_library','Caption','The Solar Resource library is disabled. Clear the Use Weather File on Disk checkbox below to enable the library.');\r",
+        "\t}\r",
+        "\telse {\r",
+        "\t\tproperty('caption_library','Caption','The Solar Resource library is a list of weather files on your computer. Choose a file from the library and verify the weather data information below.');\r",
+        "\t}\r",
         "\t//msgbox('Debug\\nlibraryget functions'+\r",
         "\t//'\\nfiltertext = ' + librarygetfiltertext('solar_resource') \r",
         "\t//+ '\\nnumber matches = ' + librarygetnumbermatches('solar_resource') \r",
