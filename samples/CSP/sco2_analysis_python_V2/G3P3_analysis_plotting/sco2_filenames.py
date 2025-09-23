@@ -28,7 +28,33 @@ color_list = [
     "#D85C8A",  # Rose
     "#2F4F4F",  # Slate Gray
     "#8B8B00",  # Olive Drab
-    "#F1A7A0"   # Peach (swapped with Burgundy)
+    "#F1A7A0",  # Peach (swapped with Burgundy)
+    # Additional 25 colors to double the list
+    "#FF69B4",  # Hot Pink
+    "#00FF7F",  # Spring Green
+    "#4169E1",  # Royal Blue
+    "#FFD700",  # Gold
+    "#FF6347",  # Tomato
+    "#40E0D0",  # Turquoise
+    "#EE82EE",  # Violet
+    "#FFA500",  # Orange Red
+    "#32CD32",  # Lime Green
+    "#87CEEB",  # Sky Blue
+    "#DDA0DD",  # Plum Light
+    "#F0E68C",  # Khaki
+    "#FA8072",  # Salmon
+    "#20B2AA",  # Light Sea Green
+    "#9370DB",  # Medium Purple
+    "#3CB371",  # Medium Sea Green
+    "#F4A460",  # Sandy Brown
+    "#2E8B57",  # Sea Green
+    "#4682B4",  # Steel Blue
+    "#D2691E",  # Chocolate
+    "#6495ED",  # Cornflower Blue
+    "#DC143C",  # Crimson
+    "#00CED1",  # Dark Turquoise
+    "#9400D3",  # Dark Violet
+    "#FF1493"   # Deep Pink
 ]
 
 linestyle_list = ['-', '--', ':']

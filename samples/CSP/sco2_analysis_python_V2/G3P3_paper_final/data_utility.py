@@ -9,6 +9,7 @@ import pickle
 import copy
 import gc
 import numpy as np
+import paper_error_filtering
 
 parentDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parentDir)
@@ -28,8 +29,8 @@ def open_pickle_mmap(filename, keys=[]):
         full_dict = pickle.load(mm)
         return_dict = full_dict
 
+        # Get prespecified keys
         if len(keys) > 0:
-            #partial_dict = {k: full_dict[k] for k in keys if k in full_dict}
             partial_dict = {}
             for dict_key in full_dict:
                 for key in keys:
@@ -37,6 +38,9 @@ def open_pickle_mmap(filename, keys=[]):
                         partial_dict[dict_key] = full_dict[dict_key]
 
             return_dict = partial_dict
+
+        # Add error metrics
+        paper_error_filtering.calc_errors(full_dict, return_dict)
 
         NVal = len(return_dict["config_name"])
         return_dict["run_id"] = []
@@ -161,6 +165,10 @@ def process_sweep_fileset_optimized(filenames, sweep_label, kwarg_arg, result_qu
             problems = 0
             print('BYPASS ERROR!!!!!!!!')
 
+    # Add check for reverse LTR/HTR heat transfer (cold side is hotter than hot side)
+    #for result_dict in input_dict_list:
+
+
     # Rename config names
     print('Naming cycles...')
     is_new_config_names = False
@@ -195,6 +203,16 @@ def process_sweep_fileset_optimized(filenames, sweep_label, kwarg_arg, result_qu
                     print('--------Bypass issue------------')
 
             new_config_name = sco2_solve.get_config_name(cycle_config, recomp_frac, bypass_frac, is_LTR, is_HTR)
+
+            # Add HX flip label if necessary
+            if result_dict['is_LTR_flip'][i] == 1 or result_dict['is_HTR_flip'][i] == 1:
+                new_config_name += " HX flip"
+
+            if result_dict['ltr_temp_down'][i] == 1:
+                new_config_name += " ltr temp"
+
+            if result_dict['htr_temp_down'][i] == 1:
+                new_config_name += " htr temp"
 
             if new_config_name != result_dict['config_name'][i]:
                 result_dict['config_name'][i] = new_config_name
@@ -234,6 +252,7 @@ def process_sweep_fileset_optimized(filenames, sweep_label, kwarg_arg, result_qu
         kwarg = copy.deepcopy(dict_kwarg[1])
         kwarg.setdefault('marker', 'X')
         kwarg['label'] = 'Best ' + kwarg['label']
+        kwarg['linestyle'] = kwarg_arg['linestyle']
         kwarg['c'] = color
         best_dict = sco2_plot_g3p3_baseline_FINAL.get_best_dict_optimized(diction, "cost_per_kWe_net_ish", False)
         best_dict_list_with_kwarg.append([best_dict, kwarg])

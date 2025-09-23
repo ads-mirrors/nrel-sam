@@ -124,8 +124,6 @@ def plot_comparisons_duo(list_of_best_dict_list_w_kwarg, sweep_label_list, show_
     # Adjust layout to make space for the legend
     #plt.tight_layout()  # Leave space on the right for the legend
 
-
-
 def make_optimal_table(list_of_best_dict_list_w_kwarg, sweep_label_list, show_sweep_list):
     
     # Variables
@@ -182,6 +180,49 @@ def make_optimal_table(list_of_best_dict_list_w_kwarg, sweep_label_list, show_sw
     x = 0
         
 
+def generate_waterfalls(list_of_best_dict_list_with_kwarg, sweep_label_list, show_sweep_list,
+                        config_name):
+
+    if len(show_sweep_list) > 2:
+        print("Too many sweeps for waterfall")
+        return
+
+    local_list_best_dict_list_w_kwarg = []
+    sweep_label_to_index = {d: i for i, d in enumerate(sweep_label_list)}
+
+    # Get correct sweeps
+    for sweep_label in show_sweep_list:
+        index = sweep_label_to_index.get(sweep_label)
+        local_list_best_dict_list_w_kwarg.append(list_of_best_dict_list_with_kwarg[index])
+
+    # Get correct config for each
+    simple_result_dict_list = []
+    for best_dict_list in local_list_best_dict_list_w_kwarg:
+        for result_dict, kwarg in best_dict_list:
+            config_name = result_dict['config_name'][0]
+            if config_name == "Simple":
+                simple_result_dict_list.append(result_dict)
+                continue
+
+    # Make Info list vars
+    info_list = [["cycle_cost", "700 °C"], ["mc_cost_bare_erected", "MC"],
+                 ["LTR_cost_bare_erected", "LTR"], ["PHX_cost_bare_erected", "PHX"],
+                 ["t_cost_bare_erected","T"], ["mc_cooler_cost_bare_erected", "MC Cooler"],
+                 ["cycle_cost", "550 °C"]]
+    
+    design_tools.plot_waterfall(simple_result_dict_list[0], 0, simple_result_dict_list[1], 0,
+                                info_list, title="Power Cycle Cost Comparison",
+                                fig_width=FIG_WIDTH_MED, fig_height=2.5)
+    
+    info_list = [["", "700 °C"], ["csp.pt.cost.heliostats", "Field"],
+                 ["csp.pt.cost.tower", "Tower"], ["csp.pt.cost.receiver", "Receiver"],
+                 ["csp.pt.cost.storage", "TES"],
+                 ["csp.pt.cost.power_block", "Power Cycle"], ["", "550 °C"]]
+    
+    design_tools.plot_waterfall(simple_result_dict_list[0], 0, simple_result_dict_list[1], 0,
+                                info_list, milli=True, title="CSP System Cost Comparison",
+                                fig_width=FIG_WIDTH_MED, fig_height=2.5)
+
 
 
 def make_comparison_plots():
@@ -194,6 +235,9 @@ def make_comparison_plots():
                  BASE.RECUP50, BASE.RECUP150,
                  BASE.TES50, BASE.TES150,
                  BASE.PHXBUCKLO, BASE.PHXBUCKHI]
+
+    enum_list = [BASE.BASELINE,
+                 BASE.TIT550]
 
     filenames_list_w_label = []
     for enum in enum_list:
@@ -211,8 +255,22 @@ def make_comparison_plots():
                 "id", "UA_BPX", "BPX_cost_equipment", "T_htf_bp_out_des",
                 "q_dot_in_total", "mc_cooler_q_dot", "pc_cooler_q_dot",
                 "is_bypass_ok", "UA_BPX", "HTR_cost_equipment", "LTR_cost_equipment",
-                "eta_thermal_net_less_cooling_des"
+                "eta_thermal_net_less_cooling_des",
+                "mc_cost_bare_erected", "LTR_cost_bare_erected", "cycle_cost",
+                "PHX_cost_bare_erected", "t_cost_bare_erected", "mc_cooler_cost_bare_erected",
+                "csp.pt.cost.heliostats", "csp.pt.cost.tower", "csp.pt.cost.receiver",
+                "receiver_lift_cost", "csp.pt.cost.storage", "csp.pt.cost.power_block"
                 ]
+
+    [["cycle_cost", "Baseline"], ["mc_cost_bare_erected", "MC"],
+                 ["LTR_cost_bare_erected", "LTR"], ["PHX_cost_bare_erected", "PHX"],
+                 ["t_cost_bare_erected","T"], ["mc_cooler_cost_bare_erected", "MC Cooler"],
+                 ["cycle_cost", "550"]]
+    
+    [["", "Baseline"], ["csp.pt.cost.heliostats", "Field"],
+                 ["csp.pt.cost.tower", "Tower"], ["csp.pt.cost.receiver", "Receiver"],
+                 ["receiver_lift_cost","Receiver Lift"], ["csp.pt.cost.storage", "TES"],
+                 ["csp.pt.cost.power_block", "Power Cycle"], ["", "550"]]
 
     # Open Files
     output = data_utility.open_file_set_w_label(filenames_list_w_label, key_list)
@@ -233,7 +291,13 @@ def make_comparison_plots():
                         'HTR BP', 'HTR BP w/o LTR', 
                         'Partial', 'Partial w/o HTR', 'Partial w/o LTR', 'Partial Intercooling w/o HTR',
                         'Turbine Split Flow']
-
+    plt.rcParams['savefig.dpi'] = 1000
+    T_waterfall_sweep_labels = [sco2_filenames.get_sweep_label(BASE.BASELINE),
+                          sco2_filenames.get_sweep_label(BASE.TIT550)]
+    generate_waterfalls(list_of_best_dict_list_with_kwarg, final_sweep_labels, T_waterfall_sweep_labels,
+                        'Simple')
+    
+    plt.show(block=True)
     # Make Optimal Table
     #make_optimal_table(list_of_best_dict_list_with_kwarg, final_sweep_labels, final_sweep_labels)
     

@@ -28,6 +28,7 @@ sys.path.append(newPath)
 import sco2_cycle_ssc as sco2_solve
 import sco2_plots as cy_plt
 
+folder_location = "C:\\Users\\tbrown2\\Desktop\\sco2_python\\Alfani2020_Final\\"
 Nproc = 10
 
 # Utilities

@@ -1322,6 +1322,29 @@ def get_min_Y_pareto_dict(result_dict, X_label, Y_label, N_bucket):
     X_values = X_values[sorted_indices]
     Y_values = Y_values[sorted_indices]
 
+    # Check if all X values are NaN (special case)
+    if np.all(np.isnan(X_values)):
+        # All X values are NaN, find the minimum Y value among non-NaN Y values
+        valid_y_mask = ~np.isnan(Y_values)
+        if np.any(valid_y_mask):
+            valid_y_indices = np.where(valid_y_mask)[0]
+            min_y_index = valid_y_indices[np.argmin(Y_values[valid_y_mask])]
+            pareto_indices = [sorted_indices[min_y_index]]
+        else:
+            # All Y values are also NaN, return the first point
+            pareto_indices = [sorted_indices[0]]
+        pareto_dict = {key: [result_dict[key][index] for index in pareto_indices] for key in result_dict}
+        return pareto_dict
+
+    # Check if all X values are equal (special case)
+    if max(X_values) == min(X_values):
+        # All X values are equal, so we have only one bucket
+        # Find the minimum Y value across all points
+        min_y_index = np.argmin(Y_values)
+        pareto_indices = [sorted_indices[min_y_index]]
+        pareto_dict = {key: [result_dict[key][index] for index in pareto_indices] for key in result_dict}
+        return pareto_dict
+
     bucket_size = (max(X_values) - min(X_values)) / (N_bucket - 1)
 
     pareto_indices = []
@@ -1939,7 +1962,7 @@ def plot_sweep_cost_comparison(list_of_best_dict_list_w_kwarg, sweep_label_list,
         #plt.xlim(right=len(show_config_list) + 4)  # Add extra space on the right
 
 def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_info, Y2_info = [], label_list= [], disk_load=False,
-                                  figsize=(6.4,4.8), fontsize=10, ax=None, showX=True, legend_loc='best'):
+                                  figsize=(6.4,4.8), fontsize=10, ax=None, showX=True, legend_loc='best', show_legend=True, colors=[]):
 
     # Handle Y Axes
     Y_info = copy.deepcopy(Y_info)
@@ -1958,9 +1981,10 @@ def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_in
     if(len(Y_info_list) > 1):
         ax2 = ax1.twinx()
 
-    cmap = plt.get_cmap('jet')
-    N_colors = len(Y_info_list)
-    colors = cmap(np.linspace(0, 0.95, N_colors))  
+    if colors == []:
+        cmap = plt.get_cmap('jet')
+        N_colors = len(Y_info_list)
+        colors = cmap(np.linspace(0, 0.95, N_colors))  
 
     # Plot each sweep
     i = 0
@@ -2014,7 +2038,7 @@ def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_in
     ax1.set_ylabel(Y_label)
     #legend = ax1.legend(loc='upper right')
 
-    if(len(Y_info_list) > 0):
+    if(len(Y_info_list) > 1):
         Y2_label = Y2_info[2]
         if Y2_info[1] != "":
             Y2_label += " [" + Y2_info[1] + "]"
@@ -2025,7 +2049,7 @@ def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_in
     lines_total = lines1
     labels_total = labels1
 
-    if(len(Y_info_list) > 0):
+    if(len(Y_info_list) > 1):
         lines2, labels2 = ax2.get_legend_handles_labels()
         lines_total += lines2
         labels_total += labels2
@@ -2036,13 +2060,14 @@ def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_in
         if label[-1] == '\n':
             labels_total[i_label] = label[:-1]
 
-    legend = ax1.legend(lines_total, labels_total, loc=legend_loc)
+    if show_legend:
+        legend = ax1.legend(lines_total, labels_total, loc=legend_loc)
 
-    map_legend_to_ax = {}
+        map_legend_to_ax = {}
 
-    for legend_text, scatter_series in zip(legend.get_texts(), series_list):
-        legend_text.set_picker(5)
-        map_legend_to_ax[legend_text.get_text()] = scatter_series
+        for legend_text, scatter_series in zip(legend.get_texts(), series_list):
+            legend_text.set_picker(5)
+            map_legend_to_ax[legend_text.get_text()] = scatter_series
     
     label_list_local = copy.deepcopy(label_list)
     if(len(label_list) == 0):
@@ -2070,7 +2095,9 @@ def plot_config_comparison_single(best_dict_list_w_kwarg, show_config_list, Y_in
     ax1.grid(True, which='major', axis='y', linestyle='--', linewidth=0.7, zorder=1)
     ax1.grid(True, which='minor', axis='y', linestyle=':', linewidth=0.3, zorder=0)
     ax1.grid(True, which='major', axis='x', linestyle='--', linewidth=0.7, zorder=1)
-    ax2.grid(False)
+    
+    if(len(Y_info_list) > 1):
+        ax2.grid(False)
 
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.2)
     plt.minorticks_on() 
@@ -2218,7 +2245,10 @@ def shorten_config(config_name):
         "Partial Intercooling w/o HTR":"Partial IC no HTR",
         "Turbine Split Flow":"TSF"
     }
-    return config_dict[config_name]
+    if config_name in config_dict:
+        return config_dict[config_name]
+    else:
+        return config_name
 
 def plot_costs_barchart(dict_index_duo, type='sco2', show=False, plot_title="", figsize=(6.4,4.8), fontsize=6,
                         shorten_config_label=False):
@@ -2273,7 +2303,7 @@ def plot_costs_barchart(dict_index_duo, type='sco2', show=False, plot_title="", 
                         ["csp.pt.cost.receiver", "$", "Receiver"],
                         ["receiver_lift_cost", "$", "Receiver Lift"],
                         ["csp.pt.cost.storage", "$", "TES"],
-                        ["csp.pt.cost.power_block", "$", "Power Block"],
+                        ["csp.pt.cost.power_block", "$", "Power Cycle"],
                         ["heater_cost", "$", "Heater"],
                         ["csp.pt.cost.bop", "$", "BOP"],
                         ["csp.pt.cost.fossil", "$", "Fossil Backup"]]
@@ -3290,6 +3320,103 @@ def plot_scatter_pts_dual_Y(result_dict, X_info, Y1_info, Y2_info, title="", fig
     ax1.grid(True, which='minor', axis='x', linestyle=':', linewidth=0.4, zorder=0)
     
     return axes
+
+def plot_waterfall(result_dict1, index1, result_dict2, index2, val_info_list, milli=False,
+                   title="", fontsize=8, fig_width=6.0, fig_height=3.0):
+
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+    total_label1 = val_info_list[0][1]
+
+    total_key2 = val_info_list[-1][0]
+    total_label2 = val_info_list[-1][1]
+
+    #total1 = result_dict1[total_key1][index1]
+    #total2 = result_dict2[total_key2][index2]
+    ylabel = 'Cost (M$)' 
+
+    color_total = '#bfbfbf'
+    color_pos = '#4e79a7'
+    color_neg = '#f28e2b'
+
+    x_positions = list(range(len(val_info_list)))
+    labels = [label[1] for label in val_info_list]
+
+    total1 = 0
+    total2 = 0
+    for i in range(1, len(val_info_list) - 1):
+
+        key = val_info_list[i][0]
+
+        val1 = result_dict1[key][index1]
+        val2 = result_dict2[key][index2]
+
+        if milli:
+            val1 = val1 / 1e6
+            val2 = val2 / 1e6
+
+        total1 += val1
+        total2 += val2
+
+    # Left total bar
+    ax.bar(x_positions[0], total1, color=color_total, edgecolor='black')
+    ax.text(x_positions[0], total1 * 1.01, f"{total1:.2f}", ha='center', va='bottom', fontsize=fontsize)
+
+    cumulative = total1
+    max_top = total1
+    for i in range(1, len(val_info_list) - 1):
+
+        key = val_info_list[i][0]
+        label = val_info_list[i][1]
+
+        val1 = result_dict1[key][index1]
+        val2 = result_dict2[key][index2]
+
+        if milli:
+            val1 = val1 / 1e6
+            val2 = val2 / 1e6
+        
+        delta = val2 - val1
+
+        xpos = x_positions[i]
+        if delta >= 0:
+            bottom = cumulative
+            height = delta
+            color = color_pos
+        else:
+            bottom = cumulative + delta
+            height = -delta
+            color = color_neg
+        ax.bar(xpos, height, bottom=bottom, color=color, edgecolor='black')
+        # Place label: above positive bar, below negative bar
+        if delta >= 0:
+            label_y = bottom + height + 0.01 * (max_top if max_top != 0 else 1)
+            ax.text(xpos, label_y, f"{delta:+.2f}", ha='center', va='bottom', fontsize=fontsize)
+        else:
+            label_y = bottom - 0.01 * (max_top if max_top != 0 else 1)
+            ax.text(xpos, label_y, f"{delta:+.2f}", ha='center', va='top', fontsize=fontsize)
+        cumulative += delta
+        if cumulative > max_top:
+            max_top = cumulative
+
+    # Right total bar
+    ax.bar(x_positions[-1], total2, color=color_total, edgecolor='black')
+    ax.text(x_positions[-1], total2 * 1.01, f"{total2:.2f}", ha='center', va='bottom', fontsize=fontsize)
+
+    ax.set_xticks(x_positions)
+    ax.set_xticklabels(labels, fontsize=fontsize)
+    ax.set_ylabel(ylabel, fontsize=fontsize)
+    ax.tick_params(axis='y', labelsize=fontsize)
+    if title != "":
+        ax.set_title(title, fontsize=fontsize)
+    ax.yaxis.grid(True, linestyle='--', linewidth=0.5, alpha=0.6)
+    ax.set_axisbelow(True)
+    # Include final total in max tracking
+    if total2 > max_top:
+        max_top = total2
+    y_margin = 0.1 * max_top if max_top != 0 else 1
+    ax.set_ylim(0, max_top + y_margin)
+    plt.tight_layout()
+    return fig, ax
 
 
 

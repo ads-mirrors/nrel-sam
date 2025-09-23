@@ -240,6 +240,9 @@ def plot_all(list_of_dict_list_w_kwarg, final_sweep_labels, Y_info = None):
 def plot_error(list_of_dict_list_w_kwarg, final_sweep_labels, X_info, Y_info):
     sweep_dict_list_w_kwarg = []
 
+    COST_PER_kW_info = ["cost_per_kWe_net_ish", "$/kWe", "System Cost per Net Power"]
+    PC_ETA_info = ["eta_thermal_calc", "", "PC Thermal Efficiency"]
+
     # Loop through every sweep
     i = 0
     for result_dict_list_w_kwarg in list_of_dict_list_w_kwarg:
@@ -259,9 +262,14 @@ def plot_error(list_of_dict_list_w_kwarg, final_sweep_labels, X_info, Y_info):
             show_legend=True, legend_loc='upper right',show_line=False,
             disk_load=True, title=final_sweep_labels[i], is_norm=False) 
         
+        design_tools.plot_scatter_pts(local_result_dict_list_w_kwarg,
+            PC_ETA_info, COST_PER_kW_info, 
+            show_legend=True, legend_loc='upper right',show_line=False,
+            disk_load=True, title=final_sweep_labels[i], is_norm=False) 
+        
         i += 1
 
-    
+
 
 
 def plot_barcharts(best_dict_list_w_kwarg, config_list):
@@ -483,16 +491,32 @@ def test_compare():
     #             TIT550.PHXBUCKLO, TIT550.PHXBUCKHI]
     #enum_list = [TIT625.RECUP150]
     enum_list = get_all_enum()
+    
+    #enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090,
+    #             BASE.COLDAPP40, BASE.COLDAPP60,
+    #             BASE.TIT550, BASE.TIT625,
+    #             BASE.HELIO127,
+    #             BASE.RECUP50, BASE.RECUP150,
+    #             BASE.TES50, BASE.TES150,
+    #             BASE.PHXBUCKLO, BASE.PHXBUCKHI]
 
-    enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090,
-                 BASE.COLDAPP40, BASE.COLDAPP60,
-                 BASE.TIT550, BASE.TIT625,
-                 BASE.HELIO127,
-                 BASE.RECUP50, BASE.RECUP150,
-                 BASE.TES50, BASE.TES150,
-                 BASE.PHXBUCKLO, BASE.PHXBUCKHI]
+    #enum_list = [TIT550.BASELINE, TIT550.ETA8085, TIT550.ETA8090, 
+    #            TIT550.COLDAPP40, TIT550.COLDAPP60, 
+    #            TIT550.HELIO127,
+    #            TIT550.RECUP50, TIT550.RECUP150,
+    #            TIT550.TES50, TIT550.TES150,
+    #            TIT550.PHXBUCKLO, TIT550.PHXBUCKHI]
+    
+    #enum_list = [TIT625.BASELINE]
 
     #enum_list = [BASE.COLDAPP60]
+    #enum_list = [BASE.BASELINE, BASE.ETA8085, BASE.ETA8090,
+    #             BASE.COLDAPP40, BASE.COLDAPP60,
+    #             BASE.TIT550, BASE.TIT625,
+    #             BASE.HELIO127,
+    #             BASE.RECUP50, BASE.RECUP150,
+    #             BASE.TES50, BASE.TES150,
+    #             BASE.PHXBUCKLO, BASE.PHXBUCKHI]
 
     filenames_list_w_label = []
     for enum in enum_list:
@@ -594,13 +618,13 @@ def test_compare():
         Y_label = ["cycle_cost", "M$", "Cycle Cost"]
         Y_label = ["UA_recup_tot_des", "MW/K", "Recup Total Conductance"]
         plot_pareto_spec_config(list_of_dict_list_w_kwargs, final_sweep_labels, show_config_list, Y_label=COST_PER_kW_info)
-    
+
     # Plot Error
-    if True:
+    if False:
         plot_error(list_of_dict_list_w_kwargs, final_sweep_labels, COST_PER_kW_info, Q_ERROR_info)
 
     # Sweep Comparison
-    if False:
+    if True:
         plot_pareto(list_of_dict_list_w_kwargs, final_sweep_labels, show_config_list)
         plot_all(list_of_dict_list_w_kwargs, final_sweep_labels)
         
@@ -621,4 +645,6 @@ def test_compare():
 
 
 if __name__ == "__main__":
+    #design_tools.plot_waterfall(0,0,0,0,0)
+    #plt.show(block=True)
     test_compare()
