@@ -386,7 +386,6 @@ bool GeoTools::GeocodeDeveloper(const wxString& address, double* lat, double* lo
         // check status code
         success = false;//overrides success of retrieving data
 
-        // cpg to do check this
         if (reader.HasMember(L"info")) {
             if (reader[L"info"].HasMember(L"statuscode")) {
                 if (reader[L"info"][L"statuscode"].IsInt()) {
