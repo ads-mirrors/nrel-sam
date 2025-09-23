@@ -9530,7 +9530,6 @@
     "rock_specific_heat": 950.0,
     "rock_thermal_conductivity": 3.0,
     "solar_data_file_name": "blythe_ca_33.617773_-114.588261_psmv3_60_tmy.csv",
-    "solar_data_file_name_load": "blythe_ca_33.617773_-114.588261_psmv3_60_tmy.csv",
     "solar_data_source": "NSRDB",
     "solar_resource": "blythe_ca_33.617773_-114.588261_psmv3_60_tmy",
     "solar_resource_file": "blythe_ca_33.617773_-114.588261_psmv3_60_tmy.csv",

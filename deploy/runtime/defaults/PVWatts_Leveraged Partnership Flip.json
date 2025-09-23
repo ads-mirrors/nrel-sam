@@ -19358,7 +19358,6 @@
         0.0
     ],
     "solar_data_file_name": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
-    "solar_data_file_name_load": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
     "solar_data_source": "NSRDB",
     "solar_resource": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy",
     "solar_resource_file": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",

@@ -11103,7 +11103,6 @@
     "sf_type": 1.0,
     "single_loop_aperture": 5248.0,
     "solar_data_file_name": "tucson_az_32.116521_-110.933042_psmv3_60_tmy.csv",
-    "solar_data_file_name_load": "tucson_az_32.116521_-110.933042_psmv3_60_tmy.csv",
     "solar_data_source": "NSRDB",
     "solar_mult": 2.0096433390690637,
     "solar_resource": "tucson_az_32.116521_-110.933042_psmv3_60_tmy",
