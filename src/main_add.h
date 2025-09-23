@@ -395,8 +395,6 @@ extern void RegisterReportObjectTypes();
 	splash.Show();
 	splash.SetMessage( "Starting up...please wait" );
 
-	wxSleep(10000);
-
 	FileHistory().Load( Settings() );
 
 	Restart(); // loads and runs startup scripts, sets up variable databases
