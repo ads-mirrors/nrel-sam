@@ -60,24 +60,52 @@ version_upgrade{'2025.9.19'} = define() {
 	const cfg = config();
 
 	if(cfg.tech == 'PVWatts' || cfg.tech == 'PVWatts Battery') {
-		message('We converted PVWatts to run in the GUI in lifetime mode by default.', 'warning');
-		old_degradation = value('degradation');
-		
-		value('dc_degradation', old_degradation, 'Update degradation from AC to DC degradation');
+		message('PVWatts now runs in lifetime mode so that time series outputs are over the analysis period instead of one year.');
+		message('PVWatts degradation is now modeled as DC degradation instead of AC degradation. DC degradation is an annual reduction in the DC output of the array instead of AC output of the system.', 'warning');
+		old_degradation = oldvalue('degradation');
+
+		value('dc_degradation', old_degradation, 'New DC degradation on DC Degradation page set to old AC degradation value from AC Degradation page.');
 	}
 	if (cfg.tech == 'PVWatts Battery') {
-		message('Converting simple battery to detailed battery for configurations paired with PVWatts.', 'warning');
-		old_kw = value('batt_simple_kw');
-		old_kwh = value('batt_simple_kwh');
-		old_dispatch = value('batt_simple_dispatch');
-		old_chem = value('batt_simple_chemistry'); // batt_type
+		message('PVWatts Battery configurations now use the detailed battery inputs to allow for modeling a full range of battery applications instead of only behind-the-meter applications with limited dispatch options.', 'warning');
+		old_kw = oldvalue('batt_simple_kw');
+		old_kwh = oldvalue('batt_simple_kwh');
+		old_dispatch = oldvalue('batt_simple_dispatch');
+		old_chem = oldvalue('batt_simple_chemistry'); // batt_type
+
+		message("DEBUG old_dispatch: " + old_dispatch + " chem: " + old_chem, 'error'); // TO DO delete
+		message("DEBUG old_kwh: " + old_kwh + " old_kw: " + old_kw, 'error'); // TO DO delete
 		
-		value('batt_bank_power', old_kw);
-		value('batt_duration_choice', 0);
-		value('batt_bank_duration', old_kwh);
-		
-		message("DEBUG: " + old_dispatch + " chem: " + old_chem, 'warning');
-		
+		// inputs from simple battery inputs on old PVWatts-Battery System Design page with explanation of where to find inputs
+		value('batt_bank_power', old_kw, 'Desired bank power (kWac) on Battery Cell and System page set to old battery power (kWac).');
+		value('batt_bank_size_ui', old_kwh, 'Desired bank capacity (kWhac) on Battery Cell and System page capacity set to old battery capacity kWhac).');
+		if (old_chem == 0) {
+			// Lead Acid
+			value('batt_type', 0, 'New battery type on Battery Cell and System page set to Lead Acid: Flooded from old battery chemistry Lead Acid.');
+		}
+		else {
+			// Li-ion NMC
+			value('batt_type', 8, 'New battery type on Battery Cell and System page set to Lithium-ion: NMC/Graphite from old battery chemistry Lithium Ion.' );
+		}
+		if (old_dispatch == 0 || old_dispatch == 1) {
+			value('batt_dispatch_choice_ui', 0, 'Dispatch option on Battery Dispatch page set to Peak Shaving from old Peak Shaving (look ahead) or Peak shaving (look behind) option.');
+			value('batt_dispatch_choice', 0);
+			msg_pk_shaving = 'Peak shaving dispatch option on Battery Dispatch page set to Perfect Look Ahead.';
+			if ( old_dispatch == 1 ) {
+				msg_pk_shaving = 'Peak shaving dispatch option on Battery Dispatch page set to One Day Look Behind.';
+			}
+			value('peak_shaving_batt_dispatch_choice', old_dispatch, msg_pk_shaving);
+			value('batt_dispatch_load_forecast_choice_peak_shaving', old_dispatch);
+		}
+		else {
+			// Should only be 2 (custom dispatch)
+			value('batt_dispatch_choice_ui', old_dispatch, 'Dispatch option on Battery Dispatch page set to Input Battery Power Targets from old Custom Dispatch option.');
+			value('batt_dispatch_choice', old_dispatch);
+		}
+
+		value('batt_duration_choice', 0); // sizing choice to kWh (not hours of storage)
+		value('batt_bank_size_dc_ac', 1); // set sizing units to AC to be consistent with simple battery
+
 		// From cmod_battwatts lines 254 - 259
 		value('batt_dispatch_auto_can_charge', true);
 		value('batt_dispatch_auto_can_gridcharge', true);
@@ -86,28 +114,6 @@ version_upgrade{'2025.9.19'} = define() {
 		value('batt_dispatch_charge_only_system_exceeds_load', false);
 		value('batt_dispatch_discharge_only_load_exceeds_system', false);
 		
-		
-		if (old_dispatch == 0 || old_dispatch == 1) {
-			value('batt_dispatch_choice_ui', 0);
-			value('batt_dispatch_choice', 0);
-			value('peak_shaving_batt_dispatch_choice', old_dispatch);
-			value('batt_dispatch_load_forecast_choice_peak_shaving', old_dispatch);
-		}
-		else {
-			// Should only be 2 (custom dispatch)
-			value('batt_dispatch_choice_ui', old_dispatch);
-			value('batt_dispatch_choice', old_dispatch);
-		
-		}
-		if (old_chem == 0) {
-			// Lead Acid
-			value('batt_type', 0);
-		
-		}
-		else {
-			// Li-ion NMC
-			value('batt_type', 8);
-		}
 	}
 };
 
