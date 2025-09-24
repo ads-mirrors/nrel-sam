@@ -73,9 +73,6 @@ version_upgrade{'2025.9.19'} = define() {
 		old_dispatch = oldvalue('batt_simple_dispatch');
 		old_chem = oldvalue('batt_simple_chemistry'); // batt_type
 
-		message("DEBUG old_dispatch: " + old_dispatch + " chem: " + old_chem, 'error'); // TO DO delete
-		message("DEBUG old_kwh: " + old_kwh + " old_kw: " + old_kw, 'error'); // TO DO delete
-		
 		// inputs from simple battery inputs on old PVWatts-Battery System Design page with explanation of where to find inputs
 		value('batt_bank_power', old_kw, 'Desired bank power (kWac) on Battery Cell and System page set to old battery power (kWac).');
 		value('batt_bank_size_ui', old_kwh, 'Desired bank capacity (kWhac) on Battery Cell and System page capacity set to old battery capacity kWhac).');
