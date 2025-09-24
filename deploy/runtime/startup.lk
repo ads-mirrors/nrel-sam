@@ -244,12 +244,12 @@ function setup_pages_standalone_battery_dispatch_fom()
 
 function setup_pvwatts_battery_pages(is_btm)
 {
-	addpage( [[ 'Solar Resource Data' ]], { 'sidebar'='Location and Resource', 'help'='pvwatts_location_and_resource', 'bin_name'='PV' } );
+	addpage( [[ 'Solar Resource Data' ]], { 'sidebar'='Location and Resource', 'help'='pvwatts_location_and_resource', 'bin_name'='PVWatts' } );
 	addpage( [[ 'PVWatts',
 	            {'name'='PV Land Area', 'caption' = 'Land Area', 'collapsible'=true, 'collapsible_var'='pv_land_area_is_shown'},
 	            {'name'='PVWatts Advanced Inputs', 'caption' = 'Advanced Inputs', 'collapsible'=true, 'collapsible_var'='pvwatts.advanced.is_shown'},
 	            'Battery Enable' ]],
-	            { 'sidebar'='System Design', 'help'='pvwatts_system_design', 'bin_name'='PV' } );
+	            { 'sidebar'='System Design', 'help'='pvwatts_system_design', 'bin_name'='PVWatts' } );
 	
 	if (is_btm)
 	{
