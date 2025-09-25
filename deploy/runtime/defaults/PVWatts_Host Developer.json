@@ -219,6 +219,9 @@
     "crit_8": 0.0,
     "crit_9": 0.0,
     "dc_ac_ratio": 1.15,
+    "dc_degradation": [
+        0.5
+    ],
     "debt_message": "",
     "debt_option": 1.0,
     "debt_percent": 60.0,
@@ -36969,7 +36972,7 @@
     "step": 3600.0,
     "subtotal_direct": 680400.0,
     "system_capacity": 540.0,
-    "system_use_lifetime_output": 0.0,
+    "system_use_lifetime_output": 1.0,
     "term_int_rate": 7.0,
     "term_tenor": 18.0,
     "tilt": 20.0,
