@@ -12469,6 +12469,7 @@
         "grid_interconnection_limit_kwac": 20000.0,
         "hybrid_system_capacity": 276923.1,
         "inflation_rate": 2.5,
+        "lbl_fom_dispatch_message": "",
         "om_batt_capacity_cost": [
             7.25
         ],
