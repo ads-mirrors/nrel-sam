@@ -1,7 +1,7 @@
 {
     "Name": "Battery Dispatch Options FOM",
     "Width": 1053.0,
-    "Height": 208.0,
+    "Height": 212.0,
     "FormObjects": {
         "CheckBox": {
             "Visible": 1.0,
@@ -57,7 +57,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 150.0
+                    "Integer": 159.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -98,7 +98,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 129.0
+                    "Integer": 135.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -139,7 +139,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 171.0
+                    "Integer": 183.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -180,7 +180,7 @@
                 },
                 "Y": {
                     "Type": 3.0,
-                    "Integer": 90.0
+                    "Integer": 87.0
                 },
                 "Width": {
                     "Type": 3.0,
@@ -402,7 +402,7 @@
                 },
                 "Height": {
                     "Type": 3.0,
-                    "Integer": 199.0
+                    "Integer": 205.0
                 },
                 "Tool Tip": {
                     "Type": 5.0,
