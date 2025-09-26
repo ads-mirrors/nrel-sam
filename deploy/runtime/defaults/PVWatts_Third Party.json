@@ -133,6 +133,9 @@
     "crit_8": 0.0,
     "crit_9": 0.0,
     "dc_ac_ratio": 1.15,
+    "dc_degradation": [
+        0.5
+    ],
     "degradation": [
         0.5
     ],
@@ -26596,7 +26599,7 @@
     "station_id": "78208",
     "step": 3600.0,
     "system_capacity": 6.4,
-    "system_use_lifetime_output": 0.0,
+    "system_use_lifetime_output": 1.0,
     "tilt": 20.0,
     "total_land_area": 0.02774514111048713,
     "total_module_area": 33.68421052631579,

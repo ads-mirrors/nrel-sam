@@ -172,6 +172,9 @@
     "crit_8": 0.0,
     "crit_9": 0.0,
     "dc_ac_ratio": 1.15,
+    "dc_degradation": [
+        0.5
+    ],
     "debt_fraction": 100.0,
     "debt_message": "",
     "degradation": [
@@ -26811,7 +26814,7 @@
     "step": 3600.0,
     "subtotal_direct": 680400.0,
     "system_capacity": 540.0,
-    "system_use_lifetime_output": 0.0,
+    "system_use_lifetime_output": 1.0,
     "tilt": 20.0,
     "total_direct_cost": 707616.0,
     "total_indirect_cost": 205200.0,
