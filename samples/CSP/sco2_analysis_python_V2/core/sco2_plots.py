@@ -1165,6 +1165,10 @@ def cycle_label(cycle_data, is_multi_line = False, is_file_name = False):
     elif cycle_data["cycle_config"] == 1 and cycle_data["is_recomp_ok"] == 1:
         cycle_name = r'$\bf{Recompression}$'
         cycle_abv = "RC"
+    elif cycle_data["cycle_config"] == 3:
+        cycle_name = r'$\bf{Recompression}$' + " " + r'$\bf{w/}$' + " " + r'$\bf{HTR Bypass}$'
+    elif cycle_data["cycle_config"] == 4:
+        cycle_name = r'$\bf{Turbine Split Flow}$'
     else:
         cycle_name = r'$\bf{Simple}$'
         cycle_abv = "simple"

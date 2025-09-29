@@ -351,6 +351,10 @@ def get_cycle_name_str(cycle_des_par_dict):
         return "simple"
     elif(cycle_config == 2):
         return "partialcooling"
+    elif(cycle_config == 3):
+        return "htrbp"
+    elif(cycle_config==4):
+        return "turbinesplitflow"
     else:
         return "unknowncycle"
 
@@ -370,6 +374,14 @@ def mod_dict_for_cycle_config(dict_in, cycle_config_str):
         dict_out["cycle_config"] = 2
         dict_out["is_recomp_ok"] = 1
     
+    elif(cycle_config_str == "htrbp"):
+        dict_out["cycle_config"] = 3
+        dict_out["is_recomp_ok"] = 1
+
+    elif(cycle_config_str == "turbinesplitflow"):
+        dict_out["cycle_config"] = 4
+        dict_out["is_recomp_ok"] = 0
+
     else:
         dict_out["cycle_config"] = -999
         dict_out["is_recomp_ok"] = -999
