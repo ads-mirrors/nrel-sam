@@ -72,15 +72,10 @@ class C_sco2_cycle_TS_plot:
         self.y_max = -1
         
     def plot_new_figure(self):
-        
-        fig = plt.figure()
-        ax = fig.add_subplot()
-        self.plot_from_existing_axes(ax)
-        plt.show(block = True)
 
-        #fig1, ax1 = plt.subplots(num = 2,figsize=(7.0,4.5))
+        fig1, ax1 = plt.subplots(num = 2,figsize=(7.0,4.5))
     
-        #self.plot_from_existing_axes(ax1)
+        self.plot_from_existing_axes(ax1)
         
         plt.tight_layout(pad=0.0,h_pad=.30,rect=(0.02,0.01,0.99,0.98))
         
@@ -609,8 +604,6 @@ class C_sco2_cycle_PH_plot:
         self.plot_from_existing_axes(ax1)
     
         plt.tight_layout(pad=0.0,h_pad=.30,rect=(0.02,0.01,0.99,0.98))
-
-        plt.show(block = True)
 
         if(self.is_save_plot):    
         
