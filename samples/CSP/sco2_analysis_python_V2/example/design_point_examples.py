@@ -103,8 +103,9 @@ if __name__ == "__main__":
     "Save dictionary of design parameters from above"
     sco2_des_par_default = get_sco2_design_parameters()
 
-    save_csv = False
+    save_csv = True
     save_figure = True
+    save_json = True
 
     ##########################################
     "Cycle design simulation with default parameters"
@@ -114,7 +115,8 @@ if __name__ == "__main__":
     print(c_sco2.m_solve_dict)
     print("\nDid the simulation code solve successfully = ",c_sco2.m_solve_success)
     c_sco2.m_also_save_csv = save_csv
-    c_sco2.save_m_solve_dict("design_solution__default_pars")   # Save design solution dictionary
+    if save_json:
+        c_sco2.save_m_solve_dict("design_solution__default_pars")   # Save design solution dictionary
     sol_dict__default_pars = c_sco2.m_solve_dict
 
     ##########################################
@@ -140,7 +142,8 @@ if __name__ == "__main__":
     print("\nDid the simulation code with " 
         "modified design parameters solve successfully = ",c_sco2.m_solve_success)
     c_sco2.m_also_save_csv = save_csv
-    c_sco2.save_m_solve_dict("design_solution__modified_pars")   # Save design solution dictionary
+    if save_json:
+        c_sco2.save_m_solve_dict("design_solution__modified_pars")   # Save design solution dictionary
     sol_dict__mod_pars = c_sco2.m_solve_dict
 
     c_plot = cy_plt.C_sco2_TS_PH_plot(sol_dict__mod_pars)
@@ -164,7 +167,8 @@ if __name__ == "__main__":
     c_sco2.solve_sco2_parametric(UA_in_par_dict_list)
     print("\nDid the parametric analyses solve successfully = ",c_sco2.m_par_solve_success)
     c_sco2.m_also_save_csv = save_csv
-    c_sco2.save_m_par_solve_dict("UA_recup_parametric")
+    if save_json:
+        c_sco2.save_m_par_solve_dict("UA_recup_parametric")
     sol_dict_parametric = c_sco2.m_par_solve_dict
 
     ##########################################
