@@ -34,7 +34,7 @@ def get_sco2_design_parameters():
 
     # Cycle design options
         # Configuration
-    des_par["cycle_config"] = 1  # [1] = RC, [2] = PC
+    des_par["cycle_config"] = 1  # [1] = RC, [2] = PC, [3] = HTR BP, [4] = TSF
 
         # Recuperator design
     des_par["design_method"] = 2  # [-] 1 = specify efficiency, 2 = specify total recup UA, 3 = Specify each recup design (see inputs below)
@@ -95,15 +95,15 @@ def get_sco2_design_parameters():
     des_par["deltaP_counterHX_frac"] = 0.0054321  # [-] Fraction of CO2 inlet pressure that is design point counterflow HX (recups & PHX) pressure drop
 
     # HTR BP parameters
-    des_par['is_bypass_ok'] = -0.11      # 1 = Optimize, 0 = no bypass, < 0 = fix bp_frac to abs(input)
+    des_par['is_bypass_ok'] = -0.11  # Bypass Fraction 1 = Optimize, 0 = no bypass, < 0 = fix bp_frac to abs(input)
     des_par['T_bypass_target'] = 480 # [C] Target HTF Outlet Temperature (if bypass frac is not fixed)
     des_par['T_target_is_HTF'] = 1   # Temperature target is HTF outlet (rather than sco2)
     des_par['deltaT_bypass'] = 0     # [dC] Temperature difference at Mixer 2
     des_par['set_HTF_mdot'] = 0      # [kg/s or False] Do NOT set HTF mdot (model solves it with approach temps)
 
     # TSF paramters
-    des_par['is_turbine_split_ok'] = 1   # 1 = Optimize, 0 = no bypass, < 0 = fix bp_frac to abs(input)
-    des_par['eta_isen_t2'] = des_par['eta_isen_t']       # Turbine 2 isentropic efficiency
+    des_par['is_turbine_split_ok'] = 1                  # Turbine split fraction 1 = Optimize, 0 = no bypass, < 0 = fix bp_frac to abs(input)
+    des_par['eta_isen_t2'] = des_par['eta_isen_t']      # Turbine 2 isentropic efficiency
 
     return des_par
 
