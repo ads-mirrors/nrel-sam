@@ -47650,6 +47650,7 @@
         "en_standalone_batt": 0.0,
         "en_wave_batt": 0.0,
         "inflation_rate": 2.5,
+        "lbl_btm_dispatch_message": "",
         "load": [
             65.6374,
             62.5244,
