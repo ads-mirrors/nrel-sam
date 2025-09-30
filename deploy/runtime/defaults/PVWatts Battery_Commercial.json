@@ -63678,6 +63678,7 @@
     "permitting_percent": 0.0,
     "permitting_total": 17010000.0,
     "prop_tax_assessed_decline": 0.0,
+    "prop_tax_cost_assessed_percent": 100.0,
     "property_assessed_value": 996066470.8252794,
     "property_tax_rate": 0.0,
     "ptc_fed_amount": [
