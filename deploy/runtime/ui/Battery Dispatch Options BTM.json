@@ -836,8 +836,6 @@
         "function enable_charging_priority() {",
         "\tcharge_system_first = value('batt_dispatch_charge_only_system_exceeds_load');",
         "\tenable('dispatch_manual_system_charge_first', !charge_system_first);",
-        "\tenable('lbl_pv_priority', !charge_system_first);",
-        "\trefresh();",
         "}",
         "",
         "// hide charge options for manual dispatch",
