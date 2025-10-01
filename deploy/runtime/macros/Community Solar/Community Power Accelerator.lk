@@ -1,20 +1,57 @@
 /*@
-<p>Welcome to the community power accelerator example macro!
-Enter community power accelerator meaningful benefits. 
-Then, a pdf report and a cash flow are generated.
-The report and cash flow gives insights for your community power accelerator project.
-This macro is an initial implementation intended as a proof-of-concept. 
-If you have questions or suggestions for improving the macro, please contact us at sam.support@nrel.gov</p>
+<p>The Community Power Accelerator (CPA) macro is available for the PVWatts and PVWatts Battery 
+performance models with the following financial models:</p>
 
-<p><strong>To use the macro:</strong></p>
+<ul>
+<li>Commercial</li>
+<li>Community Solar (not available with battery storage)</li>
+<li>Third Party Ownership Host/Developer</li>
+</ul>
+
+<p>
+<table><tr><td style="background-color:#ffff99">
+<strong>Note.</strong> This 
+macro is an initial implementation intended as a proof-of-concept. If you have 
+questions or suggestions for improving the macro, please contact us at 
+<a href="mailto:sam.support@nrel.gov">sam.support@nrel.gov</a>.
+</td></tr></table>
+</p>
+
+<p>This macro generates reports showing annual CPA meaningful benefits based on
+the SAM model inputs for the current case and four CPA macro parameters. Table 1 
+below describes the inputs and parameters used to calculate each benefit.
+The macro automatically calculates the value of the SAM input used to represent
+each benefit.</p>
+
+<p>
+<table border cellpadding=5 width="100%">
+<caption><strong>Table 1. Meaningful Benefits Calculated by CPA Macro</strong></caption>
+<tr><th>Benefit</th><th>SAM Input Variable Name</th><th>SAM Input Page</th><th>CPA Macro Parameter</th></tr>
+<tr><td>Energy savings to subscriber</td><td>Subscriber bill credit ($/yr)</td><td>Community Solar</td><td>Energy savings to subscriber ($/kWh)</td></tr>
+<tr><td>Lease payments to owner</td><td>Fixed annual cost ($/yr)</td><td>Operating Costs</td><td>Lease payment to owner ($/yr)</td></tr>
+<tr><td>Community benefits payments</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr></td></tr>
+<tr><td>Job training</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr)</td></tr>
+</table>
+</p>
+
+<p>To use the macro:</p>
 <ol>
-<li>If you have not already, set up a PVWatts Community Solar case.</li>
-<li>Enter the energy savings in $/kWh to the subscriber.</li>
-<li>Enter the lease payment in $/yr to the owner.</li>
-<li>Enter the community benefits payment in $/yr.</li>
-<li>Enter the job training value in $/yr.</li>
-<li>Click <strong>Run macro</strong> above.</li>
+<li>Review inputs on the SAM inputs page and modify as appropriate for the project you are modeling.</li>
+<li>Type a value for each of the four CPA macro parameters at the top right of this window.</li>
+<li>Click <strong>Run macro</strong>.</li>
+<li>The macro will prompt you to choose a folder to save the PDF file. If there is a file from a previous run, it will prompt you to delete or rename the file before running the macro.</li>
 </ol>
+
+<p>The macro sets values of SAM inputs listed in Table 1 based on the macro 
+parameters, runs a SAM simulation, and generates a set of reports in different 
+formats. When the macro finishes, you should see the following:</p>
+
+<ul>
+<li>A PDF file with a summary of performance metrics and a table of annual benefits.</li>
+<li>A window with a table of total and annual benefits over the anlysis period.</li>
+<li>In Windows, an Excel file with the project cash flow from the SAM simulation. (Not available for Mac or Linux.)</li>
+<li>SAM's Results page where you can explore the effect of the macro parameters on the financial metrics and cash flow.</li>
+</ul>
 
 @*/
 
@@ -117,19 +154,27 @@ varbenefits = ['Energy savings to subscriber','Lease payments to owner','Communi
 //varcf = ["cf_subscriber1_bill_credit_amount","cf_community_solar_subscriber1_revenue","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
 varcf = ["cf_subscriber1_bill_credit_amount","cf_om_fixed_expense","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
 varmultiplier = [1.0,1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
-str_html = '<table bgcolor=#dddddd width=100%>';
+
+// html table
+
 ap = round(to_real(get('analysis_period')));
 
-//str_html += '<tr><th>year</th>';
-str_html += '<tr><th>Benefit</th>';
-// Total added based on 7/2/2025 meeting
-str_html += '<th>Total</th>';
+str_html = '<table bgcolor=#dddddd width=100%>';
+
+// header rows
+str_html += '<tr>';
+str_html += '<th rowspan="2">Benefit</th>';
+str_html += '<th rowspan="2">Total</th>'; // Total added based on 7/2/2025 meeting
+str_html += '<th colspan="' + sprintf("%d",ap) + '">Year</th>';
+str_html += '</tr>';
+str_html += '<tr>';
 for (i=0;i<=ap;i++)
 {
 	str_html +=  '<th>' + sprintf("%d",i) + '</th>';
 }
 str_html += '</tr>';
 
+// data rows
 for (i=0;i<#varcf;i++)
 {
 	str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + '</td>';
@@ -145,24 +190,36 @@ for (i=0;i<#varcf;i++)
 }
 str_html +=  '</table></body></html>';
 
+// display outputs
 
-html_dialog ( str_html , 'Benefits for "' + case + '" Case' , [300,300,2600,600]);
-outln("Benefits table shown.");
+// pdf report
+path = choose_dir( homedir(),'Choose a folder for the PDF report');
+fname = 'CPA-benefits-report_' + case_name();
+reportFile = path + '/' + fname + '.pdf';
 
+if ( file_exists( reportFile ) ) {
+	msgbox('PDF File Exists.\nDelete or rename the file and then re-run the macro to generate the report.\n\n' + reportFile);
+	outln('Failed to export PDF report to ' + reportFile + '. File already exists.');
+}
+else {
+	ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-CommunitySolar.samreport', 'metadata'=data });
+
+	if ( ok ) {
+		outln('PDF report exported to ' + reportFile );
+		browse(reportFile);
+	}
+	else {
+		outln('Failed to export PDF report to ' + reportFile + '.');
+	}
+}
+
+// annual benefits as html table
+html_dialog ( str_html , 'Benefits for "' + case + '" Case' , [300,300,800,400]);
+outln("Benefits table displayed in window.");
 
 // export cashflow to Excel
-export_cashflow_excel();
+ok = export_cashflow_excel();
 
-
-// create pdf report quickstart/CPA-example.samreport 
-//if( yesno("This report will be saved to:\n" + homedir()+"/CPA-CommunitySolar_Macro_Report.pdf\n\nSelect 'Yes' to continue or 'No' to enter a different file path",[defaultX, defaultY]) ){
-	reportFile = homedir()+"/CPA-CommunitySolar_Macro_Report.pdf";
-//} else {
-//	reportFile = choose_file( homedir(), "Output report file", 'PDF Files (*.pdf)|*.pdf');
-//}
-
-ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-CommunitySolar.samreport', 'metadata'=data });
-
-// Open Report
-browse(reportFile);
-outln("PDF report generated " + reportFile);
+if ( ok ) {
+	outln('SAM cash flow open in Excel.');
+}
