@@ -66866,6 +66866,7 @@
     "lat": 33.45,
     "layout_warning": "No system sizing messages.",
     "lbl_bifacial": "",
+    "lbl_btm_dispatch_message": "",
     "lib_is_bifacial": 1.0,
     "lib_length": 0.0,
     "lib_manufacturer": "Aptos Solar Technology LLC",

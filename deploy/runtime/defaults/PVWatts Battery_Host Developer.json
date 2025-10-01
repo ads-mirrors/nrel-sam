@@ -55536,6 +55536,7 @@
     "landprep_percent": 0.0,
     "landprep_total": 0.0,
     "lat": 33.45,
+    "lbl_btm_dispatch_message": "",
     "lib_dispatch_factor1": 1.0,
     "lib_dispatch_factor2": 1.0,
     "lib_dispatch_factor3": 1.0,
