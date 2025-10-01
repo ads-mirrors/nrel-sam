@@ -426,7 +426,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "File on Disk"
+                    "String": "Disable Solar Resource Library"
                 },
                 "Bold": {
                     "Type": 2.0,
@@ -463,7 +463,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "If you prefer not to use the Solar Resource Library, check Use Weather File on Disk to disable it, and click Browse to choose a weather file."
+                    "String": "If you prefer not to use the Solar Resource Library, check Choose Weather File to disable it, and click Browse to choose a weather file."
                 },
                 "TextColour": {
                     "Type": 4.0,
@@ -671,7 +671,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 174.0
+                    "Integer": 162.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -683,7 +683,7 @@
                 },
                 "Caption": {
                     "Type": 5.0,
-                    "String": "Use weather file on disk"
+                    "String": "Choose weather file"
                 },
                 "State": {
                     "Type": 2.0,
@@ -704,7 +704,7 @@
                 },
                 "X": {
                     "Type": 3.0,
-                    "Integer": 204.0
+                    "Integer": 192.0
                 },
                 "Y": {
                     "Type": 3.0,
@@ -712,7 +712,7 @@
                 },
                 "Width": {
                     "Type": 3.0,
-                    "Integer": 558.0
+                    "Integer": 570.0
                 },
                 "Height": {
                     "Type": 3.0,
@@ -811,7 +811,7 @@
         "use_specific_weather_file": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "Use weather file on disk",
+            "Label": "Use user-specified weather file",
             "Units": "",
             "Group": "Location and Resource",
             "IndexLabels": "",
