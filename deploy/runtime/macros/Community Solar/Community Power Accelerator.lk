@@ -10,10 +10,9 @@ performance models with the following financial models:</p>
 
 <p>
 <table><tr><td style="background-color:#ffff99">
-<strong>Note.</strong> This 
-macro is an initial implementation intended as a proof-of-concept. If you have 
-questions or suggestions for improving the macro, please contact us at 
-<a href="mailto:sam.support@nrel.gov">sam.support@nrel.gov</a>.
+<strong>Note.</strong>This macro is an initial implementation intended as a 
+proof-of-concept. If you have questions or suggestions for improving the macro, 
+please contact us at <a href="mailto:sam.support@nrel.gov">sam.support@nrel.gov</a>.
 </td></tr></table>
 </p>
 
@@ -29,7 +28,7 @@ each benefit.</p>
 <tr><th>Benefit</th><th>SAM Input Variable Name</th><th>SAM Input Page</th><th>CPA Macro Parameter</th></tr>
 <tr><td>Energy savings to subscriber</td><td>Subscriber bill credit ($/yr)</td><td>Community Solar</td><td>Energy savings to subscriber ($/kWh)</td></tr>
 <tr><td>Lease payments to owner</td><td>Fixed annual cost ($/yr)</td><td>Operating Costs</td><td>Lease payment to owner ($/yr)</td></tr>
-<tr><td>Community benefits payments</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr></td></tr>
+<tr><td>Community benefits payments</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr)</td></tr>
 <tr><td>Job training</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr)</td></tr>
 </table>
 </p>
@@ -55,85 +54,39 @@ formats. When the macro finishes, you should see the following:</p>
 
 @*/
 
-
 //@ name=energysavings;type=number;label=Energy savings to subscriber ($/kWh);value=0.1
 //@ name=leasepayment;type=number;label=Lease payment to owner ($/yr):;value=50000
 //@ name=communitybenefitspayments;type=number;label=Community benefits payment ($/yr):;value=5000
 //@ name=jobtraining;type=number;label=Job training value ($/yr):;value=25000
 
-// Now use template file
-/*************************************/
-/**           Runtime Tools         **/
-
-// Save the current dir for later use
-curDir = userlocaldatadir();
-//outln( curDir );
-
-// Determine screen size and set default pop-up positions
-
-scrn = scrnres();
-
-defaultX = scrn[0] - scrn[0]/2;
-defaultY = 60;
-
-// exit function (and removes any highlighting)
-function exitIf( exitCondition ){
-	if( exitCondition ){
-		transp();
-		exit;
-	}
-}
-
-function send_excel( xl, variable)
-{
-	xl_set( xl, value(variable), variable );
-}
-
 if ( typeof(macro) == 'unknown' ) 
 {
 	msgbox('This macro must be run from within a case.');
 	exit;
-}	
+}
+
+outln('Running...');
+	
 energysavings = macro.energysavings; 
 leasepayment = macro.leasepayment; 
 communitybenefitspayments = macro.communitybenefitspayments;
 jobtraining = macro.jobtraining;
 
-
-caseName = case_name();
-exitIf(caseName == "");
-
-
-exitIf(energysavings == '');
 x=alloc(1);
 x[0] = to_real(energysavings);
 set('subscriber1_bill_credit_rate', x );
 
-exitIf(leasepayment == '');
 x[0] = to_real(leasepayment);
-// 7/2/2025-lease payment is cost to project and changed to fixed_om 
-//set('subscriber1_payment_annual', x );
-set('om_fixed', x );
+set('om_fixed', x ); // 7/2/2025-lease payment is cost to project and changed to fixed_om 
 
-exitIf(communitybenefitspayments == '');
 x[0] = to_real(communitybenefitspayments);
-exitIf(jobtraining == '');
 x[0] += to_real(jobtraining);
 
 set('cs_cost_recurring_fixed', x );
 
-
-/*************************************/
-/**            Simulate             **/
-
 // simulate
+outln('Simulating...');
 simulate('',true);
-outln("Simulation finished");
-/*************************************/
-/**            Outputs              **/
-
-// create HTML table showing Benefits
-case = case_name();
 
 /* cash flow line items from Community Solar outputs with 
 1.	Energy savings to subscriber  (Bill credits)
@@ -142,20 +95,19 @@ case = case_name();
 4.	Job training (upfront and recurring)
 */
 
+outln('Generating reports...');
+
+// store variables for reports
 fixedjobtraining = to_real(jobtraining);
 fixedcommunitybenefitspayments = to_real(communitybenefitspayments);
 fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 
-//write_text_file(runtimedir() + 'quickstart/CPA-example_multipliers.txt', fixedcommunitybenefitspayments + " " + fixedjobtraining + " " + fixedtotal);
 data = {'fixedjobtraining' = fixedjobtraining, 'fixedcommunitybenefitspayments' = fixedcommunitybenefitspayments, 'fixedtotal' = fixedtotal};
 
+// html string for table
 varbenefits = ['Energy savings to subscriber','Lease payments to owner','Community benefits payments','Job training'];
-// 7/2/2025 meeting Lease payment to owner is cf_om_fixed
-//varcf = ["cf_subscriber1_bill_credit_amount","cf_community_solar_subscriber1_revenue","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
-varcf = ["cf_subscriber1_bill_credit_amount","cf_om_fixed_expense","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"];
+varcf = ["cf_subscriber1_bill_credit_amount","cf_om_fixed_expense","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"]; // 7/2/2025 meeting Lease payment to owner is cf_om_fixed
 varmultiplier = [1.0,1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
-
-// html table
 
 ap = round(to_real(get('analysis_period')));
 
@@ -190,36 +142,31 @@ for (i=0;i<#varcf;i++)
 }
 str_html +=  '</table></body></html>';
 
-// display outputs
-
-// pdf report
+// generate and display pdf report
 path = choose_dir( homedir(),'Choose a folder for the PDF report');
 fname = 'CPA-benefits-report_' + case_name();
-reportFile = path + '/' + fname + '.pdf';
+f = path + '/' + fname + '.pdf';
 
-if ( file_exists( reportFile ) ) {
-	msgbox('PDF File Exists.\nDelete or rename the file and then re-run the macro to generate the report.\n\n' + reportFile);
-	outln('Failed to export PDF report to ' + reportFile + '. File already exists.');
+if ( file_exists( f ) ) {
+	msgbox('PDF File Exists.\nDelete or rename the file and then re-run the macro to generate the report.\n\n' + f);
+	outln('Failed to export PDF report to ' + f + '. File already exists.');
 }
 else {
-	ok = pdfreport( reportFile, {'template'=runtimedir() + 'quickstart/CPA-CommunitySolar.samreport', 'metadata'=data });
+	ok = pdfreport( f, {'template'=runtimedir() + 'reports/cpa.samreport', 'metadata'=data });
 
 	if ( ok ) {
-		outln('PDF report exported to ' + reportFile );
-		browse(reportFile);
+		outln('PDF report exported to ' + f );
+		browse(f);
 	}
 	else {
-		outln('Failed to export PDF report to ' + reportFile + '.');
+		outln('Failed to export PDF report to ' + f + '.');
 	}
 }
 
-// annual benefits as html table
-html_dialog ( str_html , 'Benefits for "' + case + '" Case' , [300,300,800,400]);
-outln("Benefits table displayed in window.");
+// display html table
+html_dialog ( str_html , 'Benefits for "' + case_name() + '" Case' , [300,300,800,400]);
 
-// export cashflow to Excel
-ok = export_cashflow_excel();
+// export cashflow to Excel (Windows only)
+export_cashflow_excel();
 
-if ( ok ) {
-	outln('SAM cash flow open in Excel.');
-}
+outln('Finished.');
