@@ -1570,7 +1570,7 @@
             "sscVariableName": "",
             "sscVariableValue": ""
         },
-        "user_specified_wave": {
+        "user_specified_wf_wave": {
             "Version": 4.0,
             "Type": 4.0,
             "Label": "",
@@ -1716,7 +1716,8 @@
         "on_change{'use_specific_wf_wave'} = define() {\r",
         "\tenable( 'user_specified_wf_wave', ${use_specific_wf_wave} );\r",
         "\tenable( 'select_wf_wave', ${use_specific_wf_wave} );\r",
-        "\tenable( 'location', !${use_specific_wf_wave} );\r",
+        "\t//enable( 'location', !${use_specific_wf_wave} );\r",
+        "\tenable('wave_resource_matrix', !${use_specific_wf_wave} );\r",
         "};\r",
         "\r",
         "on_change{'select_wf_wave'} = define() {\r",

@@ -1514,6 +1514,7 @@
         "on_change{'use_specific_wf_wavets'} = define() {\r",
         "\tenable( 'user_specified_wf_wavets', ${use_specific_wf_wavets} );\r",
         "\tenable( 'select_wf_wavets', ${use_specific_wf_wavets} );\r",
+        "\t//enable( 'location_ts', !${use_specific_wf_wavets} );\r",
         "};\r",
         "\r",
         "on_change{'select_wf_wavets'} = define() {\r",
