@@ -30209,6 +30209,7 @@
         "en_wave_batt": 0.0,
         "grid_interconnection_limit_kwac": 20000.0,
         "inflation_rate": 2.5,
+        "lbl_btm_dispatch_message": "",
         "load": [
             65637.4,
             62524.4,
