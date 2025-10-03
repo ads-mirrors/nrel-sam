@@ -496,16 +496,29 @@ bool CaseWindow::RunSSCBaseCase(wxString& fn, bool silent, wxString* messages)
 }
 
 
-void CaseWindow::ExportCashflowExcel()
+bool CaseWindow::ExportCashflowExcel()
 {
-	// run base case automatically
+/*	// run base case automatically
 	if (!RunBaseCase())
 	{
 		wxMessageBox("Base case simulation did not succeed.  Please check your inputs before creating a report");
 		return;
 	}
-	UpdateResults();
-	m_baseCaseResults->Export(EXP_CASHFLOW, EXP_SEND_EXCEL);
+	*/
+	if (auto *vv= m_case->BaseCase().GetOutput("annual_energy")) {
+#ifdef __WXMSW__
+	//	UpdateResults();
+		m_baseCaseResults->Export(EXP_CASHFLOW, EXP_SEND_EXCEL);
+		return true;
+#else
+		wxMessageBox("Excel export is only supported on Windows systems.");
+		return false;
+#endif
+	}
+	else {
+		wxMessageBox("Base case simulation did not succeed.  Please check your inputs or run the simulation before exporting cash flow.");
+		return false;
+	}
 }
 
 

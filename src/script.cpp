@@ -592,12 +592,32 @@ void fcall_show_page(lk::invoke_t &cxt)
 
 void fcall_export_cashflow_excel(lk::invoke_t& cxt)
 {
-	LK_DOC("export_cashflow_excel", "Exports the cashflow for the active case to Excel (Windows only)", "( string:page name ):boolean");
+	LK_DOC("export_cashflow_excel", "Exports the cashflow for the active case to Excel (Windows only)", "():boolean");
 	Case* active_case = CurrentCase();
 	if (CaseWindow* case_window = SamApp::Window()->GetCaseWindow(active_case)) {
-		case_window->ExportCashflowExcel();
+		if (auto* c = case_window->GetCase()) {
+			if (c->GetFinancing() == "None") {
+				cxt.error("case must have a financial model");
+				cxt.result().assign(0.0);
+			}
+			else {
+				if (c->BaseCase().Ok())
+					cxt.result().assign(case_window->ExportCashflowExcel() ? 1.0 : 0.0);
+				else {
+					cxt.error("case must be successfully simulated before exporting cashflow");
+					cxt.result().assign(0.0);
+				}
+			}
+		}
+		else {
+			cxt.error("no active case");
+			cxt.result().assign(0.0);
+		}
 	}
-	else cxt.error("no active case");
+	else {
+		cxt.error("no active case window");
+		cxt.result().assign(0.0);
+	}
 }
 
 void fcall_widgetpos( lk::invoke_t &cxt )
