@@ -592,7 +592,7 @@ void fcall_show_page(lk::invoke_t &cxt)
 
 void fcall_export_cashflow_excel(lk::invoke_t& cxt)
 {
-	LK_DOC("export_cashflow_excel", "Exports the cashflow for the active case to Excel (Windows only)", "():boolean");
+	LK_DOC("export_cashflow_excel", "Exports the current cash flow to Excel from the active case (Windows only). Runs a simulation before exporting only if the case has no results.", "():boolean");
 	Case* active_case = CurrentCase();
 	if (CaseWindow* case_window = SamApp::Window()->GetCaseWindow(active_case)) {
 		cxt.result().assign(case_window->ExportCashflowExcel() ? 1.0 : 0.0);
