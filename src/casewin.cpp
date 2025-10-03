@@ -496,16 +496,43 @@ bool CaseWindow::RunSSCBaseCase(wxString& fn, bool silent, wxString* messages)
 }
 
 
-void CaseWindow::ExportCashflowExcel()
+bool CaseWindow::ExportCashflowExcel()
 {
-	// run base case automatically
-	if (!RunBaseCase())
-	{
-		wxMessageBox("Base case simulation did not succeed.  Please check your inputs before creating a report");
-		return;
+	if (m_case != NULL) {
+
+		// if no outputs run a simulation. this approach could result in exported cash flow not matching current inputs if user modifies inputs without running a simulation before exporting
+		if (m_case->BaseCase().Outputs().size() == 0) {
+			RunBaseCase();
+		}
+
+		// all cash flow models have cf_om_fixed_expense output except standalone battery
+		bool is_cf_model;
+		if (auto* vv = m_case->BaseCase().GetOutput("cf_om_fixed_expense"))
+			is_cf_model = true;
+		else if (auto* vv1 = m_case->BaseCase().GetOutput("cf_om_fixed1_expense")) // standalone battery
+			is_cf_model = true;
+		else
+			is_cf_model = false;
+
+		if ( is_cf_model ) {
+#ifdef __WXMSW__
+				//	UpdateResults();
+				m_baseCaseResults->Export(EXP_CASHFLOW, EXP_SEND_EXCEL);
+				return true;
+#else
+				wxMessageBox("Excel export is only supported on Windows systems.");
+				return false;
+#endif
+		}
+		else {
+			wxMessageBox("No cash flow to export. Export cash flow requires a cash flow-based financial model.");
+			return false;
+		}
 	}
-	UpdateResults();
-	m_baseCaseResults->Export(EXP_CASHFLOW, EXP_SEND_EXCEL);
+	else {
+		wxMessageBox("No active case selected.");
+		return false;
+	}
 }
 
 

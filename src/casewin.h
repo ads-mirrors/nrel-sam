@@ -100,7 +100,7 @@ public:
 	bool RunBaseCase( bool silent = false, wxString *messages = 0 );
 	void UpdateResults();
 
-	void ExportCashflowExcel();
+	bool ExportCashflowExcel();
 
 	bool RunSSCBaseCase(wxString& fn, bool silent = false, wxString* messages = 0);
 
