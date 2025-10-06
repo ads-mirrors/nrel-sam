@@ -90,24 +90,20 @@ fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 
 data = {'fixedjobtraining' = fixedjobtraining, 'fixedcommunitybenefitspayments' = fixedcommunitybenefitspayments, 'fixedtotal' = fixedtotal};
 
-// html string for table
+// variables for html table
 varbenefits = ['Energy savings to beneficiary','Community benefits payments','Job training'];
 varcf = ['cf_energy_value','cf_om_fixed_expense','cf_om_fixed_expense'];
 varmultiplier = [1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
 
 ap = round(to_real(get('analysis_period')));
 
+// html table
 str_html = '<table bgcolor=#dddddd width=100%>';
 
 // header rows
 str_html += '<tr>';
-str_html += '<th rowspan="2">Benefit</th>';
-str_html += '<th>Lifetime</th>';
-str_html += '<th colspan="' + sprintf("%d",ap) + '">Analysis period</th>';
-str_html += '</tr>';
-str_html += '<tr>';
-str_html += '<th>total</th>';
-
+str_html += '<th>Benefit</th>';
+str_html += '<th>Lifetime Total</th>';
 for (i=0;i<=ap;i++)
 {
 	str_html +=  '<th>Year ' + sprintf("%d",i) + '</th>';
@@ -119,12 +115,10 @@ for (i=0;i<#varcf;i++)
 {
 	str_html += '<tr  bgcolor=#ffffff><td align="left">' + varbenefits[i] + '</td>';
 	cfline = get(varcf[i]);
-	// add sum per 7/2/2025 meeting
-	str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * sum(cfline))) + '</td>';
-	
+	str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * sum(cfline))) + '</td>'; // lifetime total
 	for (j=0; j<#cfline; j++)
 	{
-		str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * cfline[j])) + '</td>';
+		str_html += '<td align="right">' + sprintf('$%,',round(varmultiplier[i] * cfline[j])) + '</td>'; // annual
 	}
 	str_html += '</tr>';
 }
@@ -155,6 +149,9 @@ else {
 html_dialog ( str_html , 'Benefits for "' + case_name() + '" Case' , [300,300,800,400]);
 
 // export cashflow to Excel (Windows only)
-export_cashflow_excel();
+ok =  export_cashflow_excel();
+if (!ok) {
+	outln('Failed to export cash flow to Excel.');
+}
 
 outln('Finished.');
