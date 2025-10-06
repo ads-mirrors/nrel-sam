@@ -1,4 +1,5 @@
 /*@
+
 <p>The Community Power Accelerator (CPA) macro is available for the PVWatts and PVWatts Battery 
 performance models with the following financial models:</p>
 
@@ -15,28 +16,25 @@ proof-of-concept. If you have questions or suggestions for improving the macro,
 please contact us at <a href="mailto:sam.support@nrel.gov">sam.support@nrel.gov</a>.
 </td></tr></table>
 </p>
-
 <p>This macro generates reports showing annual CPA meaningful benefits based on
-the SAM model inputs for the current case and four CPA macro parameters. Table 1 
+the SAM model inputs for the current case and two CPA macro parameters. Table 1 
 below describes the inputs and parameters used to calculate each benefit.
 The macro automatically calculates the value of the SAM input used to represent
 each benefit.</p>
 
 <p>
 <table border cellpadding=5 width="100%">
-<caption><strong>Table 1. Meaningful Benefits Calculated by CPA Macro</strong></caption>
+<caption><strong>Table 1. Meaningful Benefits Calculated by CPA Macro. *The macro adds the sum of the two macro parameters to SAM's fixed operating cost input.</strong></caption>
 <tr><th>Benefit</th><th>SAM Input Variable Name</th><th>SAM Input Page</th><th>CPA Macro Parameter</th></tr>
-<tr><td>Energy savings to subscriber</td><td>Subscriber bill credit ($/yr)</td><td>Community Solar</td><td>Energy savings to subscriber ($/kWh)</td></tr>
-<tr><td>Lease payments to owner</td><td>Fixed annual cost ($/yr)</td><td>Operating Costs</td><td>Lease payment to owner ($/yr)</td></tr>
-<tr><td>Community benefits payments</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr)</td></tr>
-<tr><td>Job training</td><td>Recurring annual fixed cost ($/yr)</td><td>Community Solar</td><td>Sum of community benefits payment ($/yr) and job training value ($/yr)</td></tr>
+<tr><td>Community benefits payments</td><td>Fixed annual cost* ($/yr)</td><td>Operating Costs</td><td>Community benefits payment ($/yr)</td></tr>
+<tr><td>Job training</td><td>Fixed annual cost* ($/yr)</td><td>Operating Costs</td><td>Job training value ($/yr)</td></tr>
 </table>
 </p>
 
 <p>To use the macro:</p>
 <ol>
 <li>Review inputs on the SAM inputs page and modify as appropriate for the project you are modeling.</li>
-<li>Type a value for each of the four CPA macro parameters at the top right of this window.</li>
+<li>Type a value for each of the two CPA macro parameters at the top right of this window.</li>
 <li>Click <strong>Run macro</strong>.</li>
 <li>The macro will prompt you to choose a folder to save the PDF file. If there is a file from a previous run, it will prompt you to delete or rename the file before running the macro.</li>
 </ol>
@@ -54,8 +52,6 @@ formats. When the macro finishes, you should see the following:</p>
 
 @*/
 
-//@ name=energysavings;type=number;label=Energy savings to subscriber ($/kWh);value=0.1
-//@ name=leasepayment;type=number;label=Lease payment to owner ($/yr):;value=50000
 //@ name=communitybenefitspayments;type=number;label=Community benefits payment ($/yr):;value=5000
 //@ name=jobtraining;type=number;label=Job training value ($/yr):;value=25000
 
@@ -66,33 +62,23 @@ if ( typeof(macro) == 'unknown' )
 }
 
 outln('Running...');
-	
-energysavings = macro.energysavings; 
-leasepayment = macro.leasepayment; 
+
 communitybenefitspayments = macro.communitybenefitspayments;
 jobtraining = macro.jobtraining;
-
-x=alloc(1);
-x[0] = to_real(energysavings);
-set('subscriber1_bill_credit_rate', x );
-
-x[0] = to_real(leasepayment);
-set('om_fixed', x ); // 7/2/2025-lease payment is cost to project and changed to fixed_om 
 
 x[0] = to_real(communitybenefitspayments);
 x[0] += to_real(jobtraining);
 
-set('cs_cost_recurring_fixed', x );
+set('om_fixed', x );
 
 // simulate
 outln('Simulating...');
 simulate('',true);
 
-/* cash flow line items from Community Solar outputs with 
+/* cash flow line items from Third Party outputs with 
 1.	Energy savings to subscriber  (Bill credits)
-2.	Lease payment to owner (subscription revenue)
-3.	Community benefits payments (upfront and recurring)
-4.	Job training (upfront and recurring)
+2.	Community benefits payments (upfront and recurring)
+3.	Job training (upfront and recurring)
 */
 
 outln('Generating reports...');
@@ -105,9 +91,9 @@ fixedtotal = fixedjobtraining + fixedcommunitybenefitspayments;
 data = {'fixedjobtraining' = fixedjobtraining, 'fixedcommunitybenefitspayments' = fixedcommunitybenefitspayments, 'fixedtotal' = fixedtotal};
 
 // html string for table
-varbenefits = ['Energy savings to subscriber','Lease payments to owner','Community benefits payments','Job training'];
-varcf = ["cf_subscriber1_bill_credit_amount","cf_om_fixed_expense","cf_community_solar_recurring_fixed","cf_community_solar_recurring_fixed"]; // 7/2/2025 meeting Lease payment to owner is cf_om_fixed
-varmultiplier = [1.0,1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
+varbenefits = ['Energy savings to beneficiary','Community benefits payments','Job training'];
+varcf = ['cf_energy_value','cf_om_fixed_expense','cf_om_fixed_expense'];
+varmultiplier = [1.0,fixedcommunitybenefitspayments/fixedtotal,fixedjobtraining/fixedtotal];
 
 ap = round(to_real(get('analysis_period')));
 
@@ -116,13 +102,15 @@ str_html = '<table bgcolor=#dddddd width=100%>';
 // header rows
 str_html += '<tr>';
 str_html += '<th rowspan="2">Benefit</th>';
-str_html += '<th rowspan="2">Total</th>'; // Total added based on 7/2/2025 meeting
-str_html += '<th colspan="' + sprintf("%d",ap) + '">Year</th>';
+str_html += '<th>Lifetime</th>';
+str_html += '<th colspan="' + sprintf("%d",ap) + '">Analysis period</th>';
 str_html += '</tr>';
 str_html += '<tr>';
+str_html += '<th>total</th>';
+
 for (i=0;i<=ap;i++)
 {
-	str_html +=  '<th>' + sprintf("%d",i) + '</th>';
+	str_html +=  '<th>Year ' + sprintf("%d",i) + '</th>';
 }
 str_html += '</tr>';
 

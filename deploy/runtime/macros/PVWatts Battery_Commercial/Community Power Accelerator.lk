@@ -102,13 +102,15 @@ str_html = '<table bgcolor=#dddddd width=100%>';
 // header rows
 str_html += '<tr>';
 str_html += '<th rowspan="2">Benefit</th>';
-str_html += '<th rowspan="2">Total</th>'; // Total added based on 7/2/2025 meeting
-str_html += '<th colspan="' + sprintf("%d",ap) + '">Year</th>';
+str_html += '<th>Lifetime</th>';
+str_html += '<th colspan="' + sprintf("%d",ap) + '">Analysis period</th>';
 str_html += '</tr>';
 str_html += '<tr>';
+str_html += '<th>total</th>';
+
 for (i=0;i<=ap;i++)
 {
-	str_html +=  '<th>' + sprintf("%d",i) + '</th>';
+	str_html +=  '<th>Year ' + sprintf("%d",i) + '</th>';
 }
 str_html += '</tr>';
 
