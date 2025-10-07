@@ -139,24 +139,17 @@ for (i=0;i<#varcf;i++)
 str_html +=  '</table></body></html>';
 
 // generate and display pdf report
-path = choose_dir( homedir(),'Choose a folder for the PDF report');
-fname = 'CPA-benefits-report_' + case_name();
-f = path + '/' + fname + '.pdf';
+fname = 'CPA-benefits-report_' + case_name() + '.pdf';
 
-if ( file_exists( f ) ) {
-	msgbox('PDF File Exists.\nDelete or rename the file and then re-run the macro to generate the report.\n\n' + f);
-	outln('Failed to export PDF report to ' + f + '. File already exists.');
+f = choose_file('','Choose PDF report file.','PDF Files (*.pdf)|*.pdf',true,false,fname);
+
+ok = pdfreport( f, {'template'=runtimedir() + 'reports/cpa.samreport', 'metadata'=data });
+if ( ok ) {
+	outln('PDF report exported to ' + f );
+	browse(f);
 }
 else {
-	ok = pdfreport( f, {'template'=runtimedir() + 'reports/cpa.samreport', 'metadata'=data });
-
-	if ( ok ) {
-		outln('PDF report exported to ' + f );
-		browse(f);
-	}
-	else {
-		outln('Failed to export PDF report to ' + f + '.');
-	}
+	outln('Failed to export PDF report to ' + f + '.');
 }
 
 // display html table
