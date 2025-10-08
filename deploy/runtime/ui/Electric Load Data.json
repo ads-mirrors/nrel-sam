@@ -5874,7 +5874,7 @@
         "start_day_of_year_load_ui": {
             "Version": 4.0,
             "Type": 1.0,
-            "Label": "January  1 day of week",
+            "Label": "January 1 day of week",
             "Units": "",
             "Group": "Electric Load",
             "IndexLabels": "",
