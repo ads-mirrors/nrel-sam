@@ -19588,7 +19588,7 @@
                 6.57771
             ]
         ],
-        "in_location": "Type a location name, street address, or lat,lon in decimal degrees",
+        "in_location": "",
         "in_location_list": "|||",
         "in_location_options": 0.0,
         "in_nsrdb_options": 0.0,
@@ -21736,7 +21736,6 @@
             0.0
         ],
         "solar_data_file_name": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
-        "solar_data_file_name_load": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
         "solar_data_source": "NSRDB",
         "solar_resource": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy",
         "solar_resource_file": "phoenix_az_33.450495_-111.983688_psmv3_60_tmy.csv",
@@ -34402,6 +34401,7 @@
         "grid_interconnection_limit_kwac": 20000.0,
         "hybrid_system_capacity": 275215.82,
         "inflation_rate": 2.5,
+        "lbl_fom_dispatch_message": "",
         "om_batt_capacity_cost": [
             7.25
         ],
