@@ -142,7 +142,6 @@ else {
 html_dialog ( str_html , 'Benefits for "' + case_name() + '" Case' , [300,300,800,400]);
 
 // export cashflow to Excel (Windows only)
-export_cashflow_excel();
 ok =  export_cashflow_excel();
 if (!ok) {
 	outln('Failed to export cash flow to Excel.');
