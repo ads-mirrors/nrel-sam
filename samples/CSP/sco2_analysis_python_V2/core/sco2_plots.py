@@ -765,7 +765,6 @@ class C_sco2_cycle_PH_plot:
         ax_in.plot([h_states[1],h_states[2]],[P_states[1],P_states[2]], self.lc)
         
         "HTR HP"
-        HTR_HP_IN = 1
         ax_in.plot([h_states[HTR_HP_IN],h_states[4]],[P_states[HTR_HP_IN],P_states[4]], self.lc)
         
         "PHX"
