@@ -465,7 +465,7 @@ def get_default_sco2_dict():
     des_par['deltaT_bypass'] = 0     # [dC] Temperature difference at Mixer 2
     des_par['set_HTF_mdot'] = 0      # [kg/s or False] Do NOT set HTF mdot (model solves it with approach temps)
 
-    # TSF paramters
+    # TSF parameters
     des_par['is_turbine_split_ok'] = 1   # 1 = Optimize, 0 = no bypass, < 0 = fix bp_frac to abs(input)
     des_par['eta_isen_t2'] = des_par['eta_isen_t']       # Turbine 2 isentropic efficiency
 
