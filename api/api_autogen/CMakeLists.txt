@@ -189,6 +189,19 @@ file(TO_NATIVE_PATH $ENV{SAMNTDIR}/api API_DEST)
 set(EXPORT_RUN "$<TARGET_FILE:export_config> --api ${API_DEST} --pysam ${PYSAM}")
 
 if (MSVC)
+
+    file(GLOB ORTOOLS_DLLS "$ENV{ORTOOLSDIR}/bin/*.dll")
+    foreach( file_i ${ORTOOLS_DLLS})
+        add_custom_command(
+        TARGET export_config
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy ${file_i} "$<TARGET_FILE_DIR:export_config>"
+    )
+    endforeach( file_i )
+
+
+
 	add_custom_command(
 		TARGET export_config
 		POST_BUILD
