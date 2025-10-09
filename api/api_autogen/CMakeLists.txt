@@ -201,7 +201,6 @@ if (MSVC)
     endforeach( file_i )
 
 
-
 	add_custom_command(
 		TARGET export_config
 		POST_BUILD
